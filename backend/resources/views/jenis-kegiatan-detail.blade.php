@@ -679,7 +679,182 @@
             initializePageData();
             initializeCamera();
             initializeFileUpload();
-            // Remove auto-start camera
+            
+            // Add form submission event listener here
+            const form = document.getElementById('detailKegiatanForm');
+            if (form) {
+                console.log('✅ Form found, adding event listener');
+                
+                // Remove form action and method to prevent default submission
+                form.removeAttribute('action');
+                form.removeAttribute('method');
+                form.onsubmit = null;
+                console.log('🧹 Removed form action and method attributes');
+                
+                // Add new event listener with stronger prevention
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    e.stopImmediatePropagation();
+                    
+                    console.log('🚀 Form submission started');
+                    
+                    const submitButton = form.querySelector('button[type="submit"]');
+                    const originalText = submitButton.innerHTML;
+                    
+                    try {
+                        // Disable button and show loading
+                        submitButton.disabled = true;
+                        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
+                        
+                        // Validate required fields before sending
+                        const jenisKegiatan = document.getElementById('jenisKegiatan').value;
+                        const nip = document.getElementById('nip').value;
+                        const unit = document.getElementById('unit').value;
+                        const tanggalDibuat = document.getElementById('tanggalDibuat').value;
+                        
+                        if (!jenisKegiatan || !nip || !unit || !tanggalDibuat) {
+                            throw new Error('Semua field wajib harus diisi');
+                        }
+                        
+                        const formData = new FormData();
+                        
+                        // Add basic fields with proper validation
+                        formData.append('jenis_kegiatan', jenisKegiatan);
+                        formData.append('nip', nip);
+                        formData.append('unit', unit);
+                        
+                        // Fix date format - ensure it's in Y-m-d H:i:s format
+                        let formattedDate;
+                        if (tanggalDibuat) {
+                            const date = new Date(tanggalDibuat);
+                            if (isNaN(date.getTime())) {
+                                throw new Error('Format tanggal tidak valid');
+                            }
+                            formattedDate = date.getFullYear() + '-' + 
+                                String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                                String(date.getDate()).padStart(2, '0') + ' ' +
+                                String(date.getHours()).padStart(2, '0') + ':' +
+                                String(date.getMinutes()).padStart(2, '0') + ':' +
+                                String(date.getSeconds()).padStart(2, '0');
+                        } else {
+                            // Use current datetime if not provided
+                            const now = new Date();
+                            formattedDate = now.getFullYear() + '-' + 
+                                String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                                String(now.getDate()).padStart(2, '0') + ' ' +
+                                String(now.getHours()).padStart(2, '0') + ':' +
+                                String(now.getMinutes()).padStart(2, '0') + ':' +
+                                String(now.getSeconds()).padStart(2, '0');
+                        }
+                        formData.append('tanggal_dibuat', formattedDate);
+                        
+                        // Add optional fields
+                        const hasilTemuan = document.getElementById('hasilTemuan')?.value || '';
+                        if (hasilTemuan) {
+                            formData.append('hasil_temuan', hasilTemuan);
+                        }
+                        
+                        // Add signatures if available
+                        if (signatures.petugas) {
+                            formData.append('signature_pelaksana', signatures.petugas);
+                        }
+                        if (signatures.kaUnit) {
+                            formData.append('signature_pj', signatures.kaUnit);
+                        }
+                        
+                        // Add captured photos
+                        if (capturedPhotos && capturedPhotos.length > 0) {
+                            capturedPhotos.forEach((photo, index) => {
+                                if (photo.data) {
+                                    formData.append(`captured_photos[${index}]`, photo.data);
+                                }
+                            });
+                        }
+                        
+                        // Add uploaded files
+                        if (uploadedFiles && uploadedFiles.length > 0) {
+                            uploadedFiles.forEach((fileData, index) => {
+                                if (fileData.file) {
+                                    formData.append(`uploaded_files[${index}]`, fileData.file);
+                                }
+                            });
+                        }
+                        
+                        // Set status
+                        formData.append('status', 'submitted');
+                        
+                        console.log('📤 Sending data to API...');
+                        console.log('📋 Form data entries:');
+                        for (let [key, value] of formData.entries()) {
+                            console.log(`  ${key}:`, typeof value === 'string' ? value.substring(0, 100) : value);
+                        }
+                        
+                        // Check token
+                        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+                        if (!token) {
+                            throw new Error('Token tidak ditemukan. Silakan login ulang.');
+                        }
+                        
+                        const response = await fetch('/api/detail-jenis-kegiatan', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: formData
+                        });
+                        
+                        console.log('📥 Response status:', response.status);
+                        
+                        const result = await response.json();
+                        console.log('📥 Response data:', result);
+                        
+                        if (response.ok && result.success) {
+                            showNotification('Data berhasil disimpan!', 'success');
+                            updateStatusBadge('submitted');
+                            
+                            // Optional: redirect after success
+                            setTimeout(() => {
+                                if (confirm('Data berhasil disimpan! Kembali ke dashboard?')) {
+                                    window.location.href = '/user-dashboard';
+                                }
+                            }, 2000);
+                        } else {
+                            console.error('❌ API Error:', result);
+                            
+                            let errorMessage = 'Terjadi kesalahan saat menyimpan data';
+                            if (result.message) {
+                                errorMessage = result.message;
+                            }
+                            if (result.errors) {
+                                console.error('Validation errors:', result.errors);
+                                const errorDetails = Object.entries(result.errors)
+                                    .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+                                    .join('\n');
+                                errorMessage += ':\n' + errorDetails;
+                            }
+                            
+                            showNotification(errorMessage, 'error');
+                        }
+                        
+                    } catch (error) {
+                        console.error('❌ Submit Error:', error);
+                        showNotification('Error: ' + error.message, 'error');
+                    } finally {
+                        // Reset button
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = originalText;
+                    }
+                    
+                    return false;
+                }, true);
+                
+                console.log('✅ Event listener successfully attached with stronger prevention');
+            } else {
+                console.error('❌ Form with ID "detailKegiatanForm" not found!');
+            }
         });
 
         async function initializePageData() {
@@ -954,7 +1129,7 @@
             window.history.back();
         }
 
-        function saveDraft() {
+        async function saveDraft() {
             const formData = new FormData(document.getElementById('detailKegiatanForm'));
             formData.set('status', 'draft');
             
@@ -968,10 +1143,36 @@
                 formData.append(`uploaded_files[${index}]`, fileData.file);
             });
             
-            console.log('Saving draft with documentation...');
-            console.log('Captured photos:', capturedPhotos.length);
-            console.log('Uploaded files:', uploadedFiles.length);
-            alert('Draft berhasil disimpan!');
+            try {
+                const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+                
+                if (!token) {
+                    alert('Session expired. Please login again.');
+                    window.location.href = '/login';
+                    return;
+                }
+                
+                const response = await fetch('/api/detail-jenis-kegiatan', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    alert('Draft berhasil disimpan!');
+                    updateStatusBadge('draft');
+                } else {
+                    alert('Gagal menyimpan draft: ' + (result.message || 'Terjadi kesalahan'));
+                }
+            } catch (error) {
+                console.error('Error saving draft:', error);
+                alert('Terjadi kesalahan saat menyimpan draft: ' + error.message);
+            }
         }
 
         function updateStatusBadge(status) {
@@ -980,29 +1181,62 @@
             badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
         }
 
-        // Form submission
-        document.getElementById('detailKegiatanForm').addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Form submission is now handled in the DOMContentLoaded event
+        
+        // Add notification function
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(notif => notif.remove());
             
-            const formData = new FormData(this);
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-md transition-all duration-300 transform translate-x-full`;
             
-            // Add captured photos
-            capturedPhotos.forEach((photo, index) => {
-                formData.append(`captured_photos[${index}]`, photo.data);
-            });
+            // Set notification style based on type
+            switch(type) {
+                case 'success':
+                    notification.classList.add('bg-green-500', 'text-white');
+                    break;
+                case 'error':
+                    notification.classList.add('bg-red-500', 'text-white');
+                    break;
+                case 'warning':
+                    notification.classList.add('bg-yellow-500', 'text-black');
+                    break;
+                default:
+                    notification.classList.add('bg-blue-500', 'text-white');
+            }
             
-            // Add uploaded files
-            uploadedFiles.forEach((fileData, index) => {
-                formData.append(`uploaded_files[${index}]`, fileData.file);
-            });
+            notification.innerHTML = `
+                <div class="flex items-start">
+                    <div class="flex-1">
+                        <p class="text-sm font-medium whitespace-pre-line">${message}</p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
             
-            console.log('Form submitted with documentation:');
-            console.log('Form data:', Object.fromEntries(formData));
-            console.log('Captured photos:', capturedPhotos.length);
-            console.log('Uploaded files:', uploadedFiles.length);
+            // Add to page
+            document.body.appendChild(notification);
             
-            alert('Data berhasil disubmit!');
-        });
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 300);
+            }, 5000);
+        }
 
         // Cleanup on page unload
         window.addEventListener('beforeunload', () => {

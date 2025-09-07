@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\JenisKegiatanController;
 use App\Http\Controllers\Api\UnitRuanganController;
+use App\Http\Controllers\DetailJenisKegiatanController;
 
 Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
