@@ -524,40 +524,40 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Jenis Kegiatan Section -->
-                <div class="morphism-card rounded-2xl p-3 sm:p-4 lg:p-6 xl:p-8 mb-4 sm:mb-6 lg:mb-8">
-                    <div class="flex items-center space-x-4 mb-6">
-                        <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 gradient-green rounded-2xl flex items-center justify-center neon-glow">
-                            <i class="fas fa-clipboard-list text-white text-lg sm:text-xl lg:text-2xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-lg sm:text-xl lg:text-2xl font-bold text-white">Jenis Kegiatan</h3>
-                            <p class="text-gray-300 text-sm sm:text-base">Daftar kegiatan berdasarkan NIP Anda</p>
-                        </div>
-                    </div>
-                    
-                    <div id="jenisKegiatanContainer">
-                        <div class="glass rounded-xl p-4 sm:p-6">
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left">
-                                    <tbody id="jenisKegiatanTableBody">
-                                        <!-- Data will be loaded here -->
-                                    </tbody>
-                                </table>
+                    <!-- Jenis Kegiatan Section -->
+                    <div class="morphism-card rounded-2xl p-3 sm:p-4 lg:p-6 xl:p-8 mb-4 sm:mb-6 lg:mb-8">
+                        <div class="flex items-center space-x-4 mb-6">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 gradient-green rounded-2xl flex items-center justify-center neon-glow">
+                                <i class="fas fa-clipboard-list text-white text-lg sm:text-xl lg:text-2xl"></i>
                             </div>
-                            <div id="noDataMessage" class="text-center py-8 hidden">
-                                <i class="fas fa-inbox text-gray-400 text-4xl mb-4"></i>
-                                <p class="text-gray-400">Tidak ada data jenis kegiatan untuk NIP Anda</p>
+                            <div>
+                                <h3 class="text-lg sm:text-xl lg:text-2xl font-bold text-white">Jenis Kegiatan</h3>
+                                <p class="text-gray-300 text-sm sm:text-base">Daftar kegiatan berdasarkan NIP Anda</p>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div id="jenisKegiatanLoading" class="text-center py-8">
-                        <div class="inline-flex items-center space-x-3">
-                            <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-green-400"></div>
-                            <span class="text-white">Memuat data jenis kegiatan...</span>
+                        
+                        <div id="jenisKegiatanContainer">
+                            <div class="glass rounded-xl p-4 sm:p-6">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left">
+                                        <tbody id="jenisKegiatanTableBody">
+                                            <!-- Data will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="noDataMessage" class="text-center py-8 hidden">
+                                    <i class="fas fa-inbox text-gray-400 text-4xl mb-4"></i>
+                                    <p class="text-gray-400">Tidak ada data jenis kegiatan untuk NIP Anda</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="jenisKegiatanLoading" class="text-center py-8">
+                            <div class="inline-flex items-center space-x-3">
+                                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-green-400"></div>
+                                <span class="text-white">Memuat data jenis kegiatan...</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1117,10 +1117,27 @@
         
         // Load profile
         function loadProfile() {
-            const user = JSON.parse(localStorage.getItem('user'));
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
             const profileView = document.getElementById('profileView');
             if (!profileView) {
                 console.error('Profile view element not found');
+                return;
+            }
+            
+            // Check if user data exists
+            if (!user || !user.name) {
+                profileView.innerHTML = `
+                    <div class="glass rounded-xl p-6 mb-6">
+                        <div class="text-center py-8">
+                            <i class="fas fa-user-slash text-gray-400 text-4xl mb-4"></i>
+                            <h3 class="text-white font-semibold mb-2">Data Profil Tidak Ditemukan</h3>
+                            <p class="text-gray-300 mb-4">Silakan login ulang untuk memuat data profil Anda.</p>
+                            <button onclick="window.location.href='/login'" class="px-6 py-3 gradient-blue rounded-xl text-white font-semibold hover:scale-105 transition-all duration-300">
+                                Login Ulang
+                            </button>
+                        </div>
+                    </div>
+                `;
                 return;
             }
             
