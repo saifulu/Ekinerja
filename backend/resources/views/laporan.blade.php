@@ -36,16 +36,30 @@
             text-align: center;
         }
 
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            pointer-events: none;
+        }
+
         .header h1 {
-            color: #4a5568;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            font-weight: 700;
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            letter-spacing: -0.5px;
         }
 
         .header p {
-            color: #718096;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            opacity: 0.95;
+            font-weight: 500;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .back-button {
@@ -81,15 +95,29 @@
             border-radius: 16px;
             padding: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
             min-height: auto;
+            cursor: pointer;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
 
-        .stat-card .icon {
+        .stat-card.active {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+        }
+
+        .stat-card.active .label {
+            color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .stat-card.active .number {
+            color: white !important;
+        }
+        .icon {
             width: 40px;
             height: 40px;
             border-radius: 12px;
@@ -330,9 +358,9 @@
         @else
             <!-- Statistics Cards -->
             <div class="stats-grid">
-                <div class="stat-card">
+                <div class="stat-card" id="laporanKegiatanCard" onclick="showLaporanKegiatan()" style="cursor: pointer;">
                     <div class="d-flex align-items-center">
-                        <div class="icon" style="background: #4299e1; margin-right: 15px; margin-bottom: 0;">
+                        <div class="icon" style="background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%); margin-right: 20px; margin-bottom: 0;">
                             <i class="fas fa-chart-line"></i>
                         </div>
                         <div>
@@ -341,9 +369,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card" id="rekapLaporanCard" onclick="showRekapLaporan()" style="cursor: pointer;">
                     <div class="d-flex align-items-center">
-                        <div class="icon" style="background: #48bb78; margin-right: 15px; margin-bottom: 0;">
+                        <div class="icon" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); margin-right: 20px; margin-bottom: 0;">
                             <i class="fas fa-file-chart-column"></i>
                         </div>
                         <div>
@@ -356,9 +384,9 @@
 
             <!-- Data Table -->
             <div class="table-container">
-                <h3>
+                <h3 id="tableTitle">
                     <i class="fas fa-table"></i>
-                    Data Kegiatan Lengkap
+                    <span id="titleText">Data Kegiatan Lengkap</span>
                 </h3>
                 
                 <div class="table-controls">
@@ -372,306 +400,187 @@
                     </select>
                 </div>
 
-                @if($laporanData && $laporanData->count() > 0)
-                    <table id="dataTable">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>No</th>
-                                <th>Jenis Kegiatan</th>
-                                <th>NIP</th>
-                                <th>Nama</th>
-                                <th>Unit</th>
-                                <th>Tanggal Dibuat</th>
-                                <th>Hasil Temuan</th>
-                                <th>Signature Pelaksana</th>
-                                <th>Signature PJ</th>
-                                <th>Dokumentasi</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody">
-                            @forelse($laporanData as $index => $item)
-                            <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $item->jenis_kegiatan ?? '-' }}</td>
-                                <td>{{ $item->nip ?? '-' }}</td>
-                                <td>{{ $item->user ? $item->user->name : ($item->creator ? $item->creator->name : '-') }}</td>
-                                <td>{{ $item->unit ?? '-' }}</td>
-                                <td>{{ $item->tanggal_dibuat ? \Carbon\Carbon::parse($item->tanggal_dibuat)->format('d/m/Y H:i') : '-' }}</td>
-                                <td>
-                                    @if($item->hasil_temuan)
-                                        <div class="text-truncate" style="max-width: 200px;" title="{{ $item->hasil_temuan }}">
-                                            {{ Str::limit($item->hasil_temuan, 50) }}
+                <!-- Laporan Kegiatan Table -->
+                <div id="laporanKegiatanTable">
+                    @if($laporanData && $laporanData->count() > 0)
+                        <table id="dataTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Jenis Kegiatan</th>
+                                    <th>NIP</th>
+                                    <th>Nama</th>
+                                    <th>Unit</th>
+                                    <th>Tanggal Dibuat</th>
+                                    <th>Hasil Temuan</th>
+                                    <th>Signature Pelaksana</th>
+                                    <th>Signature PJ</th>
+                                    <th>Dokumentasi</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                @forelse($laporanData as $index => $item)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $item->jenis_kegiatan ?? '-' }}</td>
+                                    <td>{{ $item->nip ?? '-' }}</td>
+                                    <td>{{ $item->user ? $item->user->name : ($item->creator ? $item->creator->name : '-') }}</td>
+                                    <td>{{ $item->unit ?? '-' }}</td>
+                                    <td>{{ $item->tanggal_dibuat ? \Carbon\Carbon::parse($item->tanggal_dibuat)->format('d/m/Y H:i') : '-' }}</td>
+                                    <td>
+                                        @if($item->hasil_temuan)
+                                            <div class="text-truncate" style="max-width: 200px;" title="{{ $item->hasil_temuan }}">
+                                                {{ Str::limit($item->hasil_temuan, 50) }}
+                                            </div>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($item->signature_pelaksana)
+                                            @php
+                                                $signaturePelaksana = $item->signature_pelaksana;
+                                                if (!str_starts_with($signaturePelaksana, 'data:image/')) {
+                                                    $signaturePelaksana = 'data:image/png;base64,' . $signaturePelaksana;
+                                                }
+                                            @endphp
+                                            <img src="{{ $signaturePelaksana }}" 
+                                                 alt="Signature Pelaksana" 
+                                                 class="img-thumbnail" 
+                                                 style="max-width: 80px; max-height: 60px; cursor: pointer;"
+                                                 onclick="showImageModal('{{ $signaturePelaksana }}', 'Signature Pelaksana')">
+                                        @else
+                                            <span class="text-muted">Tidak ada</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($item->signature_pj)
+                                            @php
+                                                $signaturePj = $item->signature_pj;
+                                                if (!str_starts_with($signaturePj, 'data:image/')) {
+                                                    $signaturePj = 'data:image/png;base64,' . $signaturePj;
+                                                }
+                                            @endphp
+                                            <img src="{{ $signaturePj }}" 
+                                                 alt="Signature PJ" 
+                                                 class="img-thumbnail" 
+                                                 style="max-width: 80px; max-height: 60px; cursor: pointer;"
+                                                 onclick="showImageModal('{{ $signaturePj }}', 'Signature PJ')">
+                                        @else
+                                            <span class="text-muted">Tidak ada</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($item->dokumentasi && is_array($item->dokumentasi) && count($item->dokumentasi) > 0)
+                                            <div class="d-flex flex-wrap gap-1">
+                                                @foreach($item->dokumentasi as $index => $doc)
+                                                    <img src="{{ asset('storage/' . $doc) }}" 
+                                                         alt="Dokumentasi {{ $index + 1 }}" 
+                                                         class="img-thumbnail" 
+                                                         style="max-width: 50px; max-height: 40px; cursor: pointer;"
+                                                         onclick="showImageModal('{{ asset('storage/' . $doc) }}', 'Dokumentasi {{ $index + 1 }}')"
+                                                         title="Klik untuk memperbesar">
+                                                @endforeach
+                                            </div>
+                                            <small class="text-muted">{{ count($item->dokumentasi) }} file(s)</small>
+                                        @else
+                                            <span class="text-muted">Tidak ada</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewDetail({{ $item->id }})" title="Lihat Detail">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-success" onclick="editItem({{ $item->id }})" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
                                         </div>
-                                    @else
-                                        <span class="text-muted">-</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($item->signature_pelaksana)
-                                        @php
-                                            $signaturePelaksana = $item->signature_pelaksana;
-                                            // Jika sudah ada prefix, gunakan langsung. Jika tidak, tambahkan prefix
-                                            if (!str_starts_with($signaturePelaksana, 'data:image/')) {
-                                                $signaturePelaksana = 'data:image/png;base64,' . $signaturePelaksana;
-                                            }
-                                        @endphp
-                                        <img src="{{ $signaturePelaksana }}" 
-                                             alt="Signature Pelaksana" 
-                                             class="img-thumbnail" 
-                                             style="max-width: 80px; max-height: 60px; cursor: pointer;"
-                                             onclick="showImageModal('{{ $signaturePelaksana }}', 'Signature Pelaksana')">
-                                    @else
-                                        <span class="text-muted">Tidak ada</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($item->signature_pj)
-                                        @php
-                                            $signaturePj = $item->signature_pj;
-                                            // Jika sudah ada prefix, gunakan langsung. Jika tidak, tambahkan prefix
-                                            if (!str_starts_with($signaturePj, 'data:image/')) {
-                                                $signaturePj = 'data:image/png;base64,' . $signaturePj;
-                                            }
-                                        @endphp
-                                        <img src="{{ $signaturePj }}" 
-                                             alt="Signature PJ" 
-                                             class="img-thumbnail" 
-                                             style="max-width: 80px; max-height: 60px; cursor: pointer;"
-                                             onclick="showImageModal('{{ $signaturePj }}', 'Signature PJ')">
-                                    @else
-                                        <span class="text-muted">Tidak ada</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($item->dokumentasi && is_array($item->dokumentasi) && count($item->dokumentasi) > 0)
-                                        <div class="d-flex flex-wrap gap-1">
-                                            @foreach($item->dokumentasi as $index => $doc)
-                                                <img src="{{ asset('storage/' . $doc) }}" 
-                                                     alt="Dokumentasi {{ $index + 1 }}" 
-                                                     class="img-thumbnail" 
-                                                     style="max-width: 50px; max-height: 40px; cursor: pointer;"
-                                                     onclick="showImageModal('{{ asset('storage/' . $doc) }}', 'Dokumentasi {{ $index + 1 }}')"
-                                                     title="Klik untuk memperbesar">
-                                            @endforeach
-                                        </div>
-                                        <small class="text-muted">{{ count($item->dokumentasi) }} file(s)</small>
-                                    @else
-                                        <span class="text-muted">Tidak ada</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="viewDetail({{ $item->id }})" title="Lihat Detail">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-outline-success" onclick="editItem({{ $item->id }})" title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="10" class="text-center text-muted py-4">
-                                    <i class="fas fa-inbox fa-2x mb-2"></i><br>
-                                    Tidak ada data laporan
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                    
-                    <div class="pagination" id="pagination">
-                        <!-- Pagination will be generated by JavaScript -->
-                    </div>
-                @else
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="11" class="text-center text-muted py-4">
+                                        <i class="fas fa-inbox fa-2x mb-2"></i><br>
+                                        Tidak ada data laporan
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    @else
+                        <div class="no-data">
+                            <i class="fas fa-inbox"></i>
+                            <h3>Belum Ada Data</h3>
+                            <p>Belum ada kegiatan yang tercatat dalam sistem.</p>
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Rekap Laporan Table -->
+                <div id="rekapLaporanTable" style="display: none;">
                     <div class="no-data">
-                        <i class="fas fa-inbox"></i>
-                        <h3>Belum Ada Data</h3>
-                        <p>Belum ada kegiatan yang tercatat dalam sistem.</p>
+                        <i class="fas fa-chart-pie"></i>
+                        <h3>Rekap Laporan</h3>
+                        <p>Fitur rekap laporan sedang dalam pengembangan.</p>
                     </div>
-                @endif
+                </div>
+                
+                <div class="pagination" id="pagination">
+                    <!-- Pagination will be generated by JavaScript -->
+                </div>
             </div>
         @endif
     </div>
 
     <script>
-        // Global variables
-        let currentUser = null;
-        
-        // Check authentication and redirect with user NIP
-        document.addEventListener('DOMContentLoaded', function() {
-            const token = localStorage.getItem('token');
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
+        let currentView = 'laporan'; // 'laporan' or 'rekap'
+
+        function showLaporanKegiatan() {
+            currentView = 'laporan';
             
-            console.log('Token check:', !!token);
-            console.log('User data:', user);
-            console.log('User NIP:', user.nip);
+            // Update card styles
+            document.getElementById('laporanKegiatanCard').style.background = 'linear-gradient(135deg, #4299e1 0%, #3182ce 100%)';
+            document.getElementById('laporanKegiatanCard').style.color = 'white';
+            document.getElementById('rekapLaporanCard').style.background = 'rgba(255, 255, 255, 0.95)';
+            document.getElementById('rekapLaporanCard').style.color = '#333';
             
-            if (!token) {
-                console.log('No token found, redirecting to login');
-                alert('Sesi Anda telah berakhir. Silakan login kembali.');
-                window.location.href = '/login';
-                return;
-            }
+            // Update title
+            document.getElementById('titleText').textContent = 'Data Kegiatan Lengkap';
             
-            if (!user.nip) {
-                console.log('No NIP found, redirecting to login');
-                alert('Data NIP tidak ditemukan. Silakan login kembali.');
-                window.location.href = '/login';
-                return;
-            }
+            // Show/hide tables
+            document.getElementById('laporanKegiatanTable').style.display = 'block';
+            document.getElementById('rekapLaporanTable').style.display = 'none';
             
-            // Set global user variable
-            currentUser = user;
-            
-            // Redirect to laporan with NIP parameter if not already present
-            const urlParams = new URLSearchParams(window.location.search);
-            if (!urlParams.has('nip')) {
-                console.log('Adding NIP parameter to URL');
-                window.location.href = `/laporan?nip=${user.nip}`;
-                return;
-            }
-            
-            // Verify that the NIP parameter matches current user
-            const nipParam = urlParams.get('nip');
-            if (nipParam !== user.nip) {
-                console.log('NIP mismatch, correcting URL');
-                window.location.href = `/laporan?nip=${user.nip}`;
-                return;
-            }
-            
-            // Set user info in page
-            console.log('Authentication successful, initializing page');
-            console.log('Current user NIP:', user.nip);
-            console.log('URL NIP parameter:', nipParam);
-            
-            // Initialize table functionality after authentication check
-            initializeTableFunctionality();
-        });
-        
-        // Table filtering and search functionality
-        function initializeTableFunctionality() {
-            const searchInput = document.getElementById('searchInput');
-            const statusFilter = document.getElementById('statusFilter');
-            const table = document.getElementById('dataTable');
-            
-            if (table) {
-                const tbody = table.querySelector('tbody');
-                const rows = Array.from(tbody.querySelectorAll('tr'));
-                
-                // Items per page
-                const itemsPerPage = 10;
-                let currentPage = 1;
-                let filteredRows = rows;
-                
-                function filterTable() {
-                    const searchTerm = searchInput.value.toLowerCase();
-                    const statusValue = statusFilter.value.toLowerCase();
-                    
-                    filteredRows = rows.filter(row => {
-                        const cells = row.querySelectorAll('td');
-                        const id = cells[0].textContent.toLowerCase();
-                        const jenisKegiatan = cells[1].textContent.toLowerCase();
-                        const nip = cells[2].textContent.toLowerCase();
-                        const nama = cells[3].textContent.toLowerCase();
-                        const unit = cells[4].textContent.toLowerCase();
-                        const status = cells[10].textContent.toLowerCase(); // Status sekarang di kolom ke-11 (index 10)
-                        
-                        // Filter berdasarkan NIP user yang login
-                        const isUserData = currentUser && nip === currentUser.nip.toLowerCase();
-                        
-                        const matchesSearch = !searchTerm || 
-                            nip.includes(searchTerm) || 
-                            nama.includes(searchTerm) || 
-                            jenisKegiatan.includes(searchTerm) || 
-                            unit.includes(searchTerm);
-                            
-                        const matchesStatus = !statusValue || status.includes(statusValue);
-                        
-                        // Hanya tampilkan data yang sesuai dengan NIP user dan kriteria pencarian
-                        return isUserData && matchesSearch && matchesStatus;
-                    });
-                    
-                    currentPage = 1;
-                    displayPage();
-                    setupPagination();
-                }
-                
-                function displayPage() {
-                    // Hide all rows
-                    rows.forEach(row => row.style.display = 'none');
-                    
-                    // Calculate start and end indices
-                    const startIndex = (currentPage - 1) * itemsPerPage;
-                    const endIndex = startIndex + itemsPerPage;
-                    
-                    // Show filtered rows for current page
-                    filteredRows.slice(startIndex, endIndex).forEach(row => {
-                        row.style.display = '';
-                    });
-                }
-                
-                function setupPagination() {
-                    const pagination = document.getElementById('pagination');
-                    const totalPages = Math.ceil(filteredRows.length / itemsPerPage);
-                    
-                    if (totalPages <= 1) {
-                        pagination.innerHTML = '';
-                        return;
-                    }
-                    
-                    let paginationHTML = '';
-                    
-                    // Previous button
-                    paginationHTML += `<button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
-                        <i class="fas fa-chevron-left"></i>
-                    </button>`;
-                    
-                    // Page numbers
-                    for (let i = 1; i <= totalPages; i++) {
-                        if (i === currentPage) {
-                            paginationHTML += `<button class="active">${i}</button>`;
-                        } else {
-                            paginationHTML += `<button onclick="changePage(${i})">${i}</button>`;
-                        }
-                    }
-                    
-                    // Next button
-                    paginationHTML += `<button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
-                        <i class="fas fa-chevron-right"></i>
-                    </button>`;
-                    
-                    pagination.innerHTML = paginationHTML;
-                }
-                
-                // Global function for pagination
-                window.changePage = function(page) {
-                    const totalPages = Math.ceil(filteredRows.length / itemsPerPage);
-                    if (page >= 1 && page <= totalPages) {
-                        currentPage = page;
-                        displayPage();
-                        setupPagination();
-                    }
-                }
-                
-                // Event listeners
-                if (searchInput) searchInput.addEventListener('input', filterTable);
-                if (statusFilter) statusFilter.addEventListener('change', filterTable);
-                
-                // Initial setup
-                displayPage();
-                setupPagination();
-            }
+            // Show/hide controls
+            document.querySelector('.table-controls').style.display = 'flex';
         }
-    });
-    
-    // View detail function
-    function viewDetail(id) {
-        // You can implement modal or redirect to detail page
-        alert('Fitur detail akan segera tersedia. ID: ' + id);
-    }
+
+        function showRekapLaporan() {
+            currentView = 'rekap';
+            
+            // Update card styles
+            document.getElementById('rekapLaporanCard').style.background = 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)';
+            document.getElementById('rekapLaporanCard').style.color = 'white';
+            document.getElementById('laporanKegiatanCard').style.background = 'rgba(255, 255, 255, 0.95)';
+            document.getElementById('laporanKegiatanCard').style.color = '#333';
+            
+            // Update title
+            document.getElementById('titleText').textContent = 'Rekap Laporan';
+            
+            // Show/hide tables
+            document.getElementById('laporanKegiatanTable').style.display = 'none';
+            document.getElementById('rekapLaporanTable').style.display = 'block';
+            
+            // Hide controls for rekap
+            document.querySelector('.table-controls').style.display = 'none';
+        }
+
+        // Initialize with Laporan Kegiatan active
+        document.addEventListener('DOMContentLoaded', function() {
+            showLaporanKegiatan();
+        });
     </script>
 
     <!-- Modal untuk menampilkan gambar -->
