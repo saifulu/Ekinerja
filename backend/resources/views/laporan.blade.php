@@ -587,11 +587,12 @@
     <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header" style="display: none;">
                     <h5 class="modal-title" id="imageModalLabel">Gambar</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body text-center">
+                <div class="modal-body text-center" style="position: relative;">
+                    <button type="button" class="btn-close position-absolute" style="top: 10px; right: 10px; z-index: 1000;" data-bs-dismiss="modal" aria-label="Close"></button>
                     <img id="modalImage" src="" alt="" class="img-fluid" style="max-height: 70vh;">
                 </div>
             </div>
