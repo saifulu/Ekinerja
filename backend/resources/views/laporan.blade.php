@@ -371,7 +371,7 @@
                     <table id="dataTable">
                         <thead class="table-dark">
                             <tr>
-                                <th>ID</th>
+                                <th>No</th>
                                 <th>Jenis Kegiatan</th>
                                 <th>NIP</th>
                                 <th>Nama</th>
@@ -381,14 +381,13 @@
                                 <th>Signature Pelaksana</th>
                                 <th>Signature PJ</th>
                                 <th>Dokumentasi</th>
-                                <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody">
                             @forelse($laporanData as $index => $item)
                             <tr>
-                                <td>{{ $item->id }}</td>
+                                <td>{{ $index + 1 }}</td>
                                 <td>{{ $item->jenis_kegiatan ?? '-' }}</td>
                                 <td>{{ $item->nip ?? '-' }}</td>
                                 <td>{{ $item->user ? $item->user->name : ($item->creator ? $item->creator->name : '-') }}</td>
@@ -454,17 +453,6 @@
                                         <small class="text-muted">{{ count($item->dokumentasi) }} file(s)</small>
                                     @else
                                         <span class="text-muted">Tidak ada</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($item->status == 'approved')
-                                        <span class="badge bg-success">Approved</span>
-                                    @elseif($item->status == 'submitted')
-                                        <span class="badge bg-info">Submitted</span>
-                                    @elseif($item->status == 'rejected')
-                                        <span class="badge bg-danger">Rejected</span>
-                                    @else
-                                        <span class="badge bg-secondary">Draft</span>
                                     @endif
                                 </td>
                                 <td>
