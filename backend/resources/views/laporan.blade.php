@@ -79,9 +79,10 @@
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 16px;
-            padding: 25px;
+            padding: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease;
+            min-height: auto;
         }
 
         .stat-card:hover {
@@ -89,28 +90,38 @@
         }
 
         .stat-card .icon {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: white;
-            margin-bottom: 15px;
+            flex-shrink: 0;
         }
 
         .stat-card .number {
-            font-size: 2rem;
-            font-weight: 700;
+            font-size: 1.8rem;
+            font-weight: bold;
             color: #2d3748;
             margin-bottom: 5px;
+            line-height: 1;
         }
 
         .stat-card .label {
-            color: #718096;
             font-size: 0.9rem;
+            color: #718096;
             font-weight: 500;
+            line-height: 1;
+        }
+
+        .d-flex {
+            display: flex;
+        }
+
+        .align-items-center {
+            align-items: center;
         }
 
         .table-container {
@@ -320,32 +331,26 @@
             <!-- Statistics Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="icon" style="background: #4299e1;">
-                        <i class="fas fa-file-alt"></i>
+                    <div class="d-flex align-items-center">
+                        <div class="icon" style="background: #4299e1; margin-right: 15px; margin-bottom: 0;">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <div class="number">{{ ($statusStats['draft'] ?? 0) + ($statusStats['submitted'] ?? 0) + ($statusStats['approved'] ?? 0) + ($statusStats['rejected'] ?? 0) }}</div>
+                            <div class="label">Laporan Kegiatan</div>
+                        </div>
                     </div>
-                    <div class="number">{{ $statusStats['draft'] ?? 0 }}</div>
-                    <div class="label">Draft</div>
                 </div>
                 <div class="stat-card">
-                    <div class="icon" style="background: #ed8936;">
-                        <i class="fas fa-paper-plane"></i>
+                    <div class="d-flex align-items-center">
+                        <div class="icon" style="background: #48bb78; margin-right: 15px; margin-bottom: 0;">
+                            <i class="fas fa-file-chart-column"></i>
+                        </div>
+                        <div>
+                            <div class="number">{{ $statusStats['approved'] ?? 0 }}</div>
+                            <div class="label">Rekap Laporan</div>
+                        </div>
                     </div>
-                    <div class="number">{{ $statusStats['submitted'] ?? 0 }}</div>
-                    <div class="label">Submitted</div>
-                </div>
-                <div class="stat-card">
-                    <div class="icon" style="background: #48bb78;">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div class="number">{{ $statusStats['approved'] ?? 0 }}</div>
-                    <div class="label">Approved</div>
-                </div>
-                <div class="stat-card">
-                    <div class="icon" style="background: #f56565;">
-                        <i class="fas fa-times-circle"></i>
-                    </div>
-                    <div class="number">{{ $statusStats['rejected'] ?? 0 }}</div>
-                    <div class="label">Rejected</div>
                 </div>
             </div>
 
