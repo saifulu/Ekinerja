@@ -271,6 +271,60 @@ class DetailJenisKegiatanController extends Controller
     }
 
     /**
+     * Show laporan page with data from detail_jenis_kegiatan table
+     */
+    public function showLaporan(Request $request)
+    {
+        try {
+            $userNip = $request->get('nip');
+            
+            // Pastikan NIP selalu ada, jika tidak redirect ke login
+            if (!$userNip) {
+                return redirect('/login')->with('error', 'NIP tidak ditemukan dalam parameter.');
+            }
+            
+            // Filter data berdasarkan NIP yang diberikan
+            $laporanData = DetailJenisKegiatan::with(['creator', 'user'])
+                ->where('nip', $userNip)
+                ->orderBy('created_at', 'desc')
+                ->get();
+    
+            // Group data by status for statistics
+            $statusStats = [
+                'draft' => $laporanData->where('status', 'draft')->count(),
+                'submitted' => $laporanData->where('status', 'submitted')->count(),
+                'approved' => $laporanData->where('status', 'approved')->count(),
+                'rejected' => $laporanData->where('status', 'rejected')->count(),
+            ];
+    
+            // Group data by unit
+            $unitStats = $laporanData->groupBy('unit')->map(function ($items) {
+                return $items->count();
+            });
+    
+            // Group data by jenis_kegiatan
+            $jenisKegiatanStats = $laporanData->groupBy('jenis_kegiatan')->map(function ($items) {
+                return $items->count();
+            });
+    
+            // Recent activities (last 10)
+            $recentActivities = $laporanData->take(10);
+    
+            return view('laporan', compact(
+                'laporanData',
+                'statusStats', 
+                'unitStats',
+                'jenisKegiatanStats',
+                'recentActivities'
+            ));
+    
+        } catch (\Exception $e) {
+            \Log::error('Error in showLaporan: ' . $e->getMessage());
+            return view('laporan')->with('error', 'Terjadi kesalahan saat memuat data laporan.');
+        }
+    }
+
+    /**
      * Get units/ruangan for current user
      */
     public function getUnits(Request $request): JsonResponse

@@ -435,7 +435,7 @@
                     </div>
                 </a>
                 
-                <a href="#" onclick="showReports()" class="nav-item flex items-center space-x-3 sm:space-x-4 text-white hover:bg-white hover:bg-opacity-20 rounded-xl p-3 sm:p-4 transition-all duration-300 group">
+                <a href="#" onclick="navigateToLaporan()" class="nav-item flex items-center space-x-3 sm:space-x-4 text-white hover:bg-white hover:bg-opacity-20 rounded-xl p-3 sm:p-4 transition-all duration-300 group">
                     <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-orange-400 to-orange-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                         <i class="fas fa-chart-bar text-white text-sm sm:text-base"></i>
                     </div>
@@ -755,15 +755,19 @@
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         
+        console.log('Dashboard - Token check:', !!token);
+        console.log('Dashboard - User data:', user);
+        
         if (!token) {
+            console.log('Dashboard - No token, redirecting to login');
             window.location.href = '/login';
         } else if (user.role === 'admin') {
-            // Redirect admin to admin dashboard
+            console.log('Dashboard - Admin user, redirecting to admin dashboard');
             window.location.href = '/dashboard';
         } else {
+            console.log('Dashboard - Regular user, loading dashboard');
             document.getElementById('userWelcome').textContent = `${user.name}`;
             updateDateTime();
-            // Auto load jenis kegiatan data
             loadJenisKegiatan();
         }
         
@@ -783,6 +787,24 @@
         
         // Update time every minute
         setInterval(updateDateTime, 60000);
+        
+        // Function to navigate to laporan
+        function navigateToLaporan() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            
+            console.log('Navigating to laporan - Token:', !!token);
+            console.log('Navigating to laporan - User NIP:', user.nip);
+            
+            if (!token || !user.nip) {
+                alert('Sesi Anda telah berakhir atau data tidak lengkap. Silakan login kembali.');
+                window.location.href = '/login';
+                return;
+            }
+            
+            // Navigate to laporan with NIP parameter
+            window.location.href = `/laporan?nip=${user.nip}`;
+        }
         
         // Function to load jenis kegiatan data
         async function loadJenisKegiatan() {

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DetailJenisKegiatanController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -26,6 +27,9 @@ Route::get('/user-dashboard', function () {
 Route::get('/master-data', function () {
     return view('master-data');
 })->name('master-data');
+
+// Route untuk Laporan
+Route::get('/laporan', [DetailJenisKegiatanController::class, 'showLaporan'])->name('laporan');
 
 // Detail Jenis Kegiatan page - Updated route
 Route::get('/jenis-kegiatan/detail', function () {
