@@ -362,10 +362,12 @@
                                     <i class="fas fa-building me-2"></i>Unit
                                 </label>
                                 <select class="form-select" id="unit" name="unit" required>
-                                    <option value="">Pilih Unit</option>
-                                    <option value="Asoka">Asoka</option>
-                                    <option value="Flamboyan">Flamboyan</option>
+                                    <option value="">Memuat unit...</option>
+                                    <!-- Options akan dimuat dari API berdasarkan NIP -->
                                 </select>
+                                <div class="invalid-feedback">
+                                    Silakan pilih unit yang tersedia untuk NIP Anda
+                                </div>
                             </div>
 
                             <!-- Tanggal Dibuat -->
@@ -674,16 +676,103 @@
             }
         }
 
+        // Fungsi untuk memuat unit berdasarkan NIP user
+        async function loadUserUnits() {
+            try {
+                const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+                const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+                
+                if (!token || !user.nip) {
+                    console.error('Token atau NIP user tidak ditemukan');
+                    return;
+                }
+
+                console.log('Loading units for NIP:', user.nip);
+
+                const response = await fetch('/api/unit-ruangan', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                console.log('API Response:', result);
+                
+                const unitSelect = document.getElementById('unit');
+                
+                // Bersihkan options yang ada
+                unitSelect.innerHTML = '<option value="">Pilih Unit</option>';
+                
+                // Tambahkan options dari data API
+                if (result.success && result.data && result.data.length > 0) {
+                    // Gunakan Set untuk menghindari duplikasi nama_ruangan
+                    const uniqueUnits = [...new Set(result.data.map(item => item.nama_ruangan))];
+                    
+                    uniqueUnits.forEach(namaRuangan => {
+                        const option = document.createElement('option');
+                        option.value = namaRuangan;
+                        option.textContent = namaRuangan;
+                        unitSelect.appendChild(option);
+                    });
+                    
+                    console.log('Units loaded successfully:', uniqueUnits);
+                } else {
+                    // Jika tidak ada data unit untuk user ini
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = 'Tidak ada unit tersedia untuk NIP Anda';
+                    option.disabled = true;
+                    unitSelect.appendChild(option);
+                    
+                    console.log('No units found for user NIP:', user.nip);
+                }
+                
+            } catch (error) {
+                console.error('Error loading units:', error);
+                const unitSelect = document.getElementById('unit');
+                unitSelect.innerHTML = '<option value="">Error memuat data unit</option>';
+                
+                // Show notification to user
+                if (typeof showNotification === 'function') {
+                    showNotification('Gagal memuat data unit: ' + error.message, 'error');
+                }
+            }
+        }
+
         // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            initializePageData();
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 DOM Content Loaded - Starting initialization...');
+            
+            // Periksa autentikasi terlebih dahulu
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+            
+            if (!token || !user.nip) {
+                console.log('No valid session found, redirecting to login...');
+                alert('Session expired. Please login again.');
+                window.location.href = '/login';
+                return;
+            }
+            
+            console.log('User authenticated:', { nip: user.nip, name: user.name });
+            
+            // Inisialisasi data halaman
+            await initializePageData();
             initializeCamera();
             initializeFileUpload();
+            loadUserUnits();
             
-            // Add form submission event listener here
+            // Setup form submission handler
             const form = document.getElementById('detailKegiatanForm');
             if (form) {
-                console.log('✅ Form found, adding event listener');
+                console.log('✅ Form found, setting up submission handler...');
                 
                 // Remove form action and method to prevent default submission
                 form.removeAttribute('action');
@@ -691,13 +780,12 @@
                 form.onsubmit = null;
                 console.log('🧹 Removed form action and method attributes');
                 
-                // Add new event listener with stronger prevention
-                form.addEventListener('submit', async function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    e.stopImmediatePropagation();
+                form.addEventListener('submit', async function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    event.stopImmediatePropagation();
                     
-                    console.log('🚀 Form submission started');
+                    console.log('📝 Form submission started...');
                     
                     const submitButton = form.querySelector('button[type="submit"]');
                     const originalText = submitButton.innerHTML;
@@ -791,7 +879,6 @@
                         }
                         
                         // Check token
-                        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
                         if (!token) {
                             throw new Error('Token tidak ditemukan. Silakan login ulang.');
                         }
@@ -866,9 +953,24 @@
 
                 console.log('URL params:', { dataParam, idParam });
 
-                // Auto-fill NIP with current user's NIP (hardcoded for now)
-                document.getElementById('nip').value = '1234589';
-                console.log('Auto-filled NIP: 1234589');
+                // Ambil data user dari localStorage/sessionStorage
+                const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+                
+                if (user.nip) {
+                    // Auto-fill NIP dengan NIP user yang login
+                    document.getElementById('nip').value = user.nip;
+                    console.log('Auto-filled NIP:', user.nip);
+                    
+                    // Muat unit berdasarkan NIP user
+                    await loadUserUnits();
+                } else {
+                    console.error('NIP user tidak ditemukan dalam session');
+                    // Redirect ke login jika tidak ada data user
+                    if (confirm('Session expired. Redirect to login?')) {
+                        window.location.href = '/login';
+                    }
+                    return;
+                }
 
                 // Auto-fill Jenis Kegiatan from dashboard click
                 if (dataParam) {
@@ -894,6 +996,9 @@
 
             } catch (error) {
                 console.error('Error initializing page data:', error);
+                if (typeof showNotification === 'function') {
+                    showNotification('Error initializing page: ' + error.message, 'error');
+                }
             }
         }
 
