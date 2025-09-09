@@ -398,6 +398,15 @@
                         <option value="approved">Approved</option>
                         <option value="rejected">Rejected</option>
                     </select>
+                    <!-- Filter Tanggal Baru -->
+                    <div class="date-filter-container" style="display: flex; gap: 10px; align-items: center;">
+                        <label style="font-weight: 600; color: #4a5568; white-space: nowrap;">Filter Tanggal:</label>
+                        <input type="date" id="startDate" class="filter-select" style="width: auto;" placeholder="Dari Tanggal">
+                        <span style="color: #4a5568;">s/d</span>
+                        <input type="date" id="endDate" class="filter-select" style="width: auto;" placeholder="Sampai Tanggal">
+                        <button type="button" id="filterButton" class="btn" style="background: #667eea; color: white; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; white-space: nowrap;">Filter</button>
+                        <button type="button" id="resetButton" class="btn" style="background: #e2e8f0; color: #4a5568; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; white-space: nowrap;">Reset</button>
+                    </div>
                 </div>
 
                 <!-- Laporan Kegiatan Table -->
@@ -580,7 +589,166 @@
         // Initialize with Laporan Kegiatan active
         document.addEventListener('DOMContentLoaded', function() {
             showLaporanKegiatan();
+            
+            // Setup filter tanggal
+            const filterButton = document.getElementById('filterButton');
+            const resetButton = document.getElementById('resetButton');
+            
+            if (filterButton) {
+                filterButton.addEventListener('click', function() {
+                    const startDate = document.getElementById('startDate').value;
+                    const endDate = document.getElementById('endDate').value;
+                    
+                    if (!startDate && !endDate) {
+                        alert('Silakan pilih minimal satu tanggal untuk filter');
+                        return;
+                    }
+                    
+                    filterTableByDate(startDate, endDate);
+                });
+            }
+            
+            if (resetButton) {
+                resetButton.addEventListener('click', function() {
+                    resetTable();
+                });
+            }
         });
+        
+        function filterTableByDate(startDate, endDate) {
+            const rows = document.querySelectorAll('#tableBody tr');
+            let visibleCount = 0;
+            
+            console.log('Filter tanggal:', startDate, 'sampai', endDate);
+            
+            // Konversi input tanggal ke Date object
+            let startDateObj = null;
+            let endDateObj = null;
+            
+            if (startDate) {
+                startDateObj = new Date(startDate + 'T00:00:00');
+            }
+            if (endDate) {
+                endDateObj = new Date(endDate + 'T23:59:59.999');
+            }
+            
+            // Validasi tanggal
+            if (startDateObj && endDateObj && startDateObj > endDateObj) {
+                alert('Tanggal mulai tidak boleh lebih besar dari tanggal akhir');
+                return;
+            }
+            
+            rows.forEach(function(row) {
+                // Skip baris "tidak ada data"
+                if (row.cells.length === 1) {
+                    row.style.display = 'none';
+                    return;
+                }
+                
+                // Ambil tanggal dari kolom ke-6 (index 5)
+                const dateCell = row.cells[5];
+                if (!dateCell) {
+                    row.style.display = 'none';
+                    return;
+                }
+                
+                const dateText = dateCell.textContent.trim();
+                
+                // Parse tanggal dari format "dd/mm/yyyy hh:mm"
+                let rowDate = null;
+                try {
+                    if (dateText && dateText !== '-') {
+                        const dateParts = dateText.split(' ');
+                        if (dateParts.length >= 1) {
+                            const dateOnly = dateParts[0]; // "dd/mm/yyyy"
+                            const parts = dateOnly.split('/');
+                            if (parts.length === 3) {
+                                const day = parseInt(parts[0]);
+                                const month = parseInt(parts[1]) - 1; // Month is 0-indexed
+                                const year = parseInt(parts[2]);
+                                rowDate = new Date(year, month, day);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error parsing date:', dateText, error);
+                }
+                
+                // Validasi tanggal
+                if (!rowDate || isNaN(rowDate.getTime())) {
+                    console.log('Invalid date format:', dateText);
+                    row.style.display = 'none';
+                    return;
+                }
+                
+                // Logika filter
+                let showRow = true;
+                
+                if (startDateObj && rowDate < startDateObj) {
+                    showRow = false;
+                }
+                
+                if (endDateObj && rowDate > endDateObj) {
+                    showRow = false;
+                }
+                
+                console.log('Row date:', rowDate, 'Show:', showRow, 'Original text:', dateText);
+                
+                if (showRow) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Tampilkan pesan jika tidak ada data yang cocok
+            if (visibleCount === 0) {
+                showNoDataMessage('Tidak ada data yang sesuai dengan filter tanggal');
+            } else {
+                hideNoDataMessage();
+            }
+            
+            console.log('Visible rows:', visibleCount);
+        }
+        
+        function resetTable() {
+            // Reset input tanggal
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            
+            // Tampilkan semua baris
+            const rows = document.querySelectorAll('#tableBody tr');
+            rows.forEach(function(row) {
+                row.style.display = '';
+            });
+            
+            // Sembunyikan pesan "tidak ada data"
+            hideNoDataMessage();
+            
+            console.log('Filter tanggal direset');
+        }
+        
+        function showNoDataMessage(message) {
+            hideNoDataMessage();
+            const tbody = document.getElementById('tableBody');
+            const noDataRow = document.createElement('tr');
+            noDataRow.id = 'noDataRow';
+            noDataRow.innerHTML = `
+                <td colspan="11" class="text-center text-muted py-4">
+                    <i class="fas fa-search fa-2x mb-2"></i><br>
+                    ${message}
+                </td>
+            `;
+            tbody.appendChild(noDataRow);
+        }
+        
+        function hideNoDataMessage() {
+            const noDataRow = document.getElementById('noDataRow');
+            if (noDataRow) {
+                noDataRow.remove();
+            }
+        }
     </script>
 
     <!-- Modal untuk menampilkan gambar -->
