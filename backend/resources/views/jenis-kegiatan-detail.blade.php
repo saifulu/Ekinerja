@@ -1445,14 +1445,28 @@
             
             const index = type === 'capture' ? capturedPhotos.length - 1 : uploadedFiles.length - 1;
             
+            // Show compression info for uploaded files
+            const sizeInfo = imageData.originalSize && imageData.compressedSize ? 
+                `<small class="text-muted">Ukuran: ${formatFileSize(imageData.originalSize)} → ${formatFileSize(imageData.compressedSize)}</small>` : '';
+            
             imageItem.innerHTML = `
                 <img src="${imageData.data}" alt="${imageData.name || 'Captured Photo'}">
                 <div class="image-type">${type === 'capture' ? 'Camera' : 'Upload'}</div>
+                ${sizeInfo}
                 <button type="button" class="remove-image" onclick="removeImage('${type}', ${index})">
                     <i class="fas fa-times"></i>
                 </button>
             `;
             allImagesContainer.appendChild(imageItem);
+        }
+        
+        // Format file size helper function
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
         
         function removeImage(type, index) {
