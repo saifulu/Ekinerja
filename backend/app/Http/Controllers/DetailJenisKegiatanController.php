@@ -107,16 +107,31 @@ class DetailJenisKegiatanController extends Controller
                             $fileName = 'captured_' . time() . '_' . $index . '.jpg';
                             $filePath = 'dokumentasi/' . $user->nip . '/' . date('Y/m') . '/' . $fileName;
                             
-                            // Ensure directory exists
-                            Storage::disk('public')->makeDirectory(dirname($filePath));
-                            Storage::disk('public')->put($filePath, $imageData);
-                            $dokumentasiPaths[] = $filePath;
+                            // Ensure directory exists with proper permissions
+                            $directory = dirname($filePath);
+                            if (!Storage::disk('public')->exists($directory)) {
+                                Storage::disk('public')->makeDirectory($directory, 0755, true);
+                            }
                             
-                            \Log::info('Captured photo saved', ['path' => $filePath]);
+                            // Save the file
+                            $saved = Storage::disk('public')->put($filePath, $imageData);
+                            
+                            if ($saved) {
+                                $dokumentasiPaths[] = $filePath;
+                                \Log::info('Captured photo saved successfully', [
+                                    'path' => $filePath,
+                                    'size' => strlen($imageData),
+                                    'full_path' => Storage::disk('public')->path($filePath)
+                                ]);
+                            } else {
+                                \Log::error('Failed to save captured photo', ['path' => $filePath]);
+                            }
+                            
                         } catch (\Exception $e) {
                             \Log::error('Error processing captured photo', [
                                 'index' => $index,
-                                'error' => $e->getMessage()
+                                'error' => $e->getMessage(),
+                                'trace' => $e->getTraceAsString()
                             ]);
                         }
                     }
@@ -127,19 +142,39 @@ class DetailJenisKegiatanController extends Controller
             if ($request->hasFile('uploaded_files')) {
                 foreach ($request->file('uploaded_files') as $file) {
                     try {
-                        $fileName = time() . '_' . $file->getClientOriginalName();
-                        $filePath = $file->storeAs(
-                            'dokumentasi/' . $user->nip . '/' . date('Y/m'),
-                            $fileName,
-                            'public'
-                        );
-                        $dokumentasiPaths[] = $filePath;
+                        // Validate file
+                        if (!$file->isValid()) {
+                            \Log::error('Invalid uploaded file', ['original_name' => $file->getClientOriginalName()]);
+                            continue;
+                        }
                         
-                        \Log::info('Uploaded file saved', ['path' => $filePath]);
+                        $fileName = time() . '_' . $file->getClientOriginalName();
+                        $directory = 'dokumentasi/' . $user->nip . '/' . date('Y/m');
+                        
+                        // Ensure directory exists
+                        if (!Storage::disk('public')->exists($directory)) {
+                            Storage::disk('public')->makeDirectory($directory, 0755, true);
+                        }
+                        
+                        $filePath = $file->storeAs($directory, $fileName, 'public');
+                        
+                        if ($filePath) {
+                            $dokumentasiPaths[] = $filePath;
+                            \Log::info('Uploaded file saved successfully', [
+                                'path' => $filePath,
+                                'original_name' => $file->getClientOriginalName(),
+                                'size' => $file->getSize(),
+                                'full_path' => Storage::disk('public')->path($filePath)
+                            ]);
+                        } else {
+                            \Log::error('Failed to save uploaded file', ['original_name' => $file->getClientOriginalName()]);
+                        }
+                        
                     } catch (\Exception $e) {
                         \Log::error('Error processing uploaded file', [
                             'file' => $file->getClientOriginalName(),
-                            'error' => $e->getMessage()
+                            'error' => $e->getMessage(),
+                            'trace' => $e->getTraceAsString()
                         ]);
                     }
                 }

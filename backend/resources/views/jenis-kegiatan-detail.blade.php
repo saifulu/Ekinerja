@@ -1507,13 +1507,25 @@
             const formData = new FormData(document.getElementById('detailKegiatanForm'));
             formData.set('status', 'draft');
             
-            // Add captured photos
+            // Add captured photos with validation
+            console.log('Captured photos count:', capturedPhotos.length);
             capturedPhotos.forEach((photo, index) => {
+                console.log(`Adding captured photo ${index}:`, {
+                    hasData: !!photo.data,
+                    dataLength: photo.data ? photo.data.length : 0,
+                    timestamp: photo.timestamp
+                });
                 formData.append(`captured_photos[${index}]`, photo.data);
             });
             
-            // Add uploaded files
+            // Add uploaded files with validation
+            console.log('Uploaded files count:', uploadedFiles.length);
             uploadedFiles.forEach((fileData, index) => {
+                console.log(`Adding uploaded file ${index}:`, {
+                    hasFile: !!fileData.file,
+                    fileName: fileData.file ? fileData.file.name : 'unknown',
+                    fileSize: fileData.file ? fileData.file.size : 0
+                });
                 formData.append(`uploaded_files[${index}]`, fileData.file);
             });
             
@@ -1526,6 +1538,7 @@
                     return;
                 }
                 
+                console.log('Sending request to save draft...');
                 const response = await fetch('/api/detail-jenis-kegiatan', {
                     method: 'POST',
                     headers: {
@@ -1536,16 +1549,18 @@
                 });
                 
                 const result = await response.json();
+                console.log('Server response:', result);
                 
                 if (response.ok && result.success) {
                     alert('Draft berhasil disimpan!');
                     updateStatusBadge('draft');
                 } else {
+                    console.error('Save failed:', result);
                     alert('Gagal menyimpan draft: ' + (result.message || 'Terjadi kesalahan'));
                 }
             } catch (error) {
-                console.error('Error saving draft:', error);
-                alert('Terjadi kesalahan saat menyimpan draft: ' + error.message);
+                console.error('Network error:', error);
+                alert('Terjadi kesalahan jaringan: ' + error.message);
             }
         }
 
