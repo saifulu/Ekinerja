@@ -6,6 +6,9 @@
     <title>Laporan - e-Kinerja Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Tambahkan jsPDF untuk export PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -325,6 +328,15 @@
                 width: 100%;
             }
             
+            .date-filter-container {
+                flex-wrap: wrap;
+            }
+            
+            #exportPdfButton {
+                width: 100%;
+                justify-content: center;
+            }
+            
             .header h1 {
                 font-size: 2rem;
             }
@@ -398,7 +410,7 @@
                         <option value="approved">Approved</option>
                         <option value="rejected">Rejected</option>
                     </select>
-                    <!-- Filter Tanggal Baru -->
+                    <!-- Filter Tanggal -->
                     <div class="date-filter-container" style="display: flex; gap: 10px; align-items: center;">
                         <label style="font-weight: 600; color: #4a5568; white-space: nowrap;">Filter Tanggal:</label>
                         <input type="date" id="startDate" class="filter-select" style="width: auto;" placeholder="Dari Tanggal">
@@ -407,6 +419,11 @@
                         <button type="button" id="filterButton" class="btn" style="background: #667eea; color: white; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; white-space: nowrap;">Filter</button>
                         <button type="button" id="resetButton" class="btn" style="background: #e2e8f0; color: #4a5568; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; white-space: nowrap;">Reset</button>
                     </div>
+                    <!-- Tombol Export PDF -->
+                    <button type="button" id="exportPdfButton" class="btn" style="background: #dc2626; color: white; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-file-pdf"></i>
+                        Export PDF
+                    </button>
                 </div>
 
                 <!-- Laporan Kegiatan Table -->
@@ -593,6 +610,7 @@
             // Setup filter tanggal
             const filterButton = document.getElementById('filterButton');
             const resetButton = document.getElementById('resetButton');
+            const exportPdfButton = document.getElementById('exportPdfButton');
             
             if (filterButton) {
                 filterButton.addEventListener('click', function() {
@@ -613,7 +631,228 @@
                     resetTable();
                 });
             }
+            
+            // Setup Export PDF
+            if (exportPdfButton) {
+                exportPdfButton.addEventListener('click', function() {
+                    exportToPDF();
+                });
+            }
         });
+        
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm',
+                format: 'a4'
+            });
+            
+            // Ambil data instansi dari user yang login (dikirim dari controller)
+            const instansi = '{{ $currentUser->instansi ?? "Nama Instansi" }}';
+            const name = '{{ $currentUser->name ?? "Administrator" }}';
+            const userNip = '{{ $currentUser->nip ?? "" }}';
+            
+            // Periode berdasarkan filter
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            let periode = 'Semua Periode';
+            
+            if (startDate && endDate) {
+                const startFormatted = new Date(startDate).toLocaleDateString('id-ID');
+                const endFormatted = new Date(endDate).toLocaleDateString('id-ID');
+                periode = `${startFormatted} - ${endFormatted}`;
+            } else if (startDate) {
+                periode = `Mulai ${new Date(startDate).toLocaleDateString('id-ID')}`;
+            } else if (endDate) {
+                periode = `Sampai ${new Date(endDate).toLocaleDateString('id-ID')}`;
+            }
+            
+            // Header/Kop Surat
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text(instansi, doc.internal.pageSize.getWidth() / 2, 20, { align: 'center' });
+            
+            doc.setFontSize(14);
+            doc.text('LAPORAN DATA KEGIATAN', doc.internal.pageSize.getWidth() / 2, 30, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Dibuat oleh: ${name} (NIP: ${userNip})`, 20, 45);
+            doc.text(`Periode: ${periode}`, 20, 52);
+            doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`, 20, 59);
+            
+            // Garis pemisah
+            doc.setLineWidth(0.5);
+            doc.line(20, 65, doc.internal.pageSize.getWidth() - 20, 65);
+            
+            // Fungsi helper untuk menambahkan gambar ke PDF
+            function addImageToPDF(imgElement, x, y, width, height) {
+                return new Promise((resolve) => {
+                    if (!imgElement || !imgElement.src) {
+                        resolve(false);
+                        return;
+                    }
+                    
+                    try {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const img = new Image();
+                        
+                        img.onload = function() {
+                            canvas.width = width * 4; // Higher resolution
+                            canvas.height = height * 4;
+                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                            
+                            try {
+                                const imgData = canvas.toDataURL('image/jpeg', 0.8);
+                                doc.addImage(imgData, 'JPEG', x, y, width, height);
+                                resolve(true);
+                            } catch (e) {
+                                console.error('Error adding image to PDF:', e);
+                                resolve(false);
+                            }
+                        };
+                        
+                        img.onerror = function() {
+                            console.error('Error loading image:', imgElement.src);
+                            resolve(false);
+                        };
+                        
+                        img.crossOrigin = 'anonymous';
+                        img.src = imgElement.src;
+                    } catch (e) {
+                        console.error('Error processing image:', e);
+                        resolve(false);
+                    }
+                });
+            }
+            
+            // Ambil data dari tabel yang terlihat
+            const tableData = [];
+            const rows = document.querySelectorAll('#tableBody tr');
+            let no = 1;
+            
+            // Process rows synchronously first
+            const processedRows = [];
+            rows.forEach(function(row) {
+                // Skip baris yang disembunyikan atau baris "tidak ada data"
+                if (row.style.display === 'none' || row.cells.length === 1) {
+                    return;
+                }
+                
+                const cells = row.cells;
+                if (cells.length >= 10) {
+                    // Ambil gambar signature dan dokumentasi
+                    const signaturePelaksanaImg = cells[7].querySelector('img');
+                    const signaturePJImg = cells[8].querySelector('img');
+                    const dokumentasiText = cells[9].textContent.trim();
+                    
+                    const rowData = {
+                        no: no++,
+                        tanggalDibuat: cells[5].textContent.trim(),
+                        jenisKegiatan: cells[1].textContent.trim(),
+                        unit: cells[4].textContent.trim(),
+                        hasilTemuan: cells[6].textContent.trim().substring(0, 50) + (cells[6].textContent.trim().length > 50 ? '...' : ''),
+                        signaturePelaksanaImg: signaturePelaksanaImg,
+                        signaturePJImg: signaturePJImg,
+                        dokumentasi: dokumentasiText.includes('file(s)') ? dokumentasiText : 'Tidak ada'
+                    };
+                    processedRows.push(rowData);
+                }
+            });
+            
+            // Create table data for autoTable
+            const autoTableData = processedRows.map(row => [
+                row.no,
+                row.tanggalDibuat,
+                row.jenisKegiatan,
+                row.unit,
+                row.hasilTemuan,
+                row.signaturePelaksanaImg ? 'Lihat Gambar' : 'Tidak ada',
+                row.signaturePJImg ? 'Lihat Gambar' : 'Tidak ada',
+                row.dokumentasi
+            ]);
+            
+            // Buat tabel dengan autoTable - margin diperbaiki
+            doc.autoTable({
+                head: [[
+                    'No',
+                    'Tanggal Dibuat',
+                    'Jenis Kegiatan',
+                    'Unit',
+                    'Hasil Temuan',
+                    'Signature Pelaksana',
+                    'Signature PJ',
+                    'Dokumentasi'
+                ]],
+                body: autoTableData,
+                startY: 75,
+                styles: {
+                    fontSize: 8,
+                    cellPadding: 2,
+                    overflow: 'linebreak',
+                    halign: 'left'
+                },
+                headStyles: {
+                    fillColor: [102, 126, 234],
+                    textColor: 255,
+                    fontStyle: 'bold',
+                    halign: 'center'
+                },
+                columnStyles: {
+                    0: { halign: 'center', cellWidth: 12 }, // No - diperkecil
+                    1: { cellWidth: 30 }, // Tanggal - diperkecil
+                    2: { cellWidth: 35 }, // Jenis Kegiatan
+                    3: { cellWidth: 25 }, // Unit - diperkecil
+                    4: { cellWidth: 50 }, // Hasil Temuan
+                    5: { halign: 'center', cellWidth: 30 }, // Signature Pelaksana
+                    6: { halign: 'center', cellWidth: 30 }, // Signature PJ
+                    7: { halign: 'center', cellWidth: 25 } // Dokumentasi
+                },
+                margin: { left: 15, right: 15 }, // Margin diperbaiki - lebih kecil
+                tableWidth: 'auto',
+                theme: 'striped',
+                didDrawPage: function(data) {
+                    // Add images after table is drawn
+                    const startY = data.settings.startY;
+                    const rowHeight = 8; // Approximate row height
+                    
+                    processedRows.forEach((row, index) => {
+                        const currentY = startY + 10 + (index * rowHeight); // Header height + row position
+                        
+                        // Add signature pelaksana image
+                        if (row.signaturePelaksanaImg) {
+                            addImageToPDF(row.signaturePelaksanaImg, 185, currentY - 3, 25, 6);
+                        }
+                        
+                        // Add signature PJ image
+                        if (row.signaturePJImg) {
+                            addImageToPDF(row.signaturePJImg, 220, currentY - 3, 25, 6);
+                        }
+                    });
+                }
+            });
+            
+            // Footer
+            const pageCount = doc.internal.getNumberOfPages();
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.text(
+                    `Halaman ${i} dari ${pageCount}`,
+                    doc.internal.pageSize.getWidth() - 20,
+                    doc.internal.pageSize.getHeight() - 10,
+                    { align: 'right' }
+                );
+            }
+            
+            // Simpan PDF
+            const fileName = `Laporan_Kegiatan_${userNip}_${new Date().toISOString().split('T')[0]}.pdf`;
+            doc.save(fileName);
+            
+            console.log('PDF berhasil diekspor:', fileName);
+        }
         
         function filterTableByDate(startDate, endDate) {
             const rows = document.querySelectorAll('#tableBody tr');

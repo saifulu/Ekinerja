@@ -283,6 +283,13 @@ class DetailJenisKegiatanController extends Controller
                 return redirect('/login')->with('error', 'NIP tidak ditemukan dalam parameter.');
             }
             
+            // Ambil data user berdasarkan NIP untuk mendapatkan instansi
+            $currentUser = \App\Models\User::where('nip', $userNip)->first();
+            
+            if (!$currentUser) {
+                return redirect('/login')->with('error', 'User tidak ditemukan.');
+            }
+            
             // Filter data berdasarkan NIP yang diberikan
             $laporanData = DetailJenisKegiatan::with(['creator', 'user'])
                 ->where('nip', $userNip)
@@ -315,7 +322,8 @@ class DetailJenisKegiatanController extends Controller
                 'statusStats', 
                 'unitStats',
                 'jenisKegiatanStats',
-                'recentActivities'
+                'recentActivities',
+                'currentUser'
             ));
     
         } catch (\Exception $e) {
