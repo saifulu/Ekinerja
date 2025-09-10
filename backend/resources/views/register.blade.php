@@ -65,7 +65,7 @@
                         <i class="fas fa-user mr-2"></i>Nama Lengkap
                     </label>
                     <input type="text" id="name" name="name" required 
-                           class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-white placeholder-opacity-60 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 focus:border-transparent transition-all duration-300"
+                           class="w-full px-4 py-3 bg-white bg-opacity-90 border border-white border-opacity-30 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                            placeholder="Masukkan nama lengkap Anda">
                 </div>
 
@@ -75,7 +75,7 @@
                         <i class="fas fa-envelope mr-2"></i>Email Address
                     </label>
                     <input type="email" id="email" name="email" required 
-                           class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-white placeholder-opacity-60 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 focus:border-transparent transition-all duration-300"
+                           class="w-full px-4 py-3 bg-white bg-opacity-90 border border-white border-opacity-30 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                            placeholder="Masukkan email Anda">
                 </div>
 
@@ -86,7 +86,7 @@
                     </label>
                     <div class="relative">
                         <input type="password" id="password" name="password" required 
-                               class="w-full px-4 py-3 pr-12 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-white placeholder-opacity-60 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 focus:border-transparent transition-all duration-300"
+                               class="w-full px-4 py-3 pr-12 bg-white bg-opacity-90 border border-white border-opacity-30 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                                placeholder="Masukkan password Anda">
                         <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center">
                             <i class="fas fa-eye text-white text-opacity-60 hover:text-opacity-100 transition-all duration-200"></i>
@@ -101,10 +101,10 @@
                     </label>
                     <div class="relative">
                         <input type="password" id="password_confirmation" name="password_confirmation" required 
-                               class="w-full px-4 py-3 pr-12 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-white placeholder-opacity-60 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 focus:border-transparent transition-all duration-300"
+                               class="w-full px-4 py-3 pr-12 bg-white bg-opacity-90 border border-white border-opacity-30 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                                placeholder="Konfirmasi password Anda">
                         <button type="button" id="togglePasswordConfirm" class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                            <i class="fas fa-eye text-white text-opacity-60 hover:text-opacity-100 transition-all duration-200"></i>
+                            <i class="fas fa-eye text-gray-600 hover:text-gray-800 transition-all duration-200"></i>
                         </button>
                     </div>
                 </div>
@@ -115,8 +115,11 @@
                         <i class="fas fa-phone mr-2"></i>No. Telepon
                     </label>
                     <input type="tel" id="phone" name="phone" required
-                           class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-white placeholder-opacity-60 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 focus:border-transparent transition-all duration-300"
-                           placeholder="Masukkan nomor telepon">
+                           class="w-full px-4 py-3 bg-white bg-opacity-90 border border-white border-opacity-30 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                           placeholder="Masukkan nomor telepon"
+                           pattern="[0-9]*"
+                           inputmode="numeric"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
 
                 <!-- NIP Field -->
@@ -125,7 +128,7 @@
                         <i class="fas fa-id-card mr-2"></i>NIP
                     </label>
                     <input type="text" id="nip" name="nip" required
-                           class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-white placeholder-opacity-60 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 focus:border-transparent transition-all duration-300"
+                           class="w-full px-4 py-3 bg-white bg-opacity-90 border border-white border-opacity-30 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
                            placeholder="Masukkan NIP">
                 </div>
 
@@ -135,7 +138,7 @@
                         <i class="fas fa-star mr-2"></i>Golongan
                     </label>
                     <select id="golongan" name="golongan" required
-                            class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 focus:border-transparent transition-all duration-300">
+                            class="w-full px-4 py-3 bg-white bg-opacity-90 border border-white border-opacity-30 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
                         <option value="" class="text-gray-800">Pilih Golongan</option>
                         <optgroup label="Golongan I (Juru)" class="text-gray-800">
                             <option value="Ia" class="text-gray-800">Ia - Juru Muda</option>
@@ -171,8 +174,10 @@
                         <i class="fas fa-building mr-2"></i>Instansi
                     </label>
                     <input type="text" id="instansi" name="instansi" required
-                           class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-white placeholder-opacity-60 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 focus:border-transparent transition-all duration-300"
-                           placeholder="Masukkan nama instansi">
+                           class="w-full px-4 py-3 bg-white bg-opacity-90 border border-white border-opacity-30 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 uppercase"
+                           placeholder="Masukkan nama instansi"
+                           style="text-transform: uppercase;"
+                           oninput="this.value = this.value.toUpperCase()">
                 </div>
 
                 <!-- Ruangan Field -->
@@ -181,8 +186,10 @@
                         <i class="fas fa-door-open mr-2"></i>Ruangan
                     </label>
                     <input type="text" id="ruangan" name="ruangan" required
-                           class="w-full px-4 py-3 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-lg text-white placeholder-white placeholder-opacity-60 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 focus:border-transparent transition-all duration-300"
-                           placeholder="Masukkan nama ruangan">
+                           class="w-full px-4 py-3 bg-white bg-opacity-90 border border-white border-opacity-30 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 uppercase"
+                           placeholder="Masukkan nama ruangan"
+                           style="text-transform: uppercase;"
+                           oninput="this.value = this.value.toUpperCase()">
                 </div>
 
                 <!-- Terms and Conditions -->
@@ -196,7 +203,7 @@
 
                 <!-- Submit Button -->
                 <button type="submit" id="registerBtn" 
-                        class="w-full bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
+                        class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 shadow-lg">
                     <span id="registerBtnText">
                         <i class="fas fa-user-plus mr-2"></i>Daftar Sekarang
                     </span>
