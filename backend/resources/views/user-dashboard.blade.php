@@ -539,17 +539,7 @@
             
             <!-- Sidebar Footer -->
             <div class="absolute bottom-6 left-6 right-6">
-                <div class="morphism-card rounded-xl p-4">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 gradient-green rounded-full flex items-center justify-center">
-                            <i class="fas fa-clock text-white"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-semibold text-white">Waktu Kerja</p>
-                            <p class="text-xs text-green-300" id="workTime">08:00 - 17:00</p>
-                        </div>
-                    </div>
-                </div>
+                <!-- Div waktu kerja dihapus -->
             </div>
         </div>
         

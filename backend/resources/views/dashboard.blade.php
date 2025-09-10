@@ -4,6 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - e-Kinerja</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="e-Kinerja">
+    <meta name="description" content="Aplikasi manajemen kinerja pegawai yang modern dan efisien">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/icons/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="/icons/icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="128x128" href="/icons/icon-128x128.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="384x384" href="/icons/icon-384x384.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="/icons/icon-512x512.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -46,6 +72,49 @@
         
         .floating {
             animation: floating 3s ease-in-out infinite;
+        }
+        
+        /* PWA Install Button Styles */
+        .pwa-install-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        .pwa-install-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .pwa-install-btn.show {
+            display: flex;
+        }
+        
+        @media (max-width: 768px) {
+            .pwa-install-btn {
+                bottom: 15px;
+                right: 15px;
+                padding: 10px 16px;
+                font-size: 12px;
+                min-width: 100px;
+            }
         }
         
         @keyframes floating {
@@ -607,6 +676,34 @@
             <span class="text-white text-lg font-semibold">Memproses...</span>
         </div>
     </div>
+    
+    <!-- PWA Install Button -->
+    <button id="pwaInstallBtn" class="pwa-install-btn">
+        <span>Install App</span>
+    </button>
+    
+    <!-- PWA Install Modal -->
+    <div id="pwaInstallModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center">
+        <div class="glass rounded-xl p-6 m-4 max-w-md w-full">
+            <div class="text-center">
+                <div class="w-16 h-16 mx-auto mb-4 bg-gradient-purple rounded-full flex items-center justify-center">
+                    <i class="fas fa-mobile-alt text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Install e-Kinerja</h3>
+                <p class="text-gray-300 mb-6">Install aplikasi e-Kinerja di perangkat Anda untuk akses yang lebih cepat dan mudah.</p>
+                
+                <div class="flex gap-3">
+                    <button id="pwaInstallConfirm" class="flex-1 bg-gradient-purple text-white py-3 px-4 rounded-lg font-semibold hover:scale-105 transition-all">
+                        <i class="fas fa-download mr-2"></i>
+                        Install
+                    </button>
+                    <button id="pwaInstallCancel" class="flex-1 glass-dark text-white py-3 px-4 rounded-lg font-semibold hover:scale-105 transition-all">
+                        Nanti
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // Check if user is logged in and is admin
@@ -924,6 +1021,158 @@
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             window.location.href = '/login';
+        }
+        
+        // PWA Install Functionality dengan debugging
+        let deferredPrompt;
+        const pwaInstallBtn = document.getElementById('pwaInstallBtn');
+        const pwaInstallModal = document.getElementById('pwaInstallModal');
+        const pwaInstallConfirm = document.getElementById('pwaInstallConfirm');
+        const pwaInstallCancel = document.getElementById('pwaInstallCancel');
+        
+        console.log('PWA Script loaded');
+        console.log('Install button element:', pwaInstallBtn);
+        
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+        
+        // Check PWA support
+        function checkPWASupport() {
+            console.log('Checking PWA support...');
+            console.log('beforeinstallprompt supported:', 'onbeforeinstallprompt' in window);
+            console.log('Service Worker supported:', 'serviceWorker' in navigator);
+            console.log('Current display mode:', window.matchMedia('(display-mode: standalone)').matches ? 'standalone' : 'browser');
+            
+            // Show button for testing (remove this in production)
+            if (!window.matchMedia('(display-mode: standalone)').matches) {
+                console.log('Showing install button for testing');
+                pwaInstallBtn.classList.add('show');
+                pwaInstallBtn.style.display = 'flex';
+            }
+        }
+        
+        // Listen for beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('beforeinstallprompt fired');
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            // Show install button
+            pwaInstallBtn.classList.add('show');
+            pwaInstallBtn.style.display = 'flex';
+            console.log('Install button should now be visible');
+        });
+        
+        // Handle install button click
+        if (pwaInstallBtn) {
+            pwaInstallBtn.addEventListener('click', () => {
+                console.log('Install button clicked');
+                pwaInstallModal.classList.remove('hidden');
+                pwaInstallModal.classList.add('flex');
+            });
+        }
+        
+        // Handle install confirm
+        if (pwaInstallConfirm) {
+            pwaInstallConfirm.addEventListener('click', async () => {
+                console.log('Install confirm clicked');
+                if (deferredPrompt) {
+                    console.log('Showing install prompt');
+                    // Show the install prompt
+                    deferredPrompt.prompt();
+                    // Wait for the user to respond to the prompt
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`User response to the install prompt: ${outcome}`);
+                    // Clear the deferredPrompt variable
+                    deferredPrompt = null;
+                    // Hide the install button
+                    pwaInstallBtn.classList.remove('show');
+                } else {
+                    console.log('No deferred prompt available');
+                    showNotification('PWA install tidak tersedia di browser ini', 'info');
+                }
+                // Hide modal
+                pwaInstallModal.classList.add('hidden');
+                pwaInstallModal.classList.remove('flex');
+            });
+        }
+        
+        // Handle install cancel
+        if (pwaInstallCancel) {
+            pwaInstallCancel.addEventListener('click', () => {
+                console.log('Install cancelled');
+                pwaInstallModal.classList.add('hidden');
+                pwaInstallModal.classList.remove('flex');
+            });
+        }
+        
+        // Listen for app installed event
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('App was installed');
+            pwaInstallBtn.classList.remove('show');
+            pwaInstallBtn.style.display = 'none';
+            // Show success message
+            showNotification('Aplikasi berhasil diinstall!', 'success');
+        });
+        
+        // Check if app is already installed
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, checking install status');
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                console.log('App is running in standalone mode');
+                pwaInstallBtn.style.display = 'none';
+            } else {
+                console.log('App is running in browser mode');
+                // Call check function after DOM is ready
+                setTimeout(checkPWASupport, 1000);
+            }
+        });
+        
+        // Show notification function
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg text-white font-semibold transition-all transform translate-x-full`;
+            
+            if (type === 'success') {
+                notification.classList.add('bg-green-500');
+            } else if (type === 'error') {
+                notification.classList.add('bg-red-500');
+            } else {
+                notification.classList.add('bg-blue-500');
+            }
+            
+            notification.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : 'info'}-circle"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Animate out and remove
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
         }
         
         // Initialize dashboard

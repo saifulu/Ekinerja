@@ -4,6 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - e-Kinerja</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="e-Kinerja">
+    <meta name="description" content="Login ke aplikasi e-Kinerja - Sistem Manajemen Kinerja">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -34,7 +48,61 @@
         }
         
         .fade-in {
-            animation: fadeIn 0.8s ease-in-out;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* PWA Install Button Styles */
+        .pwa-install-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        .pwa-install-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .pwa-install-btn.show {
+            display: flex;
+        }
+        
+        @media (max-width: 768px) {
+            .pwa-install-btn {
+                bottom: 15px;
+                right: 15px;
+                padding: 10px 16px;
+                font-size: 12px;
+                min-width: 100px;
+            }
         }
         
         .slide-up {
@@ -176,6 +244,31 @@
         </div>
     </div>
 
+    <!-- PWA Install Button -->
+    <button id="pwaInstallBtn" class="pwa-install-btn">
+        <span>Install App</span>
+    </button>
+
+    <!-- PWA Install Modal -->
+    <div id="pwaInstallModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 m-4 max-w-sm w-full">
+            <div class="text-center">
+                <i class="fas fa-mobile-alt text-blue-500 text-4xl mb-4"></i>
+                <h3 class="text-lg font-semibold mb-2">Install e-Kinerja</h3>
+                <p class="text-gray-600 mb-4">Install aplikasi ini di perangkat Anda untuk akses yang lebih cepat dan mudah.</p>
+                <div class="flex space-x-3">
+                    <button id="installCancel" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                        Batal
+                    </button>
+                    <button id="installConfirm" class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                        <i class="fas fa-download mr-2"></i>
+                        Install
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         function togglePassword() {
             const passwordInput = document.getElementById('password');
@@ -254,6 +347,69 @@
                 loginSpinner.classList.add('hidden');
             }
         });
+        
+        // PWA Install Functionality
+        let deferredPrompt;
+        const pwaInstallBtn = document.getElementById('pwaInstallBtn');
+        const pwaInstallModal = document.getElementById('pwaInstallModal');
+        const installCancel = document.getElementById('installCancel');
+        const installConfirm = document.getElementById('installConfirm');
+        
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => console.log('SW registered:', registration))
+                .catch(error => console.log('SW registration failed:', error));
+        }
+        
+        // Listen for beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            pwaInstallBtn.classList.add('show');
+            pwaInstallBtn.style.display = 'flex';
+            console.log('PWA install prompt available');
+        });
+        
+        // Check if app is already installed
+        window.addEventListener('appinstalled', () => {
+            pwaInstallBtn.classList.remove('show');
+            pwaInstallBtn.style.display = 'none';
+            console.log('PWA was installed');
+        });
+        
+        // Handle install button click
+        if (pwaInstallBtn) {
+            pwaInstallBtn.addEventListener('click', () => {
+                pwaInstallModal.classList.remove('hidden');
+            });
+        }
+        
+        // Handle modal cancel
+        installCancel.addEventListener('click', () => {
+            pwaInstallModal.classList.add('hidden');
+        });
+        
+        // Handle modal confirm
+        installConfirm.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to the install prompt: ${outcome}`);
+                deferredPrompt = null;
+                pwaInstallModal.classList.add('hidden');
+                
+                if (outcome === 'accepted') {
+                    pwaInstallBtn.classList.remove('show');
+                    pwaInstallBtn.style.display = 'none';
+                }
+            }
+        });
+        
+        // Hide install button if app is in standalone mode
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            pwaInstallBtn.style.display = 'none';
+        }
         
         // Auto-hide message after 5 seconds
         function hideMessage() {
