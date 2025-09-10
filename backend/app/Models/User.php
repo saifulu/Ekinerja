@@ -27,12 +27,22 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected function casts(): array
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    // Scope untuk keamanan query
+    public function scopeSecureSearch($query, $term)
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $query->where(function($q) use ($term) {
+            $safeTerm = '%' . addslashes($term) . '%';
+            $q->where('name', 'LIKE', $safeTerm)
+              ->orWhere('email', 'LIKE', $safeTerm)
+              ->orWhere('nip', 'LIKE', $safeTerm);
+        });
     }
 
     // Helper methods untuk role

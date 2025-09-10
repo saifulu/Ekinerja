@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -18,18 +19,42 @@ class AdminController extends Controller
         
         return response()->json($users);
     }
-    
+
     public function getStats()
     {
-        $totalUsers = User::count();
-        $totalAdmins = User::where('role', 'admin')->count();
-        $activeUsers = User::whereNotNull('email_verified_at')->count();
-        
-        return response()->json([
-            'total_users' => $totalUsers,
-            'total_admins' => $totalAdmins,
-            'active_users' => $activeUsers
-        ]);
+        try {
+            Log::info('AdminController::getStats called by user: ' . auth()->id());
+            
+            $totalUsers = User::count();
+            $totalAdmins = User::where('role', 'admin')->count();
+            $activeUsers = User::whereNotNull('email_verified_at')->count();
+            
+            $stats = [
+                'success' => true,
+                'total_users' => $totalUsers,
+                'total_admins' => $totalAdmins,
+                'active_users' => $activeUsers
+            ];
+            
+            Log::info('Stats generated successfully', $stats);
+            
+            return response()->json($stats)
+                ->header('Access-Control-Allow-Origin', '*')
+                ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+                ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+                
+        } catch (\Exception $e) {
+            Log::error('Error in getStats: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'user_id' => auth()->id()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error retrieving stats',
+                'error' => config('app.debug') ? $e->getMessage() : 'Internal server error'
+            ], 500);
+        }
     }
     
     public function createUser(Request $request)

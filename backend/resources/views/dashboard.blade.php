@@ -704,11 +704,25 @@
                     document.getElementById('totalUsers').textContent = stats.total_users || '0';
                     document.getElementById('activeUsers').textContent = stats.active_users || '0';
                     document.getElementById('totalAdmins').textContent = stats.total_admins || '0';
+                } else if (response.status === 401) {
+                    // Token expired atau tidak valid
+                    console.error('Token expired, redirecting to login');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
                 } else {
-                    console.error('Failed to load stats');
+                    console.error('Failed to load stats:', response.status, response.statusText);
+                    // Set default values
+                    document.getElementById('totalUsers').textContent = '0';
+                    document.getElementById('activeUsers').textContent = '0';
+                    document.getElementById('totalAdmins').textContent = '0';
                 }
             } catch (error) {
                 console.error('Error loading stats:', error);
+                // Set default values on network error
+                document.getElementById('totalUsers').textContent = '0';
+                document.getElementById('activeUsers').textContent = '0';
+                document.getElementById('totalAdmins').textContent = '0';
             }
         }
         

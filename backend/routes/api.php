@@ -33,12 +33,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('jenis-kegiatan', JenisKegiatanController::class);
 });
 
-// Unit Ruangan Routes - Test tanpa auth dulu
+// Unit Ruangan Routes
 Route::get('unit-ruangan/by-nip/{nip}', [UnitRuanganController::class, 'getByNip']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('unit-ruangan', UnitRuanganController::class);
-    // Route::get('unit-ruangan/by-nip/{nip}', [UnitRuanganController::class, 'getByNip']); // Pindah ke atas
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -48,6 +47,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Detail Jenis Kegiatan routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('detail-jenis-kegiatan', DetailJenisKegiatanController::class);
-    // Route::get('detail-jenis-kegiatan-units', [DetailJenisKegiatanController::class, 'getUnits']);
+    Route::get('detail-jenis-kegiatan/units', [DetailJenisKegiatanController::class, 'getUnits']);
 });
 

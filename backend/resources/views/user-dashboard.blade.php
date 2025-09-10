@@ -4,10 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard User - e-Kinerja</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* Force sidebar to work on mobile - Enhanced */
+        @media (max-width: 1023px) {
+            #sidebar {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 300px !important;
+                height: 100vh !important;
+                background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) !important;
+                z-index: 9999 !important;
+                transform: translateX(-100%) !important;
+                transition: all 0.3s ease !important;
+                /* Override Tailwind classes */
+                margin-left: 0 !important;
+                display: block !important;
+            }
+            
+            #sidebar.show {
+                transform: translateX(0) !important;
+            }
+            
+            /* Remove Tailwind transform classes on mobile */
+            #sidebar.transform {
+                transform: translateX(-100%) !important;
+            }
+            
+            #sidebar.show.transform {
+                transform: translateX(0) !important;
+            }
+            
+            #sidebarOverlay {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                background: rgba(0, 0, 0, 0.5) !important;
+                z-index: 9998 !important;
+                display: block !important;
+            }
+            
+            #sidebarOverlay.hidden {
+                display: none !important;
+            }
+        }
+        
         * {
             font-family: 'Inter', sans-serif;
         }
@@ -320,10 +366,28 @@
         /* Sidebar base styles */
         #sidebar {
             display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 300px;
+            height: 100vh;
+            background: #1e3a8a;
+            z-index: 50;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
         }
         
-        /* Simple mobile sidebar */
-        @media (max-width: 1024px) {
+        /* Desktop - sidebar always visible */
+        @media (min-width: 1024px) {
+            #sidebar {
+                position: static;
+                transform: translateX(0);
+                width: 320px;
+            }
+        }
+        
+        /* Mobile - sidebar hidden by default */
+        @media (max-width: 1023px) {
             #sidebar {
                 position: fixed !important;
                 top: 0 !important;
@@ -331,13 +395,27 @@
                 width: 300px !important;
                 height: 100vh !important;
                 background: #1e3a8a !important;
-                z-index: 9999 !important;
+                z-index: 60 !important; /* Lebih tinggi dari overlay */
                 transform: translateX(-100%) !important;
                 transition: transform 0.3s ease !important;
             }
             
             #sidebar.show {
                 transform: translateX(0) !important;
+            }
+            
+            #sidebarOverlay {
+                z-index: 50 !important; /* Lebih rendah dari sidebar */
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                background: rgba(0, 0, 0, 0.5) !important;
+            }
+            
+            #sidebarOverlay.hidden {
+                display: none !important;
             }
         }
         
@@ -387,15 +465,14 @@
             <div class="absolute top-40 left-40 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse" style="animation-delay: 4s;"></div>
         </div>
         
-        <!-- Sidebar -->
-        <div id="sidebar" class="sidebar-gradient text-white w-80 min-h-screen p-4 sm:p-6 transform -translate-x-full transition-all duration-500 ease-in-out lg:translate-x-0 lg:static lg:inset-0 glass-dark slide-in relative z-10 lg:block">
+        <!-- Sidebar - Remove conflicting Tailwind classes -->
+        <div id="sidebar" class="sidebar-gradient text-white w-80 min-h-screen p-4 sm:p-6 transition-all duration-500 ease-in-out lg:translate-x-0 lg:static lg:inset-0 glass-dark slide-in relative z-10 lg:block">
             <div class="flex items-center justify-between mb-8 sm:mb-12">
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 sm:w-12 sm:h-12 gradient-blue rounded-xl flex items-center justify-center neon-glow">
                         <i class="fas fa-user text-white text-lg sm:text-xl"></i>
                     </div>
                     <div>
-                        <h2 class="text-xl sm:text-2xl font-bold text-gradient">User Panel</h2>
                         <p class="text-xs sm:text-sm text-gray-300">Personal Dashboard</p>
                     </div>
                 </div>
@@ -771,6 +848,46 @@
             loadJenisKegiatan();
         }
         
+        // Enhanced sidebar toggle - Override Tailwind classes
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            console.log('Toggle sidebar clicked');
+            
+            if (!sidebar || !overlay) {
+                console.error('Sidebar or overlay element not found');
+                return;
+            }
+            
+            const isVisible = sidebar.classList.contains('show');
+            console.log('Sidebar currently visible:', isVisible);
+            
+            if (isVisible) {
+                // Hide sidebar
+                sidebar.classList.remove('show');
+                overlay.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+                console.log('Hiding sidebar');
+            } else {
+                // Show sidebar - Force override Tailwind
+                sidebar.classList.add('show');
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                
+                // Force styles to override Tailwind
+                sidebar.style.transform = 'translateX(0)';
+                sidebar.style.zIndex = '9999';
+                sidebar.style.position = 'fixed';
+                sidebar.style.display = 'block';
+                
+                overlay.style.display = 'block';
+                overlay.style.zIndex = '9998';
+                
+                console.log('Showing sidebar with forced styles');
+            }
+        }
+        
         // Update current date and time
         function updateDateTime() {
             const now = new Date();
@@ -1030,76 +1147,6 @@
                 noDataMessage.classList.remove('hidden');
             }
         }
-        
-        // Sidebar functionality
-        const sidebar = document.getElementById('sidebar');
-        const openSidebar = document.getElementById('openSidebar');
-        const closeSidebar = document.getElementById('closeSidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-        
-        // Function to open sidebar
-        function openSidebarMenu() {
-            console.log('Opening sidebar...');
-            if (sidebar) {
-                sidebar.classList.add('show');
-                sidebarOverlay.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-                console.log('Sidebar opened, classes:', sidebar.className);
-            } else {
-                console.log('Sidebar element not found!');
-            }
-        }
-        
-        // Function to close sidebar
-        function closeSidebarMenu() {
-            console.log('Closing sidebar...');
-            if (sidebar) {
-                sidebar.classList.remove('show');
-                sidebarOverlay.classList.add('hidden');
-                document.body.style.overflow = 'auto';
-                console.log('Sidebar closed, classes:', sidebar.className);
-            }
-        }
-        
-        // Debug elements
-        console.log('Sidebar element:', sidebar);
-        console.log('Open button element:', openSidebar);
-        console.log('Close button element:', closeSidebar);
-        console.log('Overlay element:', sidebarOverlay);
-        
-        // Event listeners
-        if (openSidebar) {
-            openSidebar.addEventListener('click', (e) => {
-                e.preventDefault();
-                console.log('Sidebar open clicked');
-                openSidebarMenu();
-            });
-        } else {
-            console.log('Open sidebar button not found');
-        }
-        
-        if (closeSidebar) {
-            closeSidebar.addEventListener('click', (e) => {
-                e.preventDefault();
-                closeSidebarMenu();
-            });
-        }
-        
-        if (sidebarOverlay) {
-            sidebarOverlay.addEventListener('click', (e) => {
-                e.preventDefault();
-                closeSidebarMenu();
-            });
-        }
-        
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', (e) => {
-            if (window.innerWidth < 1024) {
-                if (!sidebar.contains(e.target) && !openSidebar.contains(e.target)) {
-                    closeSidebarMenu();
-                }
-            }
-        });
         
         // Content switching with animations
         function hideAllContent() {
@@ -1444,6 +1491,11 @@
         
         // Add smooth scrolling and enhanced interactions
         document.addEventListener('DOMContentLoaded', function() {
+            // Add onclick directly to buttons
+            document.getElementById('openSidebar').onclick = toggleSidebar;
+            document.getElementById('closeSidebar').onclick = toggleSidebar;
+            document.getElementById('sidebarOverlay').onclick = toggleSidebar;
+            
             // Add hover effects to navigation items
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.addEventListener('mouseenter', function() {

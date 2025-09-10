@@ -80,8 +80,25 @@
             margin-bottom: 15px;
             min-height: 300px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
+        }
+        
+        .media-section {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .photo-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
         }
         .camera-placeholder {
             text-align: center;
@@ -106,7 +123,22 @@
             left: 50%;
             transform: translateX(-50%);
             display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .primary-controls {
+            display: flex;
             gap: 15px;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .secondary-controls {
+            display: flex;
+            gap: 8px;
             align-items: center;
             justify-content: center;
             flex-wrap: wrap;
@@ -143,7 +175,7 @@
             align-items: center;
             justify-content: center;
         }
-        #cameraStatus {
+        .camera-status {
             position: absolute;
             top: 15px;
             left: 50%;
@@ -152,6 +184,7 @@
             padding: 8px 16px;
             border-radius: 20px;
             backdrop-filter: blur(10px);
+            z-index: 10;
         }
         #cameraStatus small {
             font-size: 12px;
@@ -235,36 +268,217 @@
             align-items: center;
             justify-content: center;
             z-index: 9999;
+            padding: 20px;
+            box-sizing: border-box;
         }
         .signature-modal-content {
             background: white;
             border-radius: 15px;
-            padding: 20px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 90%;
+            padding: 24px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
         }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
         .signature-modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f0f0f0;
+            flex-wrap: wrap;
+            gap: 12px;
         }
         .signature-modal-header h5 {
             margin: 0;
             color: #333;
+            font-size: 18px;
+            font-weight: 600;
+            flex: 1;
+            min-width: 200px;
         }
         .btn-close {
             background: none;
             border: none;
-            font-size: 20px;
+            font-size: 24px;
             cursor: pointer;
             color: #666;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
         }
+        .btn-close:hover {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        .signature-modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        #signatureCanvas {
+            width: 100%;
+            height: auto;
+            min-height: 200px;
+            max-height: 300px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            background: white;
+            cursor: crosshair;
+            touch-action: none;
+        }
+        
         .signature-modal-actions {
-            text-align: center;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .signature-modal-actions .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            min-width: 100px;
+        }
+        
+        .signature-modal-actions .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .signature-modal-actions .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+        
+        .signature-modal-actions .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .signature-modal-actions .btn-primary:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+        
+        .signature-modal-actions .btn-outline-secondary {
+            background: transparent;
+            color: #6c757d;
+            border: 2px solid #6c757d;
+        }
+        
+        .signature-modal-actions .btn-outline-secondary:hover {
+            background: #6c757d;
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .signature-modal {
+                padding: 16px;
+            }
+            
+            .signature-modal-content {
+                padding: 20px;
+                max-height: 95vh;
+            }
+            
+            .signature-modal-header {
+                margin-bottom: 20px;
+                padding-bottom: 12px;
+            }
+            
+            .signature-modal-header h5 {
+                font-size: 16px;
+                min-width: auto;
+            }
+            
+            #signatureCanvas {
+                min-height: 180px;
+                max-height: 250px;
+            }
+            
+            .signature-modal-actions {
+                gap: 8px;
+            }
+            
+            .signature-modal-actions .btn {
+                padding: 10px 16px;
+                font-size: 14px;
+                min-width: 80px;
+                flex: 1;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .signature-modal {
+                padding: 12px;
+            }
+            
+            .signature-modal-content {
+                padding: 16px;
+            }
+            
+            .signature-modal-header h5 {
+                font-size: 15px;
+            }
+            
+            #signatureCanvas {
+                min-height: 160px;
+                max-height: 200px;
+            }
+            
+            .signature-modal-actions {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .signature-modal-actions .btn {
+                width: 100%;
+                min-width: auto;
+            }
+        }
+        
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .btn-close {
+                width: 44px;
+                height: 44px;
+                font-size: 20px;
+            }
+            
+            .signature-modal-actions .btn {
+                padding: 14px 20px;
+                min-height: 44px;
+            }
         }
         
         #allImagesPreview {
@@ -395,40 +609,51 @@
                                     
                                     <!-- Unified Camera and Upload Section -->
                                     <div class="camera-container">
-                                        <video id="cameraVideo" autoplay playsinline style="display: none;"></video>
-                                        <canvas id="photoCanvas" style="display: none;"></canvas>
-                                        <img id="photoPreview" class="photo-preview" alt="Photo Preview">
-                                        
-                                        <!-- Camera Placeholder -->
-                                        <div id="cameraPlaceholder" class="camera-placeholder">
-                                            <i class="fas fa-camera fa-3x text-white-50 mb-3"></i>
-                                            <p class="text-white-50 mb-0">Klik tombol kamera untuk mengambil foto</p>
+                                        <!-- Media Elements -->
+                                        <div class="media-section">
+                                            <video id="cameraVideo" autoplay playsinline style="display: none;"></video>
+                                            <canvas id="photoCanvas" style="display: none;"></canvas>
+                                            <img id="photoPreview" class="photo-preview" alt="Photo Preview" style="display: none;">
+                                            
+                                            <!-- Camera Placeholder -->
+                                            <div id="cameraPlaceholder" class="camera-placeholder">
+                                                <i class="fas fa-camera fa-3x text-white-50 mb-3"></i>
+                                                <p class="text-white-50 mb-0">Klik tombol kamera untuk mengambil foto</p>
+                                            </div>
                                         </div>
                                         
-                                        <!-- Unified Controls -->
-                                        <div class="camera-controls">
-                                            <button type="button" id="startCameraBtn" class="capture-btn">
-                                                <i class="fas fa-camera text-dark"></i>
-                                            </button>
-                                            <button type="button" id="capturePhoto" class="capture-btn" style="display: none;">
-                                                <i class="fas fa-circle text-dark"></i>
-                                            </button>
-                                            <button type="button" id="uploadPhoto" class="capture-btn" onclick="document.getElementById('fileInput').click()">
-                                                <i class="fas fa-upload text-dark"></i>
-                                            </button>
-                                            <button type="button" id="retakePhoto" class="btn btn-secondary btn-sm" style="display: none;">
-                                                <i class="fas fa-redo"></i>
-                                            </button>
-                                            <button type="button" id="switchCamera" class="btn btn-primary btn-sm" style="display: none;">
-                                                <i class="fas fa-sync-alt"></i>
-                                            </button>
-                                            <button type="button" id="stopCamera" class="btn btn-danger btn-sm" style="display: none;">
-                                                <i class="fas fa-stop"></i>
-                                            </button>
-                                        </div>
-                                        
-                                        <div id="cameraStatus" class="text-center mt-2">
+                                        <!-- Status Information -->
+                                        <div id="cameraStatus" class="camera-status">
                                             <small class="text-white-50">Siap mengambil foto</small>
+                                        </div>
+                                        
+                                        <!-- Control Buttons -->
+                                        <div class="camera-controls">
+                                            <!-- Primary Actions -->
+                                            <div class="primary-controls">
+                                                <button type="button" id="startCameraBtn" class="capture-btn" title="Mulai Kamera">
+                                                    <i class="fas fa-camera text-dark"></i>
+                                                </button>
+                                                <button type="button" id="capturePhoto" class="capture-btn" style="display: none;" title="Ambil Foto">
+                                                    <i class="fas fa-circle text-dark"></i>
+                                                </button>
+                                                <button type="button" id="uploadPhoto" class="capture-btn" onclick="document.getElementById('fileInput').click()" title="Upload Foto">
+                                                    <i class="fas fa-upload text-dark"></i>
+                                                </button>
+                                            </div>
+                                            
+                                            <!-- Secondary Actions -->
+                                            <div class="secondary-controls">
+                                                <button type="button" id="retakePhoto" class="btn btn-secondary btn-sm" style="display: none;" title="Ambil Ulang">
+                                                    <i class="fas fa-redo"></i>
+                                                </button>
+                                                <button type="button" id="switchCamera" class="btn btn-primary btn-sm" style="display: none;" title="Ganti Kamera">
+                                                    <i class="fas fa-sync-alt"></i>
+                                                </button>
+                                                <button type="button" id="stopCamera" class="btn btn-danger btn-sm" style="display: none;" title="Stop Kamera">
+                                                    <i class="fas fa-stop"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                     
@@ -513,9 +738,6 @@
                             <button type="button" class="btn btn-secondary" onclick="goBack()">
                                 <i class="fas fa-times me-2"></i>Batal
                             </button>
-                            <button type="button" class="btn btn-primary" onclick="saveDraft()">
-                                <i class="fas fa-save me-2"></i>Simpan Draft
-                            </button>
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-paper-plane me-2"></i>Submit
                             </button>
@@ -569,10 +791,35 @@
             const ctx = canvas.getContext('2d');
             let isDrawing = false;
             
-            canvas.style.border = '1px solid #ddd';
-            canvas.style.borderRadius = '8px';
-            canvas.style.background = 'white';
+            // Set canvas responsive size
+            function resizeCanvas() {
+                const container = canvas.parentElement;
+                const containerWidth = container.clientWidth;
+                const aspectRatio = 2; // width:height ratio
+                
+                canvas.width = Math.min(containerWidth - 40, 500);
+                canvas.height = canvas.width / aspectRatio;
+                
+                // Ensure minimum height
+                if (canvas.height < 160) {
+                    canvas.height = 160;
+                    canvas.width = canvas.height * aspectRatio;
+                }
+                
+                canvas.style.width = canvas.width + 'px';
+                canvas.style.height = canvas.height + 'px';
+            }
             
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            canvas.style.border = '2px solid #e0e0e0';
+            canvas.style.borderRadius = '12px';
+            canvas.style.background = 'white';
+            canvas.style.cursor = 'crosshair';
+            canvas.style.touchAction = 'none';
+            
+            // Mouse events
             canvas.addEventListener('mousedown', startDrawing);
             canvas.addEventListener('mousemove', draw);
             canvas.addEventListener('mouseup', stopDrawing);
@@ -583,45 +830,50 @@
             canvas.addEventListener('touchmove', handleTouch);
             canvas.addEventListener('touchend', stopDrawing);
             
-            function startDrawing(e) {
-                isDrawing = true;
-                draw(e);
+            function handleTouch(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                
+                if (e.type === 'touchstart') {
+                    isDrawing = true;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                } else if (e.type === 'touchmove' && isDrawing) {
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                }
             }
             
-            function draw(e) {
-                if (!isDrawing) return;
-                
+            function startDrawing(e) {
+                isDrawing = true;
                 const rect = canvas.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const y = e.clientY - rect.top;
-                
-                ctx.lineWidth = 2;
-                ctx.lineCap = 'round';
-                ctx.strokeStyle = '#000';
-                
-                ctx.lineTo(x, y);
-                ctx.stroke();
                 ctx.beginPath();
                 ctx.moveTo(x, y);
             }
             
-            function stopDrawing() {
-                if (isDrawing) {
-                    isDrawing = false;
-                    ctx.beginPath();
-                }
+            function draw(e) {
+                if (!isDrawing) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                ctx.lineTo(x, y);
+                ctx.stroke();
             }
             
-            function handleTouch(e) {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 
-                                                 e.type === 'touchmove' ? 'mousemove' : 'mouseup', {
-                    clientX: touch.clientX,
-                    clientY: touch.clientY
-                });
-                canvas.dispatchEvent(mouseEvent);
+            function stopDrawing() {
+                isDrawing = false;
             }
+            
+            // Set drawing style
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
         }
 
         function clearCanvas() {
@@ -1099,6 +1351,7 @@
                 
                 const dataURL = canvas.toDataURL('image/jpeg', 0.9);
                 preview.src = dataURL;
+                preview.classList.add('show'); // Add this line
                 preview.style.display = 'block';
                 video.style.display = 'none';
                 placeholder.style.display = 'none';
@@ -1231,7 +1484,55 @@
             if (stream) {
                 stream.getTracks().forEach(track => track.stop());
             }
-            window.history.back();
+            
+            // Redirect to main dashboard
+            window.location.href = '/dashboard';
+        }
+
+        async function saveDraft() {
+            const formData = new FormData(document.getElementById('detailKegiatanForm'));
+            formData.set('status', 'draft');
+            
+            // Add captured photos
+            capturedPhotos.forEach((photo, index) => {
+                formData.append(`captured_photos[${index}]`, photo.data);
+            });
+            
+            // Add uploaded files
+            uploadedFiles.forEach((fileData, index) => {
+                formData.append(`uploaded_files[${index}]`, fileData.file);
+            });
+            
+            try {
+                const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+                
+                if (!token) {
+                    alert('Session expired. Please login again.');
+                    window.location.href = '/login';
+                    return;
+                }
+                
+                const response = await fetch('/api/detail-jenis-kegiatan', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    alert('Draft berhasil disimpan!');
+                    updateStatusBadge('draft');
+                } else {
+                    alert('Gagal menyimpan draft: ' + (result.message || 'Terjadi kesalahan'));
+                }
+            } catch (error) {
+                console.error('Error saving draft:', error);
+                alert('Terjadi kesalahan saat menyimpan draft: ' + error.message);
+            }
         }
 
         async function saveDraft() {

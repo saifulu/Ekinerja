@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - e-Kinerja</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -154,27 +154,6 @@
                     </div>
                 </form>
 
-                <!-- Test Credentials -->
-                <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <h4 class="text-sm font-semibold text-blue-800 mb-2">
-                        <i class="fas fa-info-circle mr-2"></i>Kredensial Test:
-                    </h4>
-                    <div class="text-xs text-blue-700 space-y-1">
-                        <div class="flex justify-between">
-                            <span class="font-medium">Admin:</span>
-                            <span>admin@ekinerja.com</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium">User:</span>
-                            <span>user@ekinerja.com</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium">Password:</span>
-                            <span>password123</span>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Message Area -->
                 <div id="message" class="hidden mt-6 p-4 rounded-lg transition-all duration-300"></div>
             </div>
@@ -182,7 +161,7 @@
             <!-- Footer -->
             <div class="text-center fade-in">
                 <p class="text-indigo-100 text-sm">
-                    © 2024 e-Kinerja. Dikembangkan dengan ❤️
+                    © 2025 e-Kinerja. Dikembangkan dengan ❤️
                 </p>
             </div>
             <!-- Register Link -->
