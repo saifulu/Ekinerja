@@ -738,12 +738,12 @@
                 periodeText = `Sampai: ${endDateInput.value}`;
             }
             
-            doc.text(`Periode: ${periodeText}`, 15, 52);
-            doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`, 15, 59);
+            doc.text(`Periode: ${periodeText}`, 15, 50);
+            doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`, 15, 55);
             
             // Garis pemisah
             doc.setLineWidth(0.5);
-            doc.line(15, 65, doc.internal.pageSize.getWidth() - 15, 65);
+            doc.line(15, 60, doc.internal.pageSize.getWidth() - 15, 60);
             
             // Ambil data dari tabel yang terlihat
             const rows = document.querySelectorAll('#tableBody tr');
@@ -822,30 +822,34 @@
                 startY: 75,
                 styles: {
                     fontSize: 8,
-                    cellPadding: 2,
+                    cellPadding: 3,
                     overflow: 'linebreak',
-                    halign: 'left'
+                    halign: 'left',
+                    minCellHeight: 25
                 },
                 headStyles: {
                     fillColor: [102, 126, 234],
                     textColor: 255,
                     fontStyle: 'bold',
                     halign: 'center',
-                    fontSize: 9
+                    fontSize: 9,
+                    minCellHeight: 12
                 },
                 columnStyles: {
-                    0: { halign: 'center', cellWidth: 12 },
-                    1: { cellWidth: 30 },
-                    2: { cellWidth: 35 },
-                    3: { cellWidth: 25 },
-                    4: { cellWidth: 50 },
-                    5: { halign: 'center', cellWidth: 30 },
-                    6: { halign: 'center', cellWidth: 30 },
-                    7: { halign: 'center', cellWidth: 25 }
+                    0: { halign: 'center', cellWidth: 15 },
+                    1: { cellWidth: 32 },
+                    2: { cellWidth: 38 },
+                    3: { cellWidth: 28 },
+                    4: { cellWidth: 45 },
+                    5: { halign: 'center', cellWidth: 35 },
+                    6: { halign: 'center', cellWidth: 35 },
+                    7: { halign: 'center', cellWidth: 35 }
                 },
-                margin: { left: 15, right: 15 },
-                tableWidth: 'auto',
+                margin: { left: 10, right: 10 },
+                tableWidth: 'wrap',
                 theme: 'striped',
+                horizontalPageBreak: true,
+                horizontalPageBreakRepeat: 0,
                 didDrawCell: function(data) {
                     // Add images to signature columns and dokumentasi - HANYA untuk baris data, bukan header
                     if (data.section === 'body' && (data.column.index === 5 || data.column.index === 6 || data.column.index === 7)) {
@@ -865,14 +869,19 @@
                             
                             if (imageData) {
                                 try {
-                                    // Calculate image position within cell with proper padding
-                                    const cellX = data.cell.x + 1;
-                                    const cellY = data.cell.y + 1;
-                                    const cellWidth = data.cell.width - 2;
-                                    const cellHeight = data.cell.height - 2;
+                                    // Calculate image position within cell with proper padding and aspect ratio
+                                    const cellX = data.cell.x + 2;
+                                    const cellY = data.cell.y + 2;
+                                    const cellWidth = data.cell.width - 4;
+                                    const cellHeight = data.cell.height - 4;
+                                    
+                                    // Maintain aspect ratio - make image square or proportional
+                                    const imageSize = Math.min(cellWidth, cellHeight);
+                                    const imageX = cellX + (cellWidth - imageSize) / 2;
+                                    const imageY = cellY + (cellHeight - imageSize) / 2;
                                     
                                     // Add image with proper aspect ratio
-                                    doc.addImage(imageData, 'JPEG', cellX, cellY, cellWidth, cellHeight);
+                                    doc.addImage(imageData, 'JPEG', imageX, imageY, imageSize, imageSize);
                                 } catch (e) {
                                     console.error('Error adding image to cell:', e);
                                     // Fallback text
