@@ -266,6 +266,23 @@
             border: 1px solid rgba(255, 255, 255, 0.18);
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
+
+        /* Make sidebar overlay on small screens so main content fills width */
+        @media (max-width: 1024px) {
+            #sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                z-index: 30;
+                height: 100vh;
+            }
+
+            /* ensure main content occupies full width when sidebar overlays */
+            .main-content {
+                margin-left: 0 !important;
+            }
+        }
     </style>
 </head>
 <body class="gradient-bg min-h-screen">
@@ -351,9 +368,11 @@
                 </div>
             </div>
         </div>
+        <!-- Mobile backdrop (shows when sidebar opened on small screens) -->
+        <div id="mobileBackdrop" class="hidden lg:hidden fixed inset-0 bg-black bg-opacity-40 z-20"></div>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden relative z-10">
+        <div class="flex-1 flex flex-col overflow-hidden relative z-10 main-content">
             <!-- Top Navigation -->
             <nav class="glass backdrop-blur-xl border-b border-white border-opacity-20">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -742,11 +761,28 @@
         
         openSidebar.addEventListener('click', () => {
             sidebar.classList.remove('-translate-x-full');
+            // show backdrop on mobile
+            const mb = document.getElementById('mobileBackdrop');
+            if (mb) mb.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
         });
         
         closeSidebar.addEventListener('click', () => {
             sidebar.classList.add('-translate-x-full');
+            const mb = document.getElementById('mobileBackdrop');
+            if (mb) mb.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
         });
+
+        // clicking backdrop closes sidebar
+        const mobileBackdrop = document.getElementById('mobileBackdrop');
+        if (mobileBackdrop) {
+            mobileBackdrop.addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+                mobileBackdrop.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            });
+        }
         
         // Content switching with animations
         function hideAllContent() {

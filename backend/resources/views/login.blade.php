@@ -128,6 +128,12 @@
         .floating {
             animation: floating 3s ease-in-out infinite;
         }
+
+        /* Mobile-specific background adjustments */
+        @media (max-width: 640px) {
+            .bg-large-circle { display: none; }
+            .bg-floating-circle { display: none; }
+        }
         
         @keyframes floating {
             0%, 100% { transform: translateY(0px); }
@@ -138,32 +144,32 @@
 <body class="gradient-bg min-h-screen">
     <!-- Background Pattern -->
     <div class="absolute inset-0 overflow-hidden">
-        <div class="absolute -top-40 -right-40 w-80 h-80 bg-white opacity-10 rounded-full"></div>
-        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-white opacity-5 rounded-full"></div>
-        <div class="absolute top-20 left-20 w-32 h-32 bg-white opacity-10 rounded-full floating"></div>
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-white opacity-10 rounded-full bg-large-circle"></div>
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-white opacity-5 rounded-full bg-large-circle"></div>
+        <div class="absolute top-20 left-20 w-32 h-32 bg-white opacity-10 rounded-full floating bg-floating-circle"></div>
     </div>
     
     <div class="relative min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full space-y-8">
+        <div class="max-w-md w-full space-y-8 px-2 sm:px-4">
             <!-- Logo and Header -->
             <div class="text-center fade-in">
-                <div class="mx-auto h-20 w-20 bg-white rounded-full flex items-center justify-center shadow-lg mb-6">
-                    <i class="fas fa-chart-line text-3xl text-indigo-600"></i>
+                <div class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-white rounded-full flex items-center justify-center shadow-lg mb-6">
+                    <i class="fas fa-chart-line text-2xl sm:text-3xl text-indigo-600"></i>
                 </div>
-                <h2 class="text-4xl font-bold text-white mb-2">
+                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-2">
                     e-Kinerja
                 </h2>
-                <p class="text-indigo-100 text-lg">
+                <p class="text-indigo-100 text-base sm:text-lg">
                     Sistem Manajemen Kinerja
                 </p>
                 <div class="mt-4 h-1 w-20 bg-white mx-auto rounded-full opacity-60"></div>
             </div>
 
             <!-- Login Form -->
-            <div class="glass-effect rounded-2xl shadow-2xl p-8 slide-up">
+            <div class="glass-effect rounded-2xl shadow-2xl p-6 sm:p-8 slide-up">
                 <div class="text-center mb-8">
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-2">Selamat Datang</h3>
-                    <p class="text-gray-600">Masuk ke akun Anda untuk melanjutkan</p>
+                    <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">Selamat Datang</h3>
+                    <p class="text-gray-600 text-sm sm:text-base">Masuk ke akun Anda untuk melanjutkan</p>
                 </div>
                 
                 <form class="space-y-6" id="loginForm">
@@ -210,7 +216,7 @@
 
                     <div>
                         <button type="submit" 
-                                class="btn-hover group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300">
+                            class="btn-hover group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm sm:text-base font-medium rounded-lg text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300">
                             <span class="absolute left-0 inset-y-0 flex items-center pl-3">
                                 <i class="fas fa-sign-in-alt text-indigo-300 group-hover:text-indigo-200"></i>
                             </span>
@@ -228,13 +234,13 @@
 
             <!-- Footer -->
             <div class="text-center fade-in">
-                <p class="text-indigo-100 text-sm">
+                <p class="text-indigo-100 text-xs sm:text-sm">
                     © 2025 e-Kinerja. Dikembangkan dengan ❤️
                 </p>
             </div>
             <!-- Register Link -->
             <div class="mt-6 text-center">
-                <p class="text-white text-opacity-70">
+                <p class="text-white text-opacity-70 text-sm sm:text-base">
                     Belum punya akun? 
                     <a href="/register" class="text-white font-semibold hover:text-opacity-80 transition-all duration-200">
                         Daftar di sini
