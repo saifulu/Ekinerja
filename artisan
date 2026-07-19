@@ -1,0 +1,8 @@
+#!/usr/bin/env php
+<?php
+
+// Pindah ke direktori backend agar konteks Laravel benar
+chdir(__DIR__ . '/backend');
+
+// Panggil file artisan asli dari backend
+require 'artisan';
