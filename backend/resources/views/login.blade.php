@@ -153,9 +153,6 @@
         <div class="max-w-md w-full space-y-8 px-2 sm:px-4">
             <!-- Logo and Header -->
             <div class="text-center fade-in">
-                <div class="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-white rounded-full flex items-center justify-center shadow-lg mb-6">
-                    <i class="fas fa-chart-line text-2xl sm:text-3xl text-indigo-600"></i>
-                </div>
                 <h2 class="text-3xl sm:text-4xl font-bold text-white mb-2">
                     e-Kinerja
                 </h2>
