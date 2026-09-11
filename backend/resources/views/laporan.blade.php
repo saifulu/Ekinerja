@@ -1700,14 +1700,26 @@
             window.location.href = `/jenis-kegiatan/detail?id=${item.id}&edit=true&data=${payload}`;
         }
 
-        // Image Base64 Converter for PDF Export
-        function getImageAsBase64(imgElement) {
+        // Image Base64 Converter for PDF Export (Supports Elements, URLs, and DataURIs)
+        function getImageAsBase64(srcOrElement) {
             return new Promise((resolve) => {
-                if (!imgElement || !imgElement.src) {
+                if (!srcOrElement) {
                     resolve('');
                     return;
                 }
                 
+                let src = typeof srcOrElement === 'string' ? srcOrElement : (srcOrElement.src || '');
+                if (!src) {
+                    resolve('');
+                    return;
+                }
+
+                // If already data URL, resolve directly
+                if (src.startsWith('data:image/')) {
+                    resolve(src);
+                    return;
+                }
+
                 try {
                     const img = new Image();
                     img.crossOrigin = 'anonymous';
@@ -1716,8 +1728,8 @@
                         try {
                             const canvas = document.createElement('canvas');
                             const ctx = canvas.getContext('2d');
-                            canvas.width = this.naturalWidth || this.width;
-                            canvas.height = this.naturalHeight || this.height;
+                            canvas.width = this.naturalWidth || this.width || 320;
+                            canvas.height = this.naturalHeight || this.height || 220;
                             
                             ctx.fillStyle = '#FFFFFF';
                             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -1726,35 +1738,31 @@
                             const dataURL = canvas.toDataURL('image/jpeg', 0.88);
                             resolve(dataURL);
                         } catch (e) {
-                            console.error('Canvas export error:', e);
+                            console.warn('Canvas export warning:', e);
                             resolve('');
                         }
                     };
                     
                     img.onerror = function() {
-                        console.error('Image load error:', imgElement.src);
+                        console.warn('Image load error for PDF:', src);
                         resolve('');
                     };
                     
-                    if (imgElement.complete && imgElement.naturalWidth > 0) {
-                        img.onload.call(imgElement);
-                    } else {
-                        img.src = imgElement.src;
-                    }
+                    img.src = src;
                 } catch (e) {
-                    console.error('Image process error:', e);
+                    console.warn('Image process error:', e);
                     resolve('');
                 }
             });
         }
 
-        // Professional PDF Export Engine
+        // Professional PDF Export Engine with Official Institutional Layout
         async function exportToPDF() {
             const exportBtn = document.getElementById('exportPdfButton');
             const origContent = exportBtn ? exportBtn.innerHTML : '';
             if (exportBtn) {
                 exportBtn.disabled = true;
-                exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Menyiapkan Dokumen...';
+                exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Menyusun Dokumen PDF...';
             }
 
             try {
@@ -1762,32 +1770,62 @@
                 const doc = new jsPDF({
                     orientation: 'landscape',
                     unit: 'mm',
-                    format: 'a4'
+                    format: 'a4',
+                    compress: true
                 });
                 
-                const namaInstansi = '{{ $currentUser->instansi ?? "RUMAH SAKIT UMUM DAERAH" }}';
+                const pageWidth = doc.internal.pageSize.getWidth(); // 297mm
+                const pageHeight = doc.internal.pageSize.getHeight(); // 210mm
+                const marginX = 14;
+                const contentWidth = pageWidth - (marginX * 2); // 269mm
+                
+                const rawInstansi = '{{ $currentUser->instansi ?? "RUMAH SAKIT UMUM DAERAH" }}';
+                const namaInstansi = rawInstansi ? rawInstansi.trim() : 'RUMAH SAKIT UMUM DAERAH';
                 const userName = '{{ $currentUser->name ?? "Pegawai" }}';
                 const userNip = '{{ $currentUser->nip ?? "" }}';
                 
-                // Header / Kop Surat
-                doc.setFontSize(15);
+                // 1. KOP SURAT / HEADER RESMI
                 doc.setFont('helvetica', 'bold');
-                doc.setTextColor(15, 23, 42);
-                doc.text(namaInstansi.toUpperCase(), doc.internal.pageSize.getWidth() / 2, 18, { align: 'center' });
+                doc.setFontSize(13);
+                doc.setTextColor(15, 23, 42); // slate-900
+                doc.text(namaInstansi.toUpperCase(), pageWidth / 2, 12, { align: 'center' });
                 
-                doc.setFontSize(12);
-                doc.setTextColor(16, 185, 129);
-                doc.text('LAPORAN DATA CAPAIAN KINERJA HARIAN PEGAWAI', doc.internal.pageSize.getWidth() / 2, 26, { align: 'center' });
+                doc.setFontSize(12.5);
+                doc.setTextColor(13, 148, 136); // teal-600
+                doc.text('LAPORAN CAPAIAN KINERJA HARIAN PEGAWAI', pageWidth / 2, 17.5, { align: 'center' });
                 
-                // Info Metatag
-                doc.setFontSize(9);
                 doc.setFont('helvetica', 'normal');
-                doc.setTextColor(71, 85, 105);
-                doc.text(`Nama Pegawai: ${userName}  |  NIP: ${userNip}`, 15, 36);
+                doc.setFontSize(8);
+                doc.setTextColor(100, 116, 139); // slate-500
+                doc.text('Sistem Informasi Manajemen Akuntabilitas & Kinerja Pegawai Terpadu', pageWidth / 2, 22, { align: 'center' });
                 
+                // Double Rule Line khas Surat/Dokumen Resmi
+                doc.setDrawColor(15, 23, 42);
+                doc.setLineWidth(0.65);
+                doc.line(marginX, 25, pageWidth - marginX, 25);
+                
+                doc.setDrawColor(148, 163, 184);
+                doc.setLineWidth(0.25);
+                doc.line(marginX, 26.2, pageWidth - marginX, 26.2);
+                
+                // 2. KOTAK INFORMASI METADATA PEGAWAI & LAPORAN
+                const metaBoxY = 28.5;
+                const metaBoxH = 16.5;
+                doc.setFillColor(248, 250, 252); // slate-50
+                doc.setDrawColor(226, 232, 240); // slate-200
+                doc.setLineWidth(0.3);
+                doc.roundedRect(marginX, metaBoxY, contentWidth, metaBoxH, 1.5, 1.5, 'FD');
+                
+                // Pembatas Kolom Kiri & Kanan di dalam Kotak Metadata
+                const midX = marginX + 135;
+                doc.setDrawColor(226, 232, 240);
+                doc.setLineWidth(0.25);
+                doc.line(midX, metaBoxY + 2, midX, metaBoxY + metaBoxH - 2);
+
+                // Periode Filter
                 const startDateInput = document.getElementById('startDate');
                 const endDateInput = document.getElementById('endDate');
-                let periodeText = 'Semua Periode';
+                let periodeText = 'Semua Periode / Riwayat Tercatat';
                 if (startDateInput && startDateInput.value && endDateInput && endDateInput.value) {
                     periodeText = `${startDateInput.value} s/d ${endDateInput.value}`;
                 } else if (startDateInput && startDateInput.value) {
@@ -1795,88 +1833,247 @@
                 } else if (endDateInput && endDateInput.value) {
                     periodeText = `Sampai: ${endDateInput.value}`;
                 }
+                const printDateStr = new Date().toLocaleDateString('id-ID', { 
+                    day: '2-digit', 
+                    month: 'long', 
+                    year: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+
+                // Metadata Kolom Kiri (Data Pegawai)
+                doc.setFontSize(7.5);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(71, 85, 105);
+                doc.text('Nama Pegawai', marginX + 4, metaBoxY + 5);
+                doc.text(':', marginX + 28, metaBoxY + 5);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(15, 23, 42);
+                doc.text(userName, marginX + 31, metaBoxY + 5);
+
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(71, 85, 105);
+                doc.text('NIP Pegawai', marginX + 4, metaBoxY + 9.5);
+                doc.text(':', marginX + 28, metaBoxY + 9.5);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(15, 23, 42);
+                doc.text(userNip || '-', marginX + 31, metaBoxY + 9.5);
+
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(71, 85, 105);
+                doc.text('Instansi / Unit', marginX + 4, metaBoxY + 14);
+                doc.text(':', marginX + 28, metaBoxY + 14);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(15, 23, 42);
+                doc.text(namaInstansi, marginX + 31, metaBoxY + 14);
+
+                // Metadata Kolom Kanan (Informasi Berkas)
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(71, 85, 105);
+                doc.text('Periode Laporan', midX + 6, metaBoxY + 5);
+                doc.text(':', midX + 32, metaBoxY + 5);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(15, 23, 42);
+                doc.text(periodeText, midX + 35, metaBoxY + 5);
+
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(71, 85, 105);
+                doc.text('Tanggal Cetak', midX + 6, metaBoxY + 9.5);
+                doc.text(':', midX + 32, metaBoxY + 9.5);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(15, 23, 42);
+                doc.text(printDateStr + ' WIB', midX + 35, metaBoxY + 9.5);
+
+                // 3. EKSTRAKSI DATA BARIS YANG RELEVAN
+                const allRows = Array.from(document.querySelectorAll('#tableBody tr[data-id]'));
+                let targetRows = [];
                 
-                doc.text(`Periode Laporan: ${periodeText}`, 15, 41);
-                doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })} WIB`, 15, 46);
-                
-                // Garis Pembatas
-                doc.setDrawColor(16, 185, 129);
-                doc.setLineWidth(0.6);
-                doc.line(15, 50, doc.internal.pageSize.getWidth() - 15, 50);
-                
-                // Ambil data baris yang sedang terlihat
-                const rows = document.querySelectorAll('#tableBody tr');
+                // Gunakan daftar indeks baris hasil filter aktif jika ada
+                if (typeof filteredRowIndices !== 'undefined' && filteredRowIndices.length > 0) {
+                    targetRows = filteredRowIndices.map(idx => allRows[idx]).filter(Boolean);
+                } else {
+                    targetRows = allRows.filter(row => row.getAttribute('data-id'));
+                }
+
+                if (targetRows.length === 0) {
+                    alert('Tidak ada data kegiatan yang dipilih atau tersedia untuk diekspor.');
+                    if (exportBtn) {
+                        exportBtn.disabled = false;
+                        exportBtn.innerHTML = origContent;
+                    }
+                    return;
+                }
+
+                // Tampilkan total kegiatan tercatat pada metadata
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(71, 85, 105);
+                doc.text('Total Kegiatan', midX + 6, metaBoxY + 14);
+                doc.text(':', midX + 32, metaBoxY + 14);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(13, 148, 136);
+                doc.text(`${targetRows.length} Kegiatan Terverifikasi`, midX + 35, metaBoxY + 14);
+
                 let no = 1;
                 const processedRows = [];
-                
-                for (const row of rows) {
-                    if (row.style.display === 'none' || row.cells.length === 1 || !row.getAttribute('data-id')) {
-                        continue;
-                    }
-                    
+
+                for (const row of targetRows) {
+                    const rowId = row.getAttribute('data-id');
+                    const itemData = (typeof rawItemsData !== 'undefined' && rawItemsData && rawItemsData[rowId]) ? rawItemsData[rowId] : {};
                     const cells = row.cells;
-                    if (cells.length >= 9) {
-                        const signaturePelaksanaImg = cells[6].querySelector('img');
-                        const signaturePJImg = cells[7].querySelector('img');
-                        const dokumentasiImgs = cells[8].querySelectorAll('img');
-                        
-                        const sigPelaksanaData = signaturePelaksanaImg ? await getImageAsBase64(signaturePelaksanaImg) : '';
-                        const sigPJData = signaturePJImg ? await getImageAsBase64(signaturePJImg) : '';
-                        
-                        const docImagesData = [];
-                        for (const img of dokumentasiImgs) {
+                    if (!cells || cells.length < 9) continue;
+
+                    // Jenis Kegiatan & Status
+                    let jenisKegiatan = (itemData.jenis_kegiatan || '').trim();
+                    if (!jenisKegiatan) {
+                        const jEl = cells[1].querySelector('.font-semibold');
+                        jenisKegiatan = jEl ? jEl.textContent.trim() : cells[1].textContent.trim();
+                    }
+                    const statusKey = (itemData.status || row.getAttribute('data-status') || 'draft').toLowerCase();
+
+                    // Waktu Catat
+                    let tanggalStr = '-';
+                    let jamStr = '';
+                    if (itemData.tanggal_dibuat) {
+                        try {
+                            const d = new Date(itemData.tanggal_dibuat);
+                            if (!isNaN(d.getTime())) {
+                                tanggalStr = d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                                jamStr = d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+                            }
+                        } catch (e) {}
+                    }
+                    if (tanggalStr === '-') {
+                        const tText = cells[4] ? cells[4].textContent.replace(/\s+/g, ' ').trim() : '';
+                        const parts = tText.split(' ');
+                        tanggalStr = parts[0] || '-';
+                        jamStr = parts.slice(1).join(' ') || '';
+                    }
+
+                    // Ruang / Unit
+                    let unit = (itemData.unit || (cells[3] ? cells[3].textContent.replace(/\s+/g, ' ').trim() : '-'));
+
+                    // Hasil Temuan / Uraian
+                    let hasilTemuan = (itemData.hasil_temuan || (cells[5] ? cells[5].textContent.replace(/\s+/g, ' ').trim() : '-'));
+
+                    // Signature Pelaksana
+                    let sigPelaksana = itemData.signature_pelaksana || '';
+                    if (sigPelaksana && !sigPelaksana.startsWith('data:image/')) {
+                        if (/^[A-Za-z0-9+/=]+$/.test(sigPelaksana.trim())) {
+                            sigPelaksana = 'data:image/png;base64,' + sigPelaksana.trim();
+                        }
+                    }
+                    if (!sigPelaksana && cells[6]) {
+                        const pImg = cells[6].querySelector('img');
+                        if (pImg) sigPelaksana = await getImageAsBase64(pImg);
+                    }
+
+                    // Signature PJ
+                    let sigPJ = itemData.signature_pj || '';
+                    if (sigPJ && !sigPJ.startsWith('data:image/')) {
+                        if (/^[A-Za-z0-9+/=]+$/.test(sigPJ.trim())) {
+                            sigPJ = 'data:image/png;base64,' + sigPJ.trim();
+                        }
+                    }
+                    if (!sigPJ && cells[7]) {
+                        const pjImg = cells[7].querySelector('img');
+                        if (pjImg) sigPJ = await getImageAsBase64(pjImg);
+                    }
+
+                    // Nama Pelaksana
+                    let namaPelaksana = (itemData.nama_pelaksana || '').trim();
+                    if (!namaPelaksana) {
+                        if (itemData.user && itemData.user.name) namaPelaksana = itemData.user.name.trim();
+                        else if (itemData.creator && itemData.creator.name) namaPelaksana = itemData.creator.name.trim();
+                        else if (cells[6]) {
+                            const pSpan = cells[6].querySelector('span.truncate') || cells[6].querySelector('span');
+                            const pText = pSpan ? pSpan.textContent.trim() : '';
+                            if (pText && !pText.toLowerCase().includes('belum ttd')) namaPelaksana = pText;
+                        }
+                    }
+                    if (!namaPelaksana) namaPelaksana = userName;
+
+                    // Nama PJ
+                    let namaPJ = (itemData.nama_pj || '').trim();
+                    if (!namaPJ && cells[7]) {
+                        const pjSpan = cells[7].querySelector('span.truncate') || cells[7].querySelector('span');
+                        const pjText = pjSpan ? pjSpan.textContent.trim() : '';
+                        if (pjText && !pjText.toLowerCase().includes('belum ttd')) namaPJ = pjText;
+                    }
+                    if (!namaPJ) namaPJ = 'Penanggung Jawab';
+
+                    // Dokumentasi Foto
+                    let docImagesData = [];
+                    if (cells[8]) {
+                        const docImgs = cells[8].querySelectorAll('img');
+                        for (const img of docImgs) {
                             const dData = await getImageAsBase64(img);
                             if (dData) docImagesData.push(dData);
                         }
-                        
-                        const jenisKegiatanText = cells[1].querySelector('.font-semibold') ? cells[1].querySelector('.font-semibold').textContent.trim() : cells[1].textContent.trim();
-                        const statusText = cells[1].querySelector('.status-badge') ? cells[1].querySelector('.status-badge').textContent.trim() : '';
-
-                        processedRows.push({
-                            no: no++,
-                            tanggalDibuat: cells[4].textContent.replace(/\s+/g, ' ').trim(),
-                            jenisKegiatan: `${jenisKegiatanText} [${statusText}]`,
-                            unit: cells[3].textContent.replace(/\s+/g, ' ').trim(),
-                            hasilTemuan: cells[5].textContent.replace(/\s+/g, ' ').trim(),
-                            signaturePelaksanaData: sigPelaksanaData,
-                            signaturePJData: sigPJData,
-                            dokumentasiData: docImagesData,
-                            namaPelaksana: cells[6].querySelector('span') ? cells[6].querySelector('span').textContent.trim() : '',
-                            namaPJ: cells[7].querySelector('span') ? cells[7].querySelector('span').textContent.trim() : ''
-                        });
                     }
+                    if (docImagesData.length === 0 && itemData.dokumentasi && Array.isArray(itemData.dokumentasi)) {
+                        for (const dPath of itemData.dokumentasi) {
+                            let fullUrl = dPath;
+                            if (!fullUrl.startsWith('http') && !fullUrl.startsWith('data:')) {
+                                let clean = fullUrl.replace(/^\/+/, '');
+                                if (!clean.startsWith('storage/')) clean = 'storage/' + clean;
+                                fullUrl = '/' + clean;
+                            }
+                            const dData = await getImageAsBase64(fullUrl);
+                            if (dData) docImagesData.push(dData);
+                        }
+                    }
+
+                    processedRows.push({
+                        no: no++,
+                        tanggalStr: tanggalStr,
+                        jamStr: jamStr,
+                        jenisKegiatan: jenisKegiatan,
+                        statusKey: statusKey,
+                        unit: unit,
+                        hasilTemuan: hasilTemuan,
+                        signaturePelaksanaData: sigPelaksana,
+                        signaturePJData: sigPJ,
+                        namaPelaksana: namaPelaksana,
+                        namaPJ: namaPJ,
+                        dokumentasiData: docImagesData
+                    });
                 }
-                
+
+                // 4. STRUKTUR DATA AUTOTABLE
+                // Kolom 5 (Pelaksana), Kolom 6 (PJ), dan Kolom 7 (Dokumentasi) dikosongkan teksnya
+                // agar dirender secara murni dan presisi via didDrawCell tanpa konflik teks
                 const autoTableData = processedRows.map(row => [
                     row.no,
-                    row.tanggalDibuat,
+                    `${row.tanggalStr}\n${row.jamStr}`,
                     row.jenisKegiatan,
                     row.unit,
                     row.hasilTemuan,
-                    row.namaPelaksana ? `${row.namaPelaksana}\n(TTD)` : (row.signaturePelaksanaData ? 'Ada TTD' : 'Belum TTD'),
-                    row.namaPJ ? `${row.namaPJ}\n(TTD)` : (row.signaturePJData ? 'Ada TTD' : 'Belum TTD'),
-                    row.dokumentasiData.length > 0 ? `${row.dokumentasiData.length} Foto` : 'Tidak ada'
+                    '', // Tanda Tangan Pelaksana (di-render visual di didDrawCell)
+                    '', // Tanda Tangan PJ (di-render visual di didDrawCell)
+                    ''  // Dokumentasi (di-render visual di didDrawCell)
                 ]);
-                
+
+                // 5. GENERATE TABEL KINERJA DENGAN AUTOTABLE
                 doc.autoTable({
                     head: [[
                         'No',
                         'Waktu Catat',
-                        'Jenis Kegiatan & Status',
-                        'Unit',
-                        'Hasil Temuan & Uraian',
-                        'Pelaksana (TTD)',
-                        'PJ (TTD)',
+                        'Jenis Kegiatan',
+                        'Ruang/Unit',
+                        'Uraian Hasil Temuan',
+                        'Tanda Tangan Pelaksana',
+                        'Tanda Tangan PJ',
                         'Dokumentasi'
                     ]],
                     body: autoTableData,
-                    startY: 55,
+                    startY: 48,
+                    theme: 'grid',
                     styles: {
-                        fontSize: 8,
-                        cellPadding: 3,
+                        fontSize: 7.5,
+                        cellPadding: { top: 3, right: 2, bottom: 3, left: 2 },
                         overflow: 'linebreak',
-                        halign: 'left',
-                        minCellHeight: 22,
+                        valign: 'middle',
+                        minCellHeight: 33,
                         lineColor: [226, 232, 240],
                         lineWidth: 0.2
                     },
@@ -1885,112 +2082,288 @@
                         textColor: [255, 255, 255],
                         fontStyle: 'bold',
                         halign: 'center',
-                        fontSize: 8.5,
-                        minCellHeight: 10
+                        fontSize: 8,
+                        minCellHeight: 9.5,
+                        valign: 'middle'
+                    },
+                    alternateRowStyles: {
+                        fillColor: [252, 253, 254]
                     },
                     columnStyles: {
-                        0: { halign: 'center', cellWidth: 12 },
-                        1: { cellWidth: 28 },
-                        2: { cellWidth: 44 },
-                        3: { cellWidth: 26 },
-                        4: { cellWidth: 62 },
-                        5: { halign: 'center', cellWidth: 32 },
-                        6: { halign: 'center', cellWidth: 32 },
-                        7: { halign: 'center', cellWidth: 31 }
+                        0: { halign: 'center', cellWidth: 10, valign: 'middle' },
+                        1: { halign: 'center', cellWidth: 26, valign: 'middle' },
+                        2: { halign: 'left', cellWidth: 48, valign: 'top' },
+                        3: { halign: 'center', cellWidth: 24, valign: 'middle' },
+                        4: { halign: 'left', cellWidth: 53, valign: 'top' },
+                        5: { halign: 'center', cellWidth: 37, valign: 'middle' },
+                        6: { halign: 'center', cellWidth: 37, valign: 'middle' },
+                        7: { halign: 'center', cellWidth: 34, valign: 'middle' }
                     },
-                    margin: { left: 15, right: 15 },
+                    margin: { left: marginX, right: marginX, top: 14, bottom: 14 },
                     tableWidth: 'wrap',
-                    theme: 'grid',
                     didDrawCell: function(data) {
-                        if (data.section === 'body' && (data.column.index === 5 || data.column.index === 6 || data.column.index === 7)) {
-                            const rowIndex = data.row.index;
-                            if (rowIndex < processedRows.length) {
-                                const row = processedRows[rowIndex];
-                                let imgData = '';
-                                
-                                if (data.column.index === 5 && row.signaturePelaksanaData) {
-                                    imgData = row.signaturePelaksanaData;
-                                } else if (data.column.index === 6 && row.signaturePJData) {
-                                    imgData = row.signaturePJData;
-                                } else if (data.column.index === 7 && row.dokumentasiData.length > 0) {
-                                    imgData = row.dokumentasiData[0];
-                                }
-                                
-                                if (imgData) {
-                                    try {
-                                        const cellX = data.cell.x + 2;
-                                        const cellY = data.cell.y + 2;
-                                        const cellWidth = data.cell.width - 4;
-                                        const cellHeight = data.cell.height - 4;
-                                        const size = Math.min(cellWidth, cellHeight);
-                                        const xPos = cellX + (cellWidth - size) / 2;
-                                        const yPos = cellY + (cellHeight - size) / 2;
-                                        
-                                        doc.addImage(imgData, 'JPEG', xPos, yPos, size, size);
-                                    } catch (e) {
-                                        console.error('Error drawing image into table cell:', e);
-                                    }
-                                }
-                            }
+                        if (data.section !== 'body') return;
+                        
+                        const rowIndex = data.row.index;
+                        if (rowIndex >= processedRows.length) return;
+                        const row = processedRows[rowIndex];
+
+                        const cellX = data.cell.x;
+                        const cellY = data.cell.y;
+                        const cellW = data.cell.width;
+                        const cellH = data.cell.height;
+                        const centerX = cellX + (cellW / 2);
+                        const contentTop = cellY + Math.max(1.5, (cellH - 31) / 2);
+
+                        // --- KOLOM 2: JENIS KEGIATAN & BADGE STATUS ELEGAN ---
+                        if (data.column.index === 2) {
+                            const statusConfigs = {
+                                'approved': { bg: [220, 252, 231], text: [22, 101, 52], label: 'APPROVED / DISETUJUI' },
+                                'submitted': { bg: [224, 242, 254], text: [7, 89, 133], label: 'SUBMITTED / DIAJUKAN' },
+                                'draft': { bg: [254, 243, 199], text: [146, 64, 14], label: 'DRAFT' },
+                                'rejected': { bg: [254, 226, 226], text: [153, 27, 27], label: 'REJECTED / DITOLAK' }
+                            };
+                            const stConf = statusConfigs[row.statusKey] || statusConfigs['draft'];
+                            
+                            const badgeW = 38;
+                            const badgeH = 4.6;
+                            const badgeX = cellX + 2.5;
+                            const badgeY = cellY + cellH - badgeH - 2.5;
+
+                            doc.setFillColor(stConf.bg[0], stConf.bg[1], stConf.bg[2]);
+                            doc.roundedRect(badgeX, badgeY, badgeW, badgeH, 1, 1, 'F');
+                            doc.setFontSize(6);
+                            doc.setFont('helvetica', 'bold');
+                            doc.setTextColor(stConf.text[0], stConf.text[1], stConf.text[2]);
+                            doc.text(stConf.label, badgeX + (badgeW / 2), badgeY + 3.2, { align: 'center' });
                         }
-                    }
-                });
-                
-                // Extra pages for documentation photos
-                let hasExtraDocs = false;
-                processedRows.forEach((row, idx) => {
-                    if (row.dokumentasiData.length > 1) {
-                        if (!hasExtraDocs) {
-                            doc.addPage();
-                            doc.setFontSize(13);
+
+                        // --- KOLOM 5: TANDA TANGAN PELAKSANA & NAMA TERANG JELAS ---
+                        if (data.column.index === 5) {
+                            // 1. Gambar TTD Pelaksana
+                            if (row.signaturePelaksanaData) {
+                                try {
+                                    const fmt = row.signaturePelaksanaData.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+                                    doc.addImage(row.signaturePelaksanaData, fmt, centerX - 13, contentTop + 0.5, 26, 14);
+                                } catch (e) {
+                                    console.warn('Pelaksana sig error:', e);
+                                }
+                            } else {
+                                // Placeholder jika belum TTD
+                                doc.setFillColor(248, 250, 252);
+                                doc.setDrawColor(226, 232, 240);
+                                doc.setLineWidth(0.2);
+                                doc.roundedRect(centerX - 14, contentTop + 4, 28, 8, 1, 1, 'FD');
+                                doc.setFontSize(6.5);
+                                doc.setFont('helvetica', 'italic');
+                                doc.setTextColor(148, 163, 184);
+                                doc.text('(Belum Ada TTD)', centerX, contentTop + 9.5, { align: 'center' });
+                            }
+
+                            // 2. Garis Batas Tanda Tangan
+                            const lineY = contentTop + 17;
+                            doc.setDrawColor(203, 213, 225);
+                            doc.setLineWidth(0.25);
+                            doc.line(cellX + 3.5, lineY, cellX + cellW - 3.5, lineY);
+
+                            // 3. Nama Terang Penanda Tangan (Jelas, Tebal, Terbaca)
+                            doc.setFontSize(7.5);
+                            doc.setFont('helvetica', 'bold');
+                            doc.setTextColor(15, 23, 42); // slate-900 kontras tinggi
+                            const splitName = doc.splitTextToSize(row.namaPelaksana, cellW - 4);
+                            doc.text(splitName, centerX, lineY + 3.6, { align: 'center' });
+
+                            // 4. Label Jabatan / Peran
+                            const roleY = lineY + 3.6 + (splitName.length * 3.1);
+                            doc.setFontSize(6.5);
+                            doc.setFont('helvetica', 'normal');
+                            doc.setTextColor(100, 116, 139);
+                            doc.text('Pelaksana Kegiatan', centerX, roleY, { align: 'center' });
+                        }
+
+                        // --- KOLOM 6: TANDA TANGAN PJ & NAMA TERANG JELAS ---
+                        if (data.column.index === 6) {
+                            // 1. Gambar TTD PJ
+                            if (row.signaturePJData) {
+                                try {
+                                    const fmt = row.signaturePJData.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+                                    doc.addImage(row.signaturePJData, fmt, centerX - 13, contentTop + 0.5, 26, 14);
+                                } catch (e) {
+                                    console.warn('PJ sig error:', e);
+                                }
+                            } else {
+                                // Placeholder jika belum TTD
+                                doc.setFillColor(248, 250, 252);
+                                doc.setDrawColor(226, 232, 240);
+                                doc.setLineWidth(0.2);
+                                doc.roundedRect(centerX - 14, contentTop + 4, 28, 8, 1, 1, 'FD');
+                                doc.setFontSize(6.5);
+                                doc.setFont('helvetica', 'italic');
+                                doc.setTextColor(148, 163, 184);
+                                doc.text('(Belum Ada TTD)', centerX, contentTop + 9.5, { align: 'center' });
+                            }
+
+                            // 2. Garis Batas Tanda Tangan
+                            const lineY = contentTop + 17;
+                            doc.setDrawColor(203, 213, 225);
+                            doc.setLineWidth(0.25);
+                            doc.line(cellX + 3.5, lineY, cellX + cellW - 3.5, lineY);
+
+                            // 3. Nama Terang Penanggung Jawab (Jelas & Terbaca)
+                            doc.setFontSize(7.5);
                             doc.setFont('helvetica', 'bold');
                             doc.setTextColor(15, 23, 42);
-                            doc.text('LAMPIRAN DOKUMENTASI KEGIATAN', doc.internal.pageSize.getWidth() / 2, 18, { align: 'center' });
-                            hasExtraDocs = true;
+                            const splitPjName = doc.splitTextToSize(row.namaPJ, cellW - 4);
+                            doc.text(splitPjName, centerX, lineY + 3.6, { align: 'center' });
+
+                            // 4. Label Jabatan / Peran
+                            const roleY = lineY + 3.6 + (splitPjName.length * 3.1);
+                            doc.setFontSize(6.5);
+                            doc.setFont('helvetica', 'normal');
+                            doc.setTextColor(100, 116, 139);
+                            doc.text('Penanggung Jawab', centerX, roleY, { align: 'center' });
                         }
-                        
-                        let yPos = 30;
-                        doc.setFontSize(9);
-                        doc.setFont('helvetica', 'bold');
-                        doc.setTextColor(16, 185, 129);
-                        doc.text(`${idx + 1}. ${row.jenisKegiatan} - ${row.tanggalDibuat} (${row.unit})`, 15, yPos);
-                        yPos += 8;
-                        
-                        row.dokumentasiData.forEach((img, imgIdx) => {
-                            if (yPos > 160) {
-                                doc.addPage();
-                                yPos = 20;
+
+                        // --- KOLOM 7: DOKUMENTASI KEGIATAN DENGAN BORDER & BADGE ---
+                        if (data.column.index === 7) {
+                            if (row.dokumentasiData && row.dokumentasiData.length > 0) {
+                                try {
+                                    const docImg = row.dokumentasiData[0];
+                                    const fmt = docImg.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+                                    const docW = 24;
+                                    const docH = 14;
+                                    const docX = centerX - (docW / 2);
+                                    const docY = contentTop + 0.5;
+
+                                    doc.addImage(docImg, fmt, docX, docY, docW, docH);
+                                    
+                                    // Bingkai halus foto
+                                    doc.setDrawColor(203, 213, 225);
+                                    doc.setLineWidth(0.2);
+                                    doc.rect(docX, docY, docW, docH);
+
+                                    // Badge keterangan foto
+                                    doc.setFontSize(6.5);
+                                    doc.setFont('helvetica', 'bold');
+                                    doc.setTextColor(13, 148, 136);
+                                    const countText = row.dokumentasiData.length > 1 
+                                        ? `${row.dokumentasiData.length} Foto (Ada Lampiran)` 
+                                        : '1 Foto Dokumentasi';
+                                    doc.text(countText, centerX, contentTop + 19, { align: 'center' });
+                                } catch (e) {
+                                    console.warn('Doc render error:', e);
+                                }
+                            } else {
+                                doc.setFontSize(6.5);
+                                doc.setFont('helvetica', 'italic');
+                                doc.setTextColor(148, 163, 184);
+                                doc.text('- Tidak Ada Foto -', centerX, cellY + (cellH / 2), { align: 'center' });
                             }
-                            try {
-                                doc.addImage(img, 'JPEG', 15, yPos, 70, 50);
-                                doc.setFontSize(8);
-                                doc.setTextColor(100, 116, 139);
-                                doc.text(`Foto Dokumentasi ${imgIdx + 1}`, 15, yPos + 54);
-                                yPos += 62;
-                            } catch (e) {
-                                console.error('Error embedding doc photo:', e);
-                            }
-                        });
+                        }
                     }
                 });
-                
-                // Page numbering footer
+
+                // 6. LAMPIRAN DOKUMENTASI FOTO KEGIATAN (GRID RESMI 2-KOLOM)
+                const rowsWithMultiplePhotos = processedRows.filter(r => r.dokumentasiData && r.dokumentasiData.length > 1);
+                if (rowsWithMultiplePhotos.length > 0) {
+                    doc.addPage();
+                    
+                    // Header Lampiran
+                    doc.setFontSize(13);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(15, 23, 42);
+                    doc.text('LAMPIRAN DOKUMENTASI FOTO KEGIATAN', pageWidth / 2, 14, { align: 'center' });
+                    
+                    doc.setFontSize(8);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(100, 116, 139);
+                    doc.text('Bukti fisik & visual pelaksanaan tugas harian pegawai', pageWidth / 2, 19, { align: 'center' });
+
+                    doc.setDrawColor(15, 23, 42);
+                    doc.setLineWidth(0.5);
+                    doc.line(marginX, 22, pageWidth - marginX, 22);
+
+                    let lampiranY = 27;
+                    for (const rItem of rowsWithMultiplePhotos) {
+                        if (lampiranY + 65 > pageHeight - 16) {
+                            doc.addPage();
+                            lampiranY = 18;
+                        }
+
+                        // Baris Judul Kegiatan
+                        doc.setFillColor(241, 245, 249);
+                        doc.roundedRect(marginX, lampiranY, contentWidth, 6.5, 1, 1, 'F');
+                        doc.setFontSize(7.5);
+                        doc.setFont('helvetica', 'bold');
+                        doc.setTextColor(15, 23, 42);
+                        doc.text(`Kegiatan: ${rItem.jenisKegiatan}  |  Tanggal: ${rItem.tanggalStr} (${rItem.unit})`, marginX + 3, lampiranY + 4.5);
+                        lampiranY += 8.5;
+
+                        // Grid 2 Foto per baris
+                        const cardW = 130;
+                        const cardH = 50;
+                        rItem.dokumentasiData.forEach((dImg, dIdx) => {
+                            if (dIdx >= 4) return; // Maksimal 4 foto per lampiran
+                            
+                            const isOdd = (dIdx % 2 === 1);
+                            const photoX = isOdd ? (marginX + 135) : marginX;
+                            
+                            try {
+                                const fmt = dImg.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+                                doc.addImage(dImg, fmt, photoX + 5, lampiranY, cardW - 10, cardH - 6);
+                                
+                                doc.setDrawColor(203, 213, 225);
+                                doc.setLineWidth(0.2);
+                                doc.rect(photoX + 5, lampiranY, cardW - 10, cardH - 6);
+
+                                doc.setFontSize(6.5);
+                                doc.setFont('helvetica', 'normal');
+                                doc.setTextColor(100, 116, 139);
+                                doc.text(`Foto Dokumentasi ${dIdx + 1} - ${rItem.jenisKegiatan}`, photoX + 5, lampiranY + cardH - 2);
+                            } catch (e) {}
+
+                            if (isOdd) {
+                                lampiranY += cardH + 2;
+                            }
+                        });
+
+                        if (rItem.dokumentasiData.length % 2 === 1) {
+                            lampiranY += cardH + 2;
+                        }
+                    }
+                }
+
+                // 8. HEADER BERJALAN & FOOTER RESMI DI SEMUA HALAMAN
                 const totalPages = doc.internal.getNumberOfPages();
                 for (let i = 1; i <= totalPages; i++) {
                     doc.setPage(i);
-                    doc.setFontSize(8);
+                    
+                    // Running Header (Halaman 2 ke atas)
+                    if (i > 1) {
+                        doc.setFontSize(7);
+                        doc.setFont('helvetica', 'normal');
+                        doc.setTextColor(148, 163, 184);
+                        doc.text(`${namaInstansi} | Laporan Kinerja Harian Pegawai`, marginX, 7);
+                        doc.setDrawColor(226, 232, 240);
+                        doc.setLineWidth(0.2);
+                        doc.line(marginX, 8.5, pageWidth - marginX, 8.5);
+                    }
+
+                    // Running Footer di setiap halaman
+                    doc.setDrawColor(226, 232, 240);
+                    doc.setLineWidth(0.2);
+                    doc.line(marginX, pageHeight - 9, pageWidth - marginX, pageHeight - 9);
+
+                    doc.setFontSize(7);
+                    doc.setFont('helvetica', 'normal');
                     doc.setTextColor(148, 163, 184);
-                    doc.text(
-                        `Dokumen Resmi e-Kinerja Pegawai | Halaman ${i} dari ${totalPages}`,
-                        doc.internal.pageSize.getWidth() - 15,
-                        doc.internal.pageSize.getHeight() - 8,
-                        { align: 'right' }
-                    );
+                    doc.text(`Dokumen Resmi e-Kinerja Pegawai | Waktu Cetak: ${printDateStr} WIB`, marginX, pageHeight - 5.5);
+                    doc.text(`Halaman ${i} dari ${totalPages}`, pageWidth - marginX, pageHeight - 5.5, { align: 'right' });
                 }
                 
                 const fileName = `Laporan_Kinerja_${userNip || 'Pegawai'}_${new Date().toISOString().split('T')[0]}.pdf`;
                 
-                // Generate Blob and preview instead of direct downloading
+                // Konversi ke Blob dan Tampilkan di Modal Pratinjau
                 const pdfBlob = doc.output('blob');
                 currentPdfBlob = pdfBlob;
                 currentPdfFilename = fileName;
@@ -2021,7 +2394,7 @@
                 }
             } catch (err) {
                 console.error('PDF generation error:', err);
-                alert('Terjadi kesalahan saat memproses PDF. Silakan coba lagi.');
+                alert('Terjadi kesalahan saat memproses dokumen PDF. Silakan coba lagi.');
             } finally {
                 if (exportBtn) {
                     exportBtn.disabled = false;
