@@ -15,7 +15,20 @@ class SocialLoginController extends Controller
      */
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->redirect();
+        $clientId = config('services.google.client_id');
+        $clientSecret = config('services.google.client_secret');
+
+        // Check if Google credentials are configured in .env
+        if (empty($clientId) || $clientId === 'your-google-client-id' || empty($clientSecret) || $clientSecret === 'your-google-client-secret') {
+            return redirect('/login')->with('error', 'Fitur Login Google belum aktif: GOOGLE_CLIENT_ID dan GOOGLE_CLIENT_SECRET di file .env masih bernilai default/kosong. Harap daftarkan kredensial di Google Cloud Console.');
+        }
+
+        try {
+            return Socialite::driver('google')->redirect();
+        } catch (Exception $e) {
+            \Log::error('Google Redirect Error: ' . $e->getMessage());
+            return redirect('/login')->with('error', 'Gagal menghubungi server autentikasi Google: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -26,6 +39,10 @@ class SocialLoginController extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
 
+            if (!$googleUser || empty($googleUser->email)) {
+                return redirect('/login')->with('error', 'Gagal mengambil data akun Google Anda.');
+            }
+
             $user = User::where('email', $googleUser->email)->first();
 
             if ($user) {
@@ -34,9 +51,9 @@ class SocialLoginController extends Controller
                     $user->update(['google_id' => $googleUser->id]);
                 }
             } else {
-                // Create a new user
+                // Create a new user from Google
                 $user = User::create([
-                    'name' => $googleUser->name,
+                    'name' => $googleUser->name ?? $googleUser->nickname ?? 'Pengguna Google',
                     'email' => $googleUser->email,
                     'google_id' => $googleUser->id,
                     'password' => null,
@@ -44,7 +61,7 @@ class SocialLoginController extends Controller
                 ]);
             }
 
-            // Generate a token for the user using Sanctum
+            // Generate a Sanctum token for API authentication
             $token = $user->createToken('auth_token')->plainTextToken;
 
             // Return a view that will save the token to localStorage and redirect
@@ -54,7 +71,8 @@ class SocialLoginController extends Controller
             ]);
 
         } catch (Exception $e) {
-            return redirect('/login')->with('error', 'Login dengan Google gagal. Silakan coba lagi.');
+            \Log::error('Google Callback Error: ' . $e->getMessage());
+            return redirect('/login')->with('error', 'Autentikasi Google dibatalkan atau gagal: ' . $e->getMessage());
         }
     }
 }

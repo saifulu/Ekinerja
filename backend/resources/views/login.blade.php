@@ -154,6 +154,20 @@
                 <h2 class="text-lg sm:text-xl font-bold text-white mb-1">Selamat Datang</h2>
                 <p class="text-slate-400 text-xs sm:text-sm">Masuk ke akun Anda untuk melanjutkan</p>
             </div>
+
+            @if(session('error'))
+                <div class="mb-4 p-3.5 rounded-xl bg-rose-950/90 border border-rose-500/40 text-rose-300 text-xs sm:text-sm flex items-center gap-2">
+                    <i class="fas fa-exclamation-circle text-rose-400 text-base flex-shrink-0"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+            @endif
+
+            @if(session('success'))
+                <div class="mb-4 p-3.5 rounded-xl bg-emerald-950/90 border border-emerald-500/40 text-emerald-300 text-xs sm:text-sm flex items-center gap-2">
+                    <i class="fas fa-check-circle text-emerald-400 text-base flex-shrink-0"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+            @endif
             
             <form class="space-y-4" id="loginForm">
                 <!-- Email Address -->
