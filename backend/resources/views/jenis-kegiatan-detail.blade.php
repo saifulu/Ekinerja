@@ -890,6 +890,21 @@
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
         .signature-signed-canvas-wrap {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 4px;
+        }
+        .signature-signed-canvas-wrap img {
+            max-height: 85px;
+            max-width: 100%;
+            object-fit: contain;
+            user-select: none;
+        }
         .signature-canvas {
             width: 100%;
             height: 100%;
@@ -897,7 +912,6 @@
             max-height: 110px;
             border-radius: 8px;
             background: #ffffff;
-            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -905,11 +919,6 @@
             padding: 4px;
             position: relative;
         }
-        .signature-signed-canvas-wrap img {
-            max-height: 85px;
-            max-width: 100%;
-            object-fit: contain;
-            user-select: none;
         .signature-signed {
             background: rgba(16, 185, 129, 0.12);
             border-color: rgba(16, 185, 129, 0.45);
@@ -1493,47 +1502,53 @@
         }
 
         // Open Signature Pad Modal
-        // Signature functions
+        let hasSignatureDrawn = false;
+
         function openSignaturePad(type) {
             closeSignatureModal();
 
             const title = type === 'petugas' ? 'Petugas' : 'Ka. Unit / Ka. Ruangan';
-            // Create modal for signature pad
             const modal = document.createElement('div');
             modal.className = 'signature-modal';
             modal.id = 'activeSignatureModal';
+            modal.style.cssText = 'position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;background:rgba(0,0,0,0.85)!important;backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important;display:flex!important;align-items:center!important;justify-content:center!important;z-index:999999!important;padding:16px!important;box-sizing:border-box!important;margin:0!important;';
+
+            // Dismiss modal when clicking backdrop outside content
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeSignatureModal();
+                }
+            });
+
             modal.innerHTML = `
-                <div class="signature-modal-content" style="max-width: 480px;">
-                    <div class="signature-modal-header py-2 mb-3">
-                        <h6 class="text-white mb-0 font-semibold" style="font-size: 15px;">
-                            <i class="fas fa-signature text-emerald-400 me-2"></i>Tanda Tangan ${title}
+                <div class="signature-modal-content" style="max-width: 520px; width: 100%;">
+                    <div class="signature-modal-header d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-white/10">
+                        <h6 class="text-white mb-0 font-semibold d-flex align-items-center gap-2" style="font-size: 15px;">
+                            <i class="fas fa-pen-nib text-emerald-400"></i>
+                            <span>Tanda Tangan ${title}</span>
                         </h6>
-                        <button type="button" class="btn-close" onclick="closeSignatureModal()" title="Tutup"></button>
-                <div class="signature-modal-content">
-                    <div class="signature-modal-header">
-                        <h5>Tanda Tangan ${type === 'petugas' ? 'Petugas' : 'Ka. Unit/Ka. Ruangan'}</h5>
-                        <button type="button" class="btn-close" onclick="closeSignatureModal()"></button>
+                        <button type="button" class="btn-close btn-close-white" onclick="closeSignatureModal()" title="Tutup" aria-label="Close"></button>
                     </div>
                     <div class="signature-modal-body">
-                        <div class="position-relative" style="background: #ffffff; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.2); overflow: hidden;">
-                            <canvas id="signatureCanvas" style="display: block; width: 100%; cursor: crosshair; touch-action: none;"></canvas>
-                            <div style="position: absolute; bottom: 25px; left: 16px; right: 16px; border-bottom: 1px dashed rgba(15, 23, 42, 0.2); pointer-events: none;">
-                                <span style="font-size: 10px; color: rgba(15, 23, 42, 0.35);">✕ Tanda tangan di sini</span>
+                        <div class="position-relative mb-3" style="background: #ffffff; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.2); overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.25);">
+                            <canvas id="signatureCanvas" style="display: block; width: 100%; height: 210px; cursor: crosshair; touch-action: none; background: #ffffff;"></canvas>
+                            <div style="position: absolute; bottom: 18px; left: 16px; right: 16px; border-bottom: 1px dashed rgba(15, 23, 42, 0.25); pointer-events: none; display: flex; justify-content: space-between; align-items: flex-end;">
+                                <span style="font-size: 11px; color: rgba(15, 23, 42, 0.45); font-weight: 500;">✕ Tanda tangan di atas garis ini</span>
+                                <span style="font-size: 10px; color: rgba(15, 23, 42, 0.35);"><i class="fas fa-pen text-xs me-1"></i>Gunakan mouse / jari</span>
                             </div>
-                        <canvas id="signatureCanvas" width="400" height="200"></canvas>
-                        <div class="signature-modal-actions mt-3">
-                            <button type="button" class="btn btn-secondary me-2" onclick="clearCanvas()">Hapus</button>
-                            <button type="button" class="btn btn-primary me-2" onclick="saveSignature('${type}')">Simpan</button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="closeSignatureModal()">Batal</button>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-white/10">
-                            <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2.5 text-xs" onclick="clearCanvas()">
-                                <i class="fas fa-rotate-left me-1"></i>Hapus
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top border-white/10">
+                            <button type="button" class="btn btn-sm btn-outline-danger py-1.5 px-3 rounded-xl text-xs d-flex align-items-center gap-1.5" onclick="clearCanvas()">
+                                <i class="fas fa-rotate-left"></i>
+                                <span>Hapus Kanvas</span>
                             </button>
                             <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-sm btn-secondary py-1 px-3 text-xs" onclick="closeSignatureModal()">Batal</button>
-                                <button type="button" class="btn btn-sm btn-emerald-pro py-1 px-3 text-xs" onclick="saveSignature('${type}')">
-                                    <i class="fas fa-check me-1"></i>Simpan
+                                <button type="button" class="btn btn-sm btn-secondary py-1.5 px-3 rounded-xl text-xs" onclick="closeSignatureModal()">
+                                    Batal
+                                </button>
+                                <button type="button" class="btn btn-sm py-1.5 px-4 rounded-xl text-xs font-semibold text-white d-flex align-items-center gap-1.5" style="background: linear-gradient(135deg, #10b981 0%, #0d9488 100%); border: none;" onclick="saveSignature('${type}')">
+                                    <i class="fas fa-check"></i>
+                                    <span>Simpan</span>
                                 </button>
                             </div>
                         </div>
@@ -1551,18 +1566,16 @@
 
             const ctx = canvas.getContext('2d');
             let isDrawing = false;
+            hasSignatureDrawn = false;
 
             function resizeCanvas() {
-                const container = canvas.parentElement;
-                const rect = container.getBoundingClientRect();
+                const rect = canvas.getBoundingClientRect();
                 const dpr = window.devicePixelRatio || 1;
                 const width = rect.width || 460;
-                const height = Math.min(Math.max(width * 0.46, 170), 220);
+                const height = rect.height || 210;
 
                 canvas.width = width * dpr;
                 canvas.height = height * dpr;
-                canvas.style.width = width + 'px';
-                canvas.style.height = height + 'px';
 
                 ctx.scale(dpr, dpr);
                 ctx.lineCap = 'round';
@@ -1571,13 +1584,11 @@
                 ctx.lineWidth = 2.6;
             }
 
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
+            requestAnimationFrame(resizeCanvas);
 
             function getPos(e) {
                 const rect = canvas.getBoundingClientRect();
-                const pointer = e.touches?.[0] || e;
-
+                const pointer = (e.touches && e.touches[0]) ? e.touches[0] : e;
                 return {
                     x: pointer.clientX - rect.left,
                     y: pointer.clientY - rect.top,
@@ -1585,8 +1596,9 @@
             }
 
             function startDrawing(e) {
-                e.preventDefault();
+                if (e.touches) e.preventDefault();
                 isDrawing = true;
+                hasSignatureDrawn = true;
                 const pos = getPos(e);
                 ctx.beginPath();
                 ctx.moveTo(pos.x, pos.y);
@@ -1594,29 +1606,24 @@
 
             function draw(e) {
                 if (!isDrawing) return;
-
-                e.preventDefault();
+                if (e.touches) e.preventDefault();
                 const pos = getPos(e);
                 ctx.lineTo(pos.x, pos.y);
                 ctx.stroke();
             }
 
             function stopDrawing() {
-                if (!isDrawing) return;
-
-                isDrawing = false;
-                ctx.closePath();
+                if (isDrawing) {
+                    isDrawing = false;
+                    ctx.closePath();
+                }
             }
-
-            canvas.style.border = '2px solid rgba(255, 255, 255, 0.2)';
-            canvas.style.borderRadius = '12px';
-            canvas.style.background = 'white';
-            canvas.style.cursor = 'crosshair';
-            canvas.style.touchAction = 'none';
 
             canvas.addEventListener('mousedown', startDrawing);
             canvas.addEventListener('mousemove', draw);
             window.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseleave', stopDrawing);
+
             canvas.addEventListener('touchstart', startDrawing, { passive: false });
             canvas.addEventListener('touchmove', draw, { passive: false });
             canvas.addEventListener('touchend', stopDrawing);
@@ -1631,32 +1638,23 @@
                 ctx.setTransform(1, 0, 0, 1, 0, 0);
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.restore();
+                hasSignatureDrawn = false;
             }
-        }
-
-        function isCanvasBlank(canvas) {
-            const ctx = canvas.getContext('2d');
-            const pixelBuffer = new Uint32Array(
-                ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer
-            );
-            return !pixelBuffer.some(color => color !== 0);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
         function saveSignature(type) {
             const canvas = document.getElementById('signatureCanvas');
             if (!canvas) return;
 
-            if (isCanvasBlank(canvas)) {
+            if (!hasSignatureDrawn) {
                 alert('Silakan bubuhkan tanda tangan di kanvas terlebih dahulu.');
                 return;
             }
 
             const dataURL = canvas.toDataURL('image/png');
-            
             signatures[type] = dataURL;
             
-            // Update UI
+            // Update surface UI
             const signatureArea = document.getElementById(type + 'Signature');
             if (signatureArea) {
                 signatureArea.innerHTML = `
@@ -1666,6 +1664,7 @@
                 `;
                 signatureArea.classList.add('signature-signed');
             }
+
             // Update status badge
             const statusBadge = document.getElementById(type + 'StatusBadge');
             if (statusBadge) {
@@ -1678,11 +1677,7 @@
             if (actionText) {
                 actionText.textContent = 'Ubah';
             }
-            // Update info
-            const now = new Date();
-            document.getElementById(type + 'Name').textContent = type === 'petugas' ? 'Petugas' : 'Ka. Unit/Ka. Ruangan';
-            document.getElementById(type + 'Date').textContent = now.toLocaleDateString('id-ID');
-            
+
             // Show clear button
             const clearBtn = document.getElementById('clear' + (type === 'petugas' ? 'Petugas' : 'KaUnit') + 'Btn');
             if (clearBtn) {
@@ -1691,13 +1686,12 @@
 
             // Update section summary counter
             updateSignatureBadges();
-            document.getElementById('clear' + (type === 'petugas' ? 'Petugas' : 'KaUnit') + 'Btn').style.display = 'inline-block';
-            
             closeSignatureModal();
         }
 
         function clearSignature(type) {
             signatures[type] = null;
+            hasSignatureDrawn = false;
             
             const signatureArea = document.getElementById(type + 'Signature');
             if (signatureArea) {
@@ -1709,13 +1703,6 @@
                 `;
                 signatureArea.classList.remove('signature-signed');
             }
-            signatureArea.innerHTML = `
-                <div class="signature-placeholder">
-                    <i class="fas fa-pen-nib fa-2x text-white-50 mb-2"></i>
-                    <p class="text-white-50 mb-0">Klik untuk tanda tangan</p>
-                </div>
-            `;
-            signatureArea.classList.remove('signature-signed');
             
             // Update status badge
             const statusBadge = document.getElementById(type + 'StatusBadge');
@@ -1738,17 +1725,21 @@
 
             // Update section summary counter
             updateSignatureBadges();
-            document.getElementById(type + 'Name').textContent = '-';
-            document.getElementById(type + 'Date').textContent = '-';
-            document.getElementById('clear' + (type === 'petugas' ? 'Petugas' : 'KaUnit') + 'Btn').style.display = 'none';
         }
 
         function closeSignatureModal() {
-            const modal = document.querySelector('.signature-modal');
+            const modal = document.getElementById('activeSignatureModal') || document.querySelector('.signature-modal');
             if (modal) {
                 modal.remove();
             }
         }
+
+        // Global functions for inline event handlers
+        window.openSignaturePad = openSignaturePad;
+        window.closeSignatureModal = closeSignatureModal;
+        window.saveSignature = saveSignature;
+        window.clearSignature = clearSignature;
+        window.clearCanvas = clearCanvas;
 
         // Fungsi untuk memuat unit berdasarkan NIP user
         async function loadUserUnits() {
