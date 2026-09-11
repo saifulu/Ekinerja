@@ -414,12 +414,11 @@
                     </p>
                 </div>
 
-                <!-- Export PDF Button -->
                 <button type="button" 
                         id="exportPdfButton" 
                         class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-semibold text-xs sm:text-sm shadow-md shadow-rose-600/25 transition-all">
                     <i class="fas fa-file-pdf"></i>
-                    <span>Export PDF</span>
+                    <span>Pratinjau & Cetak PDF</span>
                 </button>
             </div>
         </div>
@@ -1208,6 +1207,68 @@
         </div>
     </div>
 
+    <!-- PDF Preview Modal -->
+    <div class="modal fade" id="pdfPreviewModal" tabindex="-1" aria-labelledby="pdfPreviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width: 96vw;">
+            <div class="modal-content border border-slate-700 bg-slate-900 shadow-2xl rounded-2xl overflow-hidden">
+                <!-- Header -->
+                <div class="modal-header border-b border-slate-700/80 px-4 sm:px-6 py-3.5 flex items-center justify-between bg-slate-900/95 backdrop-blur">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-9 h-9 rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-400 flex items-center justify-center text-base shrink-0">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <h5 class="modal-title font-bold text-white text-sm sm:text-base truncate" id="pdfPreviewModalLabel">
+                                Pratinjau Dokumen Laporan PDF
+                            </h5>
+                            <span class="text-[11px] text-slate-400 truncate block" id="pdfPreviewFilename">Laporan_Kinerja.pdf</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button type="button" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors flex items-center gap-1.5" onclick="openPdfInNewTab()" title="Buka dokumen di tab baru browser">
+                            <i class="fas fa-arrow-up-right-from-square"></i> <span class="hidden md:inline">Buka di Tab Baru</span>
+                        </button>
+                        <button type="button" class="text-slate-400 hover:text-white transition-colors text-base p-1.5" data-bs-dismiss="modal" aria-label="Close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Helper Notice -->
+                <div class="bg-amber-500/10 border-b border-amber-500/20 px-4 py-2 flex items-center justify-between text-xs text-amber-300 sm:hidden">
+                    <span class="truncate"><i class="fas fa-mobile-screen mr-1 text-amber-400"></i> Mode Ponsel: Gunakan tombol Buka Tab Baru jika pratinjau tidak muncul</span>
+                    <button type="button" class="text-amber-300 font-bold underline shrink-0 ml-2" onclick="openPdfInNewTab()">Buka Tab</button>
+                </div>
+
+                <!-- Body (responsive height PDF container) -->
+                <div class="modal-body p-0 bg-slate-950 relative" style="height: 75vh; min-height: 480px;">
+                    <!-- Loading Indicator -->
+                    <div id="pdfLoadingSkeleton" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950 text-slate-400 z-10">
+                        <i class="fas fa-spinner fa-spin text-3xl text-rose-500 mb-3"></i>
+                        <p class="text-xs font-medium text-slate-300">Membuat dan merender pratinjau dokumen PDF...</p>
+                    </div>
+                    <!-- PDF Iframe -->
+                    <iframe id="pdfPreviewFrame" src="" class="w-full h-full border-0" title="Pratinjau Dokumen PDF"></iframe>
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer border-t border-slate-700/80 px-4 sm:px-6 py-3 flex flex-wrap justify-between items-center gap-2 bg-slate-900/95">
+                    <button type="button" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors flex items-center gap-1.5" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Tutup
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <button type="button" class="px-3.5 sm:px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 text-xs font-semibold transition-colors flex items-center gap-1.5" onclick="printPdfFromPreview()">
+                            <i class="fas fa-print text-emerald-400"></i> <span class="hidden sm:inline">Cetak Langsung</span><span class="sm:hidden">Cetak</span>
+                        </button>
+                        <button type="button" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-semibold shadow-md shadow-emerald-600/30 transition-all flex items-center gap-1.5" onclick="downloadCurrentPdf()">
+                            <i class="fas fa-download"></i> Unduh File PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -1928,7 +1989,36 @@
                 }
                 
                 const fileName = `Laporan_Kinerja_${userNip || 'Pegawai'}_${new Date().toISOString().split('T')[0]}.pdf`;
-                doc.save(fileName);
+                
+                // Generate Blob and preview instead of direct downloading
+                const pdfBlob = doc.output('blob');
+                currentPdfBlob = pdfBlob;
+                currentPdfFilename = fileName;
+
+                if (currentPdfUrl) {
+                    URL.revokeObjectURL(currentPdfUrl);
+                }
+                currentPdfUrl = URL.createObjectURL(pdfBlob);
+
+                const frame = document.getElementById('pdfPreviewFrame');
+                const filenameLabel = document.getElementById('pdfPreviewFilename');
+                const skeleton = document.getElementById('pdfLoadingSkeleton');
+
+                if (filenameLabel) filenameLabel.textContent = fileName;
+                if (skeleton) skeleton.style.display = 'flex';
+
+                if (frame) {
+                    frame.onload = function() {
+                        if (skeleton) skeleton.style.display = 'none';
+                    };
+                    frame.src = currentPdfUrl;
+                }
+
+                const previewModalEl = document.getElementById('pdfPreviewModal');
+                if (previewModalEl && window.bootstrap) {
+                    const previewModal = new bootstrap.Modal(previewModalEl);
+                    previewModal.show();
+                }
             } catch (err) {
                 console.error('PDF generation error:', err);
                 alert('Terjadi kesalahan saat memproses PDF. Silakan coba lagi.');
@@ -1937,6 +2027,43 @@
                     exportBtn.disabled = false;
                     exportBtn.innerHTML = origContent;
                 }
+            }
+        }
+
+        // PDF Preview Helper Controls
+        let currentPdfBlob = null;
+        let currentPdfUrl = null;
+        let currentPdfFilename = 'Laporan_Kinerja.pdf';
+
+        function openPdfInNewTab() {
+            if (currentPdfUrl) {
+                window.open(currentPdfUrl, '_blank');
+            }
+        }
+
+        function downloadCurrentPdf() {
+            if (!currentPdfBlob && !currentPdfUrl) return;
+            const a = document.createElement('a');
+            a.href = currentPdfUrl;
+            a.download = currentPdfFilename || 'Laporan_Kinerja.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function printPdfFromPreview() {
+            const frame = document.getElementById('pdfPreviewFrame');
+            if (frame && frame.contentWindow) {
+                try {
+                    frame.contentWindow.focus();
+                    frame.contentWindow.print();
+                    return;
+                } catch (e) {
+                    console.warn('Frame print failed, opening popup for print:', e);
+                }
+            }
+            if (currentPdfUrl) {
+                window.open(currentPdfUrl, '_blank');
             }
         }
 
@@ -1967,6 +2094,14 @@
             const exportPdfButton = document.getElementById('exportPdfButton');
             if (exportPdfButton) {
                 exportPdfButton.addEventListener('click', exportToPDF);
+            }
+
+            const pdfModalEl = document.getElementById('pdfPreviewModal');
+            if (pdfModalEl) {
+                pdfModalEl.addEventListener('hidden.bs.modal', function () {
+                    const frame = document.getElementById('pdfPreviewFrame');
+                    if (frame) frame.src = 'about:blank';
+                });
             }
         });
     </script>
