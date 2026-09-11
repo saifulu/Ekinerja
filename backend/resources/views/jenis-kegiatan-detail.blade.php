@@ -685,6 +685,13 @@
         /* Single Date Picker Dark Styling */
         input[type="datetime-local"] {
             color-scheme: dark;
+        /* Signature Styles */
+        .signature-section {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         /* Professional Signature Styles */
@@ -694,6 +701,10 @@
             border-radius: 18px;
             padding: 22px;
             margin-bottom: 24px;
+        .signature-box {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 12px;
+            padding: 16px;
             border: 1px solid rgba(255, 255, 255, 0.12);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
             backdrop-filter: blur(12px);
@@ -732,17 +743,24 @@
             flex-shrink: 0;
         }
         .signature-role-title {
+        .signature-label {
             color: #f8fafc;
             font-weight: 600;
             font-size: 13.5px;
             margin: 0;
             line-height: 1.2;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: block;
         }
         .signature-pad-surface {
             background: rgba(15, 23, 42, 0.8);
+        .signature-area {
+            background: rgba(15, 23, 42, 0.7);
             border-radius: 10px;
             min-height: 90px;
             max-height: 110px;
+            height: 120px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -751,13 +769,18 @@
             border: 1.5px dashed rgba(255, 255, 255, 0.18);
             position: relative;
             overflow: hidden;
+            transition: all 0.3s ease;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
         }
         .signature-pad-surface:hover {
             background: rgba(15, 23, 42, 0.95);
+        .signature-area:hover {
+            background: rgba(15, 23, 42, 0.85);
             border-color: #10b981;
             box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
         }
         .signature-placeholder-pro {
+        .signature-placeholder {
             text-align: center;
             color: #94a3b8;
             padding: 8px;
@@ -776,21 +799,35 @@
             color: #34d399;
             font-size: 16px;
             transition: transform 0.2s ease;
+        .signature-placeholder i {
+            opacity: 0.8;
+            color: #10b981;
         }
         .signature-pad-surface:hover .pen-icon-circle {
             transform: scale(1.1);
+        .signature-placeholder p {
+            font-size: 12px;
+            margin: 0;
+            color: #cbd5e1;
         }
         .signature-freetyping-box {
             margin-top: 12px;
+        .signature-info {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 8px;
+            padding: 8px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         .signature-freetyping-box label {
             font-size: 11.5px;
             color: #cbd5e1;
             font-weight: 500;
             margin-bottom: 5px;
+        .signature-actions {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 8px;
         }
         .freetyping-tag {
             background: rgba(51, 65, 85, 0.6);
@@ -853,15 +890,18 @@
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
         .signature-signed-canvas-wrap {
+        .signature-canvas {
             width: 100%;
             height: 100%;
             min-height: 90px;
             max-height: 110px;
+            border-radius: 8px;
             background: #ffffff;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
+            object-fit: contain;
             padding: 4px;
             position: relative;
         }
@@ -870,6 +910,9 @@
             max-width: 100%;
             object-fit: contain;
             user-select: none;
+        .signature-signed {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: rgba(16, 185, 129, 0.45);
         }
         
         /* Signature Modal */
@@ -1323,7 +1366,7 @@
                                         </h6>
                                         <span id="signatureStatusSummaryBadge" class="badge bg-slate-800 text-slate-400 border border-slate-700/60 font-normal px-2 py-0.5" style="font-size: 11px;">0/2</span>
                                     </div>
-                                    
+
                                     <div class="row g-3">
                                         <!-- Petugas Card -->
                                         <div class="col-md-6">
@@ -1450,10 +1493,12 @@
         }
 
         // Open Signature Pad Modal
+        // Signature functions
         function openSignaturePad(type) {
             closeSignatureModal();
 
             const title = type === 'petugas' ? 'Petugas' : 'Ka. Unit / Ka. Ruangan';
+            // Create modal for signature pad
             const modal = document.createElement('div');
             modal.className = 'signature-modal';
             modal.id = 'activeSignatureModal';
@@ -1464,6 +1509,10 @@
                             <i class="fas fa-signature text-emerald-400 me-2"></i>Tanda Tangan ${title}
                         </h6>
                         <button type="button" class="btn-close" onclick="closeSignatureModal()" title="Tutup"></button>
+                <div class="signature-modal-content">
+                    <div class="signature-modal-header">
+                        <h5>Tanda Tangan ${type === 'petugas' ? 'Petugas' : 'Ka. Unit/Ka. Ruangan'}</h5>
+                        <button type="button" class="btn-close" onclick="closeSignatureModal()"></button>
                     </div>
                     <div class="signature-modal-body">
                         <div class="position-relative" style="background: #ffffff; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.2); overflow: hidden;">
@@ -1471,6 +1520,11 @@
                             <div style="position: absolute; bottom: 25px; left: 16px; right: 16px; border-bottom: 1px dashed rgba(15, 23, 42, 0.2); pointer-events: none;">
                                 <span style="font-size: 10px; color: rgba(15, 23, 42, 0.35);">✕ Tanda tangan di sini</span>
                             </div>
+                        <canvas id="signatureCanvas" width="400" height="200"></canvas>
+                        <div class="signature-modal-actions mt-3">
+                            <button type="button" class="btn btn-secondary me-2" onclick="clearCanvas()">Hapus</button>
+                            <button type="button" class="btn btn-primary me-2" onclick="saveSignature('${type}')">Simpan</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="closeSignatureModal()">Batal</button>
                         </div>
                         <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-white/10">
                             <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2.5 text-xs" onclick="clearCanvas()">
@@ -1497,35 +1551,79 @@
             const ctx = canvas.getContext('2d');
             let isDrawing = false;
             
+            // Set canvas responsive size
             function resizeCanvas() {
                 const container = canvas.parentElement;
                 const rect = container.getBoundingClientRect();
                 const dpr = window.devicePixelRatio || 1;
                 const width = rect.width || 460;
                 const height = Math.min(Math.max(width * 0.46, 170), 220);
+                const containerWidth = container.clientWidth;
+                const aspectRatio = 2; // width:height ratio
                 
                 canvas.width = width * dpr;
                 canvas.height = height * dpr;
                 canvas.style.width = width + 'px';
                 canvas.style.height = height + 'px';
+                canvas.width = Math.min(containerWidth - 40, 500);
+                canvas.height = canvas.width / aspectRatio;
                 
                 ctx.scale(dpr, dpr);
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
                 ctx.strokeStyle = '#090d16'; // sleek deep dark ink
                 ctx.lineWidth = 2.6;
+                // Ensure minimum height
+                if (canvas.height < 160) {
+                    canvas.height = 160;
+                    canvas.width = canvas.height * aspectRatio;
+                }
+                
+                canvas.style.width = canvas.width + 'px';
+                canvas.style.height = canvas.height + 'px';
             }
             
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
             
             function getPos(e) {
+            canvas.style.border = '2px solid #e0e0e0';
+            canvas.style.border = '2px solid rgba(255, 255, 255, 0.2)';
+            canvas.style.borderRadius = '12px';
+            canvas.style.background = 'white';
+            canvas.style.cursor = 'crosshair';
+            canvas.style.touchAction = 'none';
+            
+            // Mouse events
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            // Touch events for mobile
+            canvas.addEventListener('touchstart', handleTouch);
+            canvas.addEventListener('touchmove', handleTouch);
+            canvas.addEventListener('touchend', stopDrawing);
+            
+            function handleTouch(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
                 const rect = canvas.getBoundingClientRect();
                 if (e.touches && e.touches[0]) {
                     return {
                         x: e.touches[0].clientX - rect.left,
                         y: e.touches[0].clientY - rect.top
                     };
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                
+                if (e.type === 'touchstart') {
+                    isDrawing = true;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                } else if (e.type === 'touchmove' && isDrawing) {
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
                 }
                 return {
                     x: e.clientX - rect.left,
@@ -1537,8 +1635,12 @@
                 e.preventDefault();
                 isDrawing = true;
                 const pos = getPos(e);
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
                 ctx.beginPath();
                 ctx.moveTo(pos.x, pos.y);
+                ctx.moveTo(x, y);
             }
             
             function draw(e) {
@@ -1546,6 +1648,10 @@
                 e.preventDefault();
                 const pos = getPos(e);
                 ctx.lineTo(pos.x, pos.y);
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                ctx.lineTo(x, y);
                 ctx.stroke();
             }
             
@@ -1554,6 +1660,7 @@
                     isDrawing = false;
                     ctx.closePath();
                 }
+                isDrawing = false;
             }
             
             // Mouse events
@@ -1566,6 +1673,11 @@
             canvas.addEventListener('touchmove', draw, { passive: false });
             canvas.addEventListener('touchend', stopDrawing);
             canvas.addEventListener('touchcancel', stopDrawing);
+            // Set drawing style
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
         }
 
         function clearCanvas() {
@@ -1585,6 +1697,7 @@
                 ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer
             );
             return !pixelBuffer.some(color => color !== 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
         function saveSignature(type) {
@@ -1597,6 +1710,8 @@
             }
 
             const dataURL = canvas.toDataURL('image/png');
+            const dataURL = canvas.toDataURL();
+            
             signatures[type] = dataURL;
             
             // Update UI
@@ -1609,6 +1724,8 @@
                 `;
                 signatureArea.classList.add('signature-signed');
             }
+            signatureArea.innerHTML = `<img src="${dataURL}" class="signature-canvas" alt="Signature">`;
+            signatureArea.classList.add('signature-signed');
             
             // Update status badge
             const statusBadge = document.getElementById(type + 'StatusBadge');
@@ -1622,6 +1739,10 @@
             if (actionText) {
                 actionText.textContent = 'Ubah';
             }
+            // Update info
+            const now = new Date();
+            document.getElementById(type + 'Name').textContent = type === 'petugas' ? 'Petugas' : 'Ka. Unit/Ka. Ruangan';
+            document.getElementById(type + 'Date').textContent = now.toLocaleDateString('id-ID');
             
             // Show clear button
             const clearBtn = document.getElementById('clear' + (type === 'petugas' ? 'Petugas' : 'KaUnit') + 'Btn');
@@ -1631,6 +1752,7 @@
 
             // Update section summary counter
             updateSignatureBadges();
+            document.getElementById('clear' + (type === 'petugas' ? 'Petugas' : 'KaUnit') + 'Btn').style.display = 'inline-block';
             
             closeSignatureModal();
         }
@@ -1648,6 +1770,13 @@
                 `;
                 signatureArea.classList.remove('signature-signed');
             }
+            signatureArea.innerHTML = `
+                <div class="signature-placeholder">
+                    <i class="fas fa-pen-nib fa-2x text-white-50 mb-2"></i>
+                    <p class="text-white-50 mb-0">Klik untuk tanda tangan</p>
+                </div>
+            `;
+            signatureArea.classList.remove('signature-signed');
             
             // Update status badge
             const statusBadge = document.getElementById(type + 'StatusBadge');
@@ -1670,6 +1799,9 @@
 
             // Update section summary counter
             updateSignatureBadges();
+            document.getElementById(type + 'Name').textContent = '-';
+            document.getElementById(type + 'Date').textContent = '-';
+            document.getElementById('clear' + (type === 'petugas' ? 'Petugas' : 'KaUnit') + 'Btn').style.display = 'none';
         }
 
         function closeSignatureModal() {
@@ -1770,6 +1902,7 @@
             await initializePageData();
             initializeCamera();
             initializeFileUpload();
+            loadUserUnits();
             
             // Setup form submission handler
             const form = document.getElementById('detailKegiatanForm');
@@ -1780,6 +1913,7 @@
                 form.removeAttribute('action');
                 form.removeAttribute('method');
                 form.onsubmit = null;
+                console.log('🧹 Removed form action and method attributes');
                 
                 form.addEventListener('submit', async function(event) {
                     event.preventDefault();
@@ -1789,29 +1923,26 @@
                     console.log('📝 Form submission started...');
                     
                     const submitButton = form.querySelector('button[type="submit"]');
-                    const originalText = submitButton ? submitButton.innerHTML : '<i class="fas fa-paper-plane me-2"></i>Submit';
-                    let isSubmittedSuccessfully = false;
+                    const originalText = submitButton.innerHTML;
                     
                     try {
-                        // Disable button and show loading spinner
-                        if (submitButton) {
-                            submitButton.disabled = true;
-                            submitButton.innerHTML = '<i class="fas fa-circle-notch fa-spin me-2"></i>Menyimpan...';
-                        }
+                        // Disable button and show loading
+                        submitButton.disabled = true;
+                        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
                         
                         // Validate required fields before sending
-                        const jenisKegiatan = document.getElementById('jenisKegiatan')?.value?.trim();
-                        const nip = document.getElementById('nip')?.value?.trim();
-                        const unit = document.getElementById('unit')?.value?.trim();
-                        const tanggalDibuat = document.getElementById('tanggalDibuat')?.value?.trim();
+                        const jenisKegiatan = document.getElementById('jenisKegiatan').value;
+                        const nip = document.getElementById('nip').value;
+                        const unit = document.getElementById('unit').value;
+                        const tanggalDibuat = document.getElementById('tanggalDibuat').value;
                         
                         if (!jenisKegiatan || !nip || !unit || !tanggalDibuat) {
-                            throw new Error('Semua field wajib (Jenis Kegiatan, NIP, Unit, Tanggal) harus diisi');
+                            throw new Error('Semua field wajib harus diisi');
                         }
                         
                         const formData = new FormData();
                         
-                        // Add basic fields
+                        // Add basic fields with proper validation
                         formData.append('jenis_kegiatan', jenisKegiatan);
                         formData.append('nip', nip);
                         formData.append('unit', unit);
@@ -1830,6 +1961,7 @@
                                 String(date.getMinutes()).padStart(2, '0') + ':' +
                                 String(date.getSeconds()).padStart(2, '0');
                         } else {
+                            // Use current datetime if not provided
                             const now = new Date();
                             formattedDate = now.getFullYear() + '-' + 
                                 String(now.getMonth() + 1).padStart(2, '0') + '-' + 
@@ -1866,7 +1998,7 @@
                             formData.append('nama_pj', namaKaUnit);
                         }
                         
-                        // Add captured photos (optimized lightweight base64)
+                        // Add captured photos
                         if (capturedPhotos && capturedPhotos.length > 0) {
                             capturedPhotos.forEach((photo, index) => {
                                 if (photo.data) {
@@ -1875,7 +2007,7 @@
                             });
                         }
                         
-                        // Add uploaded files (compressed lightweight blobs)
+                        // Add uploaded files
                         if (uploadedFiles && uploadedFiles.length > 0) {
                             uploadedFiles.forEach((fileData, index) => {
                                 if (fileData.file) {
@@ -1887,9 +2019,15 @@
                         // Set status
                         formData.append('status', 'submitted');
                         
+                        console.log('📤 Sending data to API...');
+                        console.log('📋 Form data entries:');
+                        for (let [key, value] of formData.entries()) {
+                            console.log(`  ${key}:`, typeof value === 'string' ? value.substring(0, 100) : value);
+                        }
+                        
                         // Check token
                         if (!token) {
-                            throw new Error('Token otentikasi tidak ditemukan. Silakan login kembali.');
+                            throw new Error('Token tidak ditemukan. Silakan login ulang.');
                         }
                         
                         const response = await fetch('/api/detail-jenis-kegiatan', {
@@ -1902,21 +2040,21 @@
                             body: formData
                         });
                         
+                        console.log('📥 Response status:', response.status);
+                        
                         const result = await response.json();
+                        console.log('📥 Response data:', result);
                         
                         if (response.ok && result.success) {
-                            isSubmittedSuccessfully = true;
-                            if (submitButton) {
-                                submitButton.innerHTML = '<i class="fas fa-check-circle me-2"></i>Berhasil Disimpan!';
-                                submitButton.classList.remove('btn-primary');
-                                submitButton.classList.add('btn-success');
-                            }
-                            showNotification('Data kegiatan berhasil disimpan! Mengalihkan ke dashboard...', 'success');
+                            showNotification('Data berhasil disimpan!', 'success');
                             updateStatusBadge('submitted');
                             
+                            // Optional: redirect after success
                             setTimeout(() => {
-                                window.location.href = '/user-dashboard';
-                            }, 700);
+                                if (confirm('Data berhasil disimpan! Kembali ke dashboard?')) {
+                                    window.location.href = '/user-dashboard';
+                                }
+                            }, 2000);
                         } else {
                             console.error('❌ API Error:', result);
                             
@@ -1925,6 +2063,7 @@
                                 errorMessage = result.message;
                             }
                             if (result.errors) {
+                                console.error('Validation errors:', result.errors);
                                 const errorDetails = Object.entries(result.errors)
                                     .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
                                     .join('\n');
@@ -1936,18 +2075,17 @@
                         
                     } catch (error) {
                         console.error('❌ Submit Error:', error);
-                        showNotification(error.message || 'Terjadi kesalahan saat menyimpan', 'error');
+                        showNotification('Error: ' + error.message, 'error');
                     } finally {
-                        if (!isSubmittedSuccessfully && submitButton) {
-                            submitButton.disabled = false;
-                            submitButton.innerHTML = originalText;
-                        }
+                        // Reset button
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = originalText;
                     }
                     
                     return false;
                 }, true);
                 
-                console.log('✅ Event listener successfully attached');
+                console.log('✅ Event listener successfully attached with stronger prevention');
             } else {
                 console.error('❌ Form with ID "detailKegiatanForm" not found!');
             }
@@ -1997,6 +2135,7 @@
                 }
 
                 // Set default datetime to now (Single Date System)
+                // Set default datetime to now
                 if (!idParam) {
                     const now = new Date();
                     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -2118,7 +2257,7 @@
                 tempCapturedDataUrl = null;
             }
 
-            // Shutter Button Click with automatic dimension scaling & compression
+            // Shutter Button Click
             if (captureBtn) {
                 captureBtn.addEventListener('click', () => {
                     if (!cameraStarted || !video.videoWidth) return;
@@ -2130,23 +2269,8 @@
                     }
 
                     const context = canvas.getContext('2d');
-                    
-                    // Downscale to max dimension 1280px to keep payload ultra-lightweight (<150KB)
-                    let targetWidth = video.videoWidth;
-                    let targetHeight = video.videoHeight;
-                    const maxDim = 1280;
-                    if (targetWidth > maxDim || targetHeight > maxDim) {
-                        if (targetWidth > targetHeight) {
-                            targetHeight = Math.round((targetHeight * maxDim) / targetWidth);
-                            targetWidth = maxDim;
-                        } else {
-                            targetWidth = Math.round((targetWidth * maxDim) / targetHeight);
-                            targetHeight = maxDim;
-                        }
-                    }
-
-                    canvas.width = targetWidth;
-                    canvas.height = targetHeight;
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
 
                     // Mirror front camera frame horizontally
                     if (currentFacingMode === 'user') {
@@ -2155,8 +2279,7 @@
                     }
                     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                    // Quality 0.78 delivers crisp logbook photos while cutting size by ~90%
-                    tempCapturedDataUrl = canvas.toDataURL('image/jpeg', 0.78);
+                    tempCapturedDataUrl = canvas.toDataURL('image/jpeg', 0.92);
 
                     preview.src = tempCapturedDataUrl;
                     preview.style.display = 'block';
@@ -2185,7 +2308,7 @@
                     capturedPhotos.push(photoData);
                     tempCapturedDataUrl = null;
                     refreshImageDisplay();
-                    showNotification('Foto kamera berhasil ditambahkan!', 'success');
+                    showNotification('Foto berhasil ditambahkan ke lampiran dokumentasi!', 'success');
                     stopCamera();
                 });
             }
@@ -2222,98 +2345,39 @@
             if (closeBtn) closeBtn.addEventListener('click', stopCamera);
         }
 
-        // Lightweight image compression helper (max 1280px dimension, JPEG quality 0.78)
-        async function compressImageFile(file, maxDimension = 1280, quality = 0.78) {
-            return new Promise((resolve) => {
-                if (!file.type.startsWith('image/')) {
-                    resolve({ file: file, dataUrl: null });
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        let width = img.width;
-                        let height = img.height;
-
-                        if (width > maxDimension || height > maxDimension) {
-                            if (width > height) {
-                                height = Math.round((height * maxDimension) / width);
-                                width = maxDimension;
-                            } else {
-                                width = Math.round((width * maxDimension) / height);
-                                height = maxDimension;
-                            }
-                        }
-
-                        const offCanvas = document.createElement('canvas');
-                        offCanvas.width = width;
-                        offCanvas.height = height;
-                        const ctx = offCanvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-
-                        const compressedDataUrl = offCanvas.toDataURL('image/jpeg', quality);
-
-                        offCanvas.toBlob((blob) => {
-                            if (!blob) {
-                                resolve({ file: file, dataUrl: compressedDataUrl });
-                                return;
-                            }
-                            const cleanName = (file.name || 'foto').replace(/\.[^/.]+$/, "") + ".jpg";
-                            const compressedFile = new File([blob], cleanName, {
-                                type: 'image/jpeg',
-                                lastModified: Date.now()
-                            });
-                            resolve({ file: compressedFile, dataUrl: compressedDataUrl });
-                        }, 'image/jpeg', quality);
-                    };
-                    img.onerror = () => resolve({ file: file, dataUrl: e.target.result });
-                    img.src = e.target.result;
-                };
-                reader.onerror = () => resolve({ file: file, dataUrl: null });
-                reader.readAsDataURL(file);
-            });
-        }
-
-        // Fast & lightweight file upload with client-side compression
+        // File upload functionality
         function initializeFileUpload() {
             const fileInput = document.getElementById('fileInput');
 
             if (fileInput) {
-                fileInput.addEventListener('change', async (event) => {
-                    const files = Array.from(event.target.files || []);
+                fileInput.addEventListener('change', (event) => {
+                    const files = Array.from(event.target.files);
                     if (!files || files.length === 0) return;
                     
-                    showNotification('Mengompresi & menyiapkan foto...', 'info');
-                    
                     let addedCount = 0;
-                    for (const file of files) {
-                        try {
-                            if (!file.type.startsWith('image/')) {
-                                showNotification(`File ${file.name} bukan format gambar.`, 'error');
-                                continue;
-                            }
-                            
-                            const compressed = await compressImageFile(file, 1280, 0.78);
-                            const imageData = {
-                                file: compressed.file,
-                                data: compressed.dataUrl,
-                                name: compressed.file.name,
-                                type: 'upload',
-                                timestamp: new Date().toISOString()
+                    files.forEach(file => {
+                        if (file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024) {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                const imageData = {
+                                    file: file,
+                                    data: e.target.result,
+                                    name: file.name,
+                                    type: 'upload',
+                                    timestamp: new Date().toISOString()
+                                };
+                                uploadedFiles.push(imageData);
+                                refreshImageDisplay();
                             };
-                            uploadedFiles.push(imageData);
+                            reader.readAsDataURL(file);
                             addedCount++;
-                        } catch (err) {
-                            console.error('Gagal mengompresi gambar:', err);
-                            showNotification(`Gagal memproses file ${file.name}`, 'error');
+                        } else {
+                            showNotification(`File ${file.name} melebihi 5MB atau bukan format gambar valid.`, 'error');
                         }
-                    }
+                    });
 
                     if (addedCount > 0) {
-                        refreshImageDisplay();
-                        showNotification(`${addedCount} foto berhasil dioptimasi & ditambahkan`, 'success');
+                        showNotification(`${addedCount} foto berhasil ditambahkan dari galeri`, 'success');
                     }
                     fileInput.value = '';
                 });
@@ -2426,12 +2490,8 @@
                 stream.getTracks().forEach(track => track.stop());
             }
             
-            // Redirect to user dashboard
-            if (window.history.length > 1) {
-                window.history.back();
-            } else {
-                window.location.href = '/user-dashboard';
-            }
+            // Redirect to main dashboard
+            window.location.href = '/dashboard';
         }
 
         async function saveDraft() {
@@ -2459,29 +2519,91 @@
             }
 
             // Add captured photos with validation
+            console.log('Captured photos count:', capturedPhotos.length);
             capturedPhotos.forEach((photo, index) => {
                 if (photo.data) {
                     formData.append(`captured_photos[${index}]`, photo.data);
                 }
+                console.log(`Adding captured photo ${index}:`, {
+                    hasData: !!photo.data,
+                    dataLength: photo.data ? photo.data.length : 0,
+                    timestamp: photo.timestamp
+                });
+                formData.append(`captured_photos[${index}]`, photo.data);
             });
             
             // Add uploaded files with validation
+            console.log('Uploaded files count:', uploadedFiles.length);
             uploadedFiles.forEach((fileData, index) => {
                 if (fileData.file) {
                     formData.append(`uploaded_files[${index}]`, fileData.file);
                 }
+                console.log(`Adding uploaded file ${index}:`, {
+                    hasFile: !!fileData.file,
+                    fileName: fileData.file ? fileData.file.name : 'unknown',
+                    fileSize: fileData.file ? fileData.file.size : 0
+                });
+                formData.append(`uploaded_files[${index}]`, fileData.file);
             });
             
             try {
                 const token = localStorage.getItem('token') || sessionStorage.getItem('token');
                 
                 if (!token) {
-                    showNotification('Sesi berakhir. Silakan login kembali.', 'error');
-                    setTimeout(() => window.location.href = '/login', 1200);
+                    alert('Session expired. Please login again.');
+                    window.location.href = '/login';
                     return;
                 }
                 
-                showNotification('Menyimpan draft kegiatan...', 'info');
+                console.log('Sending request to save draft...');
+                const response = await fetch('/api/detail-jenis-kegiatan', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                });
+                
+                const result = await response.json();
+                console.log('Server response:', result);
+                
+                if (response.ok && result.success) {
+                    alert('Draft berhasil disimpan!');
+                    updateStatusBadge('draft');
+                } else {
+                    console.error('Save failed:', result);
+                    alert('Gagal menyimpan draft: ' + (result.message || 'Terjadi kesalahan'));
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+                alert('Terjadi kesalahan jaringan: ' + error.message);
+            }
+        }
+
+        async function saveDraft() {
+            const formData = new FormData(document.getElementById('detailKegiatanForm'));
+            formData.set('status', 'draft');
+            
+            // Add captured photos
+            capturedPhotos.forEach((photo, index) => {
+                formData.append(`captured_photos[${index}]`, photo.data);
+            });
+            
+            // Add uploaded files
+            uploadedFiles.forEach((fileData, index) => {
+                formData.append(`uploaded_files[${index}]`, fileData.file);
+            });
+            
+            try {
+                const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+                
+                if (!token) {
+                    alert('Session expired. Please login again.');
+                    window.location.href = '/login';
+                    return;
+                }
+                
                 const response = await fetch('/api/detail-jenis-kegiatan', {
                     method: 'POST',
                     headers: {
@@ -2494,15 +2616,14 @@
                 const result = await response.json();
                 
                 if (response.ok && result.success) {
-                    showNotification('Draft berhasil disimpan!', 'success');
+                    alert('Draft berhasil disimpan!');
                     updateStatusBadge('draft');
                 } else {
-                    console.error('Save failed:', result);
-                    showNotification('Gagal menyimpan draft: ' + (result.message || 'Terjadi kesalahan'), 'error');
+                    alert('Gagal menyimpan draft: ' + (result.message || 'Terjadi kesalahan'));
                 }
             } catch (error) {
-                console.error('Network error:', error);
-                showNotification('Terjadi kesalahan jaringan: ' + error.message, 'error');
+                console.error('Error saving draft:', error);
+                alert('Terjadi kesalahan saat menyimpan draft: ' + error.message);
             }
         }
 
