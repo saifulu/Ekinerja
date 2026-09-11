@@ -401,6 +401,16 @@
                     </div>
                 </button>
                 
+                <button type="button" onclick="showMasterKegiatan()" data-section="master-kegiatan" class="nav-item w-full text-left flex items-center space-x-3 sm:space-x-4 text-white hover:bg-white hover:bg-opacity-20 rounded-xl p-3 sm:p-4 transition-all duration-300 group">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-emerald-400 to-teal-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fas fa-clipboard-list text-white text-sm sm:text-base"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <span class="font-semibold text-sm sm:text-base">Master Kegiatan</span>
+                        <p class="text-xs text-gray-300 truncate">Kelola Jenis Kegiatan</p>
+                    </div>
+                </button>
+                
                 <button type="button" onclick="showProfile()" data-section="profile" class="nav-item w-full text-left flex items-center space-x-3 sm:space-x-4 text-white hover:bg-white hover:bg-opacity-20 rounded-xl p-3 sm:p-4 transition-all duration-300 group">
                     <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-green-400 to-green-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                         <i class="fas fa-user-cog text-white text-sm sm:text-base"></i>
@@ -455,6 +465,9 @@
                             <button id="openSidebar" class="lg:hidden p-2 sm:p-3 hover:bg-white hover:bg-opacity-20 rounded-xl transition-all">
                                 <i class="fas fa-bars text-white text-lg sm:text-xl"></i>
                             </button>
+                            <button id="mobileNavBackBtn" type="button" onclick="showDashboard()" class="hidden lg:hidden p-2 sm:p-3 hover:bg-white hover:bg-opacity-20 rounded-xl transition-all text-white items-center justify-center" title="Kembali ke Dashboard">
+                                <i class="fas fa-arrow-left text-white text-lg sm:text-xl"></i>
+                            </button>
                             <div class="min-w-0 flex-1">
                                 <h1 class="text-white text-lg sm:text-2xl font-bold truncate">e-Kinerja Dashboard</h1>
                                 <p class="text-gray-200 text-xs sm:text-sm hidden sm:block">Personal Workspace</p>
@@ -501,12 +514,12 @@
                         </div>
 
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-                            <button type="button" onclick="scrollToActivities()" class="quick-menu-card group min-h-36 sm:min-h-40 rounded-2xl p-4 sm:p-5 text-left transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-80">
+                            <button type="button" onclick="showMasterKegiatan()" class="quick-menu-card group min-h-36 sm:min-h-40 rounded-2xl p-4 sm:p-5 text-left transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-80">
                                 <span class="w-12 h-12 sm:w-14 sm:h-14 gradient-green rounded-2xl flex items-center justify-center shadow-lg mb-4 transition-transform duration-300 group-hover:scale-110">
                                     <i class="fas fa-clipboard-check text-white text-xl sm:text-2xl"></i>
                                 </span>
-                                <span class="block text-white font-bold text-sm sm:text-base">Kegiatan Saya</span>
-                                <span class="block text-gray-300 text-xs sm:text-sm mt-1 leading-snug">Lihat dan isi detail kegiatan</span>
+                                <span class="block text-white font-bold text-sm sm:text-base">Master Kegiatan</span>
+                                <span class="block text-gray-300 text-xs sm:text-sm mt-1 leading-snug">Kelola kegiatan & isi logbook</span>
                             </button>
 
                             <button type="button" onclick="showProfile()" class="quick-menu-card group min-h-36 sm:min-h-40 rounded-2xl p-4 sm:p-5 text-left transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-80">
@@ -527,22 +540,85 @@
                         </div>
                     </section>
 
+                    <!-- Overview Summary Card -->
+                    <div class="morphism-card rounded-2xl p-4 sm:p-6 lg:p-8">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div class="flex items-center space-x-3 sm:space-x-4">
+                                <div class="w-12 h-12 sm:w-14 sm:h-14 gradient-emerald rounded-2xl flex items-center justify-center neon-glow flex-shrink-0">
+                                    <i class="fas fa-clipboard-list text-white text-xl sm:text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-base sm:text-lg lg:text-xl font-bold text-white">Ringkasan Master Kegiatan</h3>
+                                    <p class="text-gray-300 text-xs sm:text-sm">Kelola master kegiatan dan isi logbook kinerja Anda melalui menu Master Kegiatan.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2.5">
+                                <button type="button" onclick="showMasterKegiatan()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold rounded-xl text-sm transition-all shadow hover:shadow-emerald-500/25">
+                                    <i class="fas fa-arrow-right"></i>
+                                    <span>Buka Master Kegiatan</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Master Kegiatan Content -->
+                <div id="masterKegiatanContent" class="content-section hidden fade-in">
+                    <!-- Back Button -->
+                    <div class="mb-3 sm:mb-4">
+                        <button type="button" onclick="showDashboard()" class="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 glass rounded-xl text-white font-medium hover:bg-white hover:bg-opacity-20 transition-all text-sm group" title="Kembali ke Dashboard">
+                            <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+                            <span>Kembali ke Dashboard</span>
+                        </button>
+                    </div>
+
                     <!-- Jenis Kegiatan Section -->
                     <div id="activitiesSection" tabindex="-1" class="morphism-card rounded-2xl p-3 sm:p-4 lg:p-6 xl:p-8 mb-4 sm:mb-6 lg:mb-8 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-70">
-                        <div class="flex items-center space-x-4 mb-6">
-                            <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 gradient-green rounded-2xl flex items-center justify-center neon-glow">
-                                <i class="fas fa-clipboard-list text-white text-lg sm:text-xl lg:text-2xl"></i>
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                            <div class="flex items-center space-x-3 sm:space-x-4">
+                                <button type="button" onclick="showDashboard()" class="p-2.5 sm:p-3 glass rounded-xl hover:bg-white hover:bg-opacity-20 transition-all text-white flex items-center justify-center flex-shrink-0" title="Kembali ke Dashboard">
+                                    <i class="fas fa-arrow-left text-base sm:text-xl"></i>
+                                </button>
+                                <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 gradient-green rounded-2xl flex items-center justify-center neon-glow flex-shrink-0">
+                                    <i class="fas fa-clipboard-list text-white text-lg sm:text-xl lg:text-2xl"></i>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <h3 class="text-lg sm:text-xl lg:text-2xl font-bold text-white">Master Jenis Kegiatan</h3>
+                                        <span id="activityCountBadge" class="hidden text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold"></span>
+                                    </div>
+                                    <p class="text-gray-300 text-xs sm:text-sm">Kelola master kegiatan kinerja Anda & isi logbook</p>
+                                </div>
                             </div>
-                            <div>
-                                <h3 class="text-lg sm:text-xl lg:text-2xl font-bold text-white">Jenis Kegiatan</h3>
-                                <p class="text-gray-300 text-sm sm:text-base">Daftar kegiatan berdasarkan NIP Anda</p>
+                            <div class="flex items-center gap-2.5 self-start sm:self-auto">
+                                <button type="button" onclick="openCreateJenisKegiatanModal()" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Tambah Kegiatan</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Search & Filter Bar -->
+                        <div class="mb-4">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                    <i class="fas fa-search text-sm"></i>
+                                </div>
+                                <input type="text" id="searchKegiatanInput" oninput="filterJenisKegiatan()" placeholder="Cari jenis kegiatan..." class="w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                             </div>
                         </div>
                         
                         <div id="jenisKegiatanContainer">
-                            <div class="glass rounded-xl p-4 sm:p-6">
+                            <div class="glass rounded-xl p-3 sm:p-5">
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-left">
+                                        <thead>
+                                            <tr class="border-b border-white border-opacity-20 text-gray-300 text-xs sm:text-sm uppercase tracking-wider font-semibold">
+                                                <th class="py-3 px-3 w-12 text-center">No</th>
+                                                <th class="py-3 px-3">Nama Jenis Kegiatan</th>
+                                                <th class="py-3 px-3 w-48 sm:w-56 text-center">Aksi</th>
+                                            </tr>
+                                        </thead>
                                         <tbody id="jenisKegiatanTableBody">
                                             <!-- Data will be loaded here -->
                                         </tbody>
@@ -565,27 +641,38 @@
                 </div>
 
                 <!-- Modal Form Jenis Kegiatan -->
-                <div id="jenisKegiatanModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-                    <div class="glass rounded-xl p-6 w-full max-w-md mx-auto">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-xl font-bold text-white">Detail Jenis Kegiatan</h3>
-                            <button id="closeModal" class="text-gray-400 hover:text-white transition-colors">
-                                <i class="fas fa-times text-xl"></i>
+                <div id="jenisKegiatanModal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+                    <div class="glass morphism-card rounded-2xl p-5 sm:p-6 w-full max-w-lg mx-auto shadow-2xl border border-white border-opacity-20">
+                        <div class="flex justify-between items-center mb-5 border-b border-white border-opacity-10 pb-4">
+                            <div class="flex items-center space-x-3">
+                                <div id="modalIconContainer" class="w-10 h-10 gradient-green rounded-xl flex items-center justify-center">
+                                    <i id="modalIcon" class="fas fa-plus text-white"></i>
+                                </div>
+                                <div>
+                                    <h3 id="modalTitle" class="text-lg sm:text-xl font-bold text-white">Tambah Jenis Kegiatan</h3>
+                                    <p id="modalSubtitle" class="text-xs text-gray-300">Tambahkan kegiatan baru untuk master kinerja Anda</p>
+                                </div>
+                            </div>
+                            <button type="button" id="closeModal" class="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white hover:bg-opacity-10 transition-colors">
+                                <i class="fas fa-times text-lg"></i>
                             </button>
                         </div>
                         
                         <form id="jenisKegiatanForm" class="space-y-4">
+                            <input type="hidden" id="jenisKegiatanId" value="">
                             <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2">Jenis Kegiatan</label>
-                                <input type="text" id="jenisKegiatanInput" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Masukkan jenis kegiatan">
+                                <label for="jenisKegiatanInput" class="block text-sm font-medium text-gray-200 mb-2">Nama Jenis Kegiatan <span class="text-red-400">*</span></label>
+                                <textarea id="jenisKegiatanInput" rows="3" required class="w-full px-4 py-3 bg-slate-900 border border-white border-opacity-20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm resize-none" placeholder="Masukkan nama jenis kegiatan..."></textarea>
+                                <p class="text-xs text-gray-400 mt-1">Nama kegiatan yang akan muncul pada daftar logbook kinerja.</p>
                             </div>
                             
-                            <div class="flex space-x-3 pt-4">
-                                <button type="submit" class="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
-                                    <i class="fas fa-save mr-2"></i>Simpan
+                            <div class="flex space-x-3 pt-2">
+                                <button type="button" id="cancelModal" class="flex-1 bg-gray-700/80 hover:bg-gray-600 text-white py-3 px-4 rounded-xl font-medium transition-all duration-200">
+                                    Batal
                                 </button>
-                                <button type="button" id="cancelModal" class="flex-1 bg-gray-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-700 transition-all duration-300">
-                                    <i class="fas fa-times mr-2"></i>Batal
+                                <button type="submit" id="saveJenisKegiatanBtn" class="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white py-3 px-4 rounded-xl font-semibold shadow-lg hover:shadow-emerald-500/30 transition-all duration-200 flex items-center justify-center space-x-2">
+                                    <i class="fas fa-save"></i>
+                                    <span id="saveBtnText">Simpan</span>
                                 </button>
                             </div>
                         </form>
@@ -594,14 +681,25 @@
 
                 <!-- Profile Content -->
                 <div id="profileContent" class="content-section hidden fade-in">
-                    <div class="morphism-card rounded-2xl p-8 hover-scale">
-                        <div class="flex items-center space-x-4 mb-8">
-                            <div class="w-16 h-16 gradient-blue rounded-2xl flex items-center justify-center neon-glow">
-                                <i class="fas fa-user-cog text-white text-2xl"></i>
+                    <!-- Back Button on Mobile / Sub-page -->
+                    <div class="mb-3 sm:mb-4">
+                        <button type="button" onclick="showDashboard()" class="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 glass rounded-xl text-white font-medium hover:bg-white hover:bg-opacity-20 transition-all text-sm group" title="Kembali ke Dashboard">
+                            <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+                            <span>Kembali ke Dashboard</span>
+                        </button>
+                    </div>
+
+                    <div class="morphism-card rounded-2xl p-4 sm:p-6 lg:p-8 hover-scale">
+                        <div class="flex items-center space-x-3 sm:space-x-4 mb-6 sm:mb-8">
+                            <button type="button" onclick="showDashboard()" class="p-2.5 sm:p-3 glass rounded-xl hover:bg-white hover:bg-opacity-20 transition-all text-white flex items-center justify-center flex-shrink-0" title="Kembali ke Dashboard">
+                                <i class="fas fa-arrow-left text-base sm:text-xl"></i>
+                            </button>
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 gradient-blue rounded-2xl flex items-center justify-center neon-glow flex-shrink-0">
+                                <i class="fas fa-user-cog text-white text-xl sm:text-2xl"></i>
                             </div>
-                            <div>
-                                <h2 class="text-3xl font-bold text-white">Profil Saya</h2>
-                                <p class="text-gray-300">Kelola informasi personal Anda</p>
+                            <div class="min-w-0">
+                                <h2 class="text-xl sm:text-3xl font-bold text-white truncate">Profil Saya</h2>
+                                <p class="text-xs sm:text-sm text-gray-300 truncate">Kelola informasi personal Anda</p>
                             </div>
                         </div>
                         
@@ -619,19 +717,30 @@
 
                 <!-- Tasks Content -->
                 <div id="tasksContent" class="content-section hidden fade-in">
-                    <div class="morphism-card rounded-2xl p-8 hover-scale">
-                        <div class="flex items-center justify-between mb-8">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-16 h-16 gradient-purple rounded-2xl flex items-center justify-center neon-glow">
-                                    <i class="fas fa-tasks text-white text-2xl"></i>
+                    <!-- Back Button on Mobile / Sub-page -->
+                    <div class="mb-3 sm:mb-4">
+                        <button type="button" onclick="showDashboard()" class="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 glass rounded-xl text-white font-medium hover:bg-white hover:bg-opacity-20 transition-all text-sm group" title="Kembali ke Dashboard">
+                            <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+                            <span>Kembali ke Dashboard</span>
+                        </button>
+                    </div>
+
+                    <div class="morphism-card rounded-2xl p-4 sm:p-6 lg:p-8 hover-scale">
+                        <div class="flex items-center justify-between mb-6 sm:mb-8">
+                            <div class="flex items-center space-x-3 sm:space-x-4 min-w-0">
+                                <button type="button" onclick="showDashboard()" class="p-2.5 sm:p-3 glass rounded-xl hover:bg-white hover:bg-opacity-20 transition-all text-white flex items-center justify-center flex-shrink-0" title="Kembali ke Dashboard">
+                                    <i class="fas fa-arrow-left text-base sm:text-xl"></i>
+                                </button>
+                                <div class="w-12 h-12 sm:w-16 sm:h-16 gradient-purple rounded-2xl flex items-center justify-center neon-glow flex-shrink-0">
+                                    <i class="fas fa-tasks text-white text-xl sm:text-2xl"></i>
                                 </div>
-                                <div>
-                                    <h2 class="text-3xl font-bold text-white">Tugas Saya</h2>
-                                    <p class="text-gray-300">Kelola dan pantau progress tugas</p>
+                                <div class="min-w-0">
+                                    <h2 class="text-xl sm:text-3xl font-bold text-white truncate">Tugas Saya</h2>
+                                    <p class="text-xs sm:text-sm text-gray-300 truncate">Kelola dan pantau progress tugas</p>
                                 </div>
                             </div>
-                            <button class="px-6 py-3 gradient-purple rounded-xl text-white font-semibold hover:scale-105 transition-all duration-300 neon-glow">
-                                <i class="fas fa-plus mr-2"></i>Tugas Baru
+                            <button class="px-4 py-2 sm:px-6 sm:py-3 gradient-purple rounded-xl text-white font-semibold hover:scale-105 transition-all duration-300 neon-glow text-sm sm:text-base flex-shrink-0">
+                                <i class="fas fa-plus mr-1 sm:mr-2"></i><span class="hidden sm:inline">Tugas Baru</span><span class="sm:hidden">Tambah</span>
                             </button>
                         </div>
                         
@@ -687,14 +796,25 @@
                 
                 <!-- Reports Content -->
                 <div id="reportsContent" class="content-section hidden fade-in">
-                    <div class="morphism-card rounded-2xl p-8 hover-scale">
-                        <div class="flex items-center space-x-4 mb-8">
-                            <div class="w-16 h-16 gradient-orange rounded-2xl flex items-center justify-center neon-glow">
-                                <i class="fas fa-chart-bar text-white text-2xl"></i>
+                    <!-- Back Button on Mobile / Sub-page -->
+                    <div class="mb-3 sm:mb-4">
+                        <button type="button" onclick="showDashboard()" class="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 glass rounded-xl text-white font-medium hover:bg-white hover:bg-opacity-20 transition-all text-sm group" title="Kembali ke Dashboard">
+                            <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+                            <span>Kembali ke Dashboard</span>
+                        </button>
+                    </div>
+
+                    <div class="morphism-card rounded-2xl p-4 sm:p-6 lg:p-8 hover-scale">
+                        <div class="flex items-center space-x-3 sm:space-x-4 mb-6 sm:mb-8">
+                            <button type="button" onclick="showDashboard()" class="p-2.5 sm:p-3 glass rounded-xl hover:bg-white hover:bg-opacity-20 transition-all text-white flex items-center justify-center flex-shrink-0" title="Kembali ke Dashboard">
+                                <i class="fas fa-arrow-left text-base sm:text-xl"></i>
+                            </button>
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 gradient-orange rounded-2xl flex items-center justify-center neon-glow flex-shrink-0">
+                                <i class="fas fa-chart-bar text-white text-xl sm:text-2xl"></i>
                             </div>
-                            <div>
-                                <h2 class="text-3xl font-bold text-white">Laporan Kinerja</h2>
-                                <p class="text-gray-300">Analisis dan statistik performa Anda</p>
+                            <div class="min-w-0">
+                                <h2 class="text-xl sm:text-3xl font-bold text-white truncate">Laporan Kinerja</h2>
+                                <p class="text-xs sm:text-sm text-gray-300 truncate">Analisis dan statistik performa Anda</p>
                             </div>
                         </div>
                         
@@ -882,6 +1002,20 @@
             window.location.href = `/laporan?nip=${user.nip}`;
         }
         
+        // Cached master jenis kegiatan data
+        let cachedJenisKegiatan = [];
+
+        // Helper function to escape HTML
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         // Function to load jenis kegiatan data
         async function loadJenisKegiatan() {
             const token = localStorage.getItem('token');
@@ -906,19 +1040,13 @@
             
             const loadingElement = document.getElementById('jenisKegiatanLoading');
             const containerElement = document.getElementById('jenisKegiatanContainer');
-            const tableBody = document.getElementById('jenisKegiatanTableBody');
             const noDataMessage = document.getElementById('noDataMessage');
-            
-            // Validate elements exist
-            if (!loadingElement || !containerElement || !tableBody || !noDataMessage) {
-                console.error('Required DOM elements not found');
-                return;
-            }
+            const countBadge = document.getElementById('activityCountBadge');
             
             // Show loading
-            loadingElement.classList.remove('hidden');
-            containerElement.classList.add('hidden');
-            noDataMessage.classList.add('hidden');
+            loadingElement?.classList.remove('hidden');
+            containerElement?.classList.add('hidden');
+            noDataMessage?.classList.add('hidden');
             
             try {
                 console.log('Fetching data from /api/jenis-kegiatan...');
@@ -931,9 +1059,6 @@
                     }
                 });
                 
-                console.log('API Response status:', response.status);
-                console.log('API Response headers:', response.headers);
-                
                 if (!response.ok) {
                     const errorText = await response.text();
                     console.error('API Error Response:', errorText);
@@ -941,105 +1066,191 @@
                 }
                 
                 const result = await response.json();
-                console.log('API Response result:', result);
                 
-                // Handle different response formats
                 let data = result;
                 if (result.data) {
                     data = result.data;
                 } else if (Array.isArray(result)) {
                     data = result;
                 } else {
-                    console.error('Unexpected response format:', result);
                     throw new Error('Format response tidak valid');
                 }
                 
-                console.log('Processing data:', data);
-                
                 if (!Array.isArray(data)) {
-                    console.error('Data is not an array:', data);
                     throw new Error('Data yang diterima bukan array');
                 }
                 
-                // Filter data by user's NIP (convert both to string for comparison)
-                const userJenisKegiatan = data.filter(item => {
+                // Filter data by user's NIP
+                const userNip = String(user.nip || '').trim();
+                cachedJenisKegiatan = data.filter(item => {
                     const itemNip = String(item.nip || '').trim();
-                    const userNip = String(user.nip || '').trim();
-                    console.log(`Comparing: "${itemNip}" === "${userNip}"`);
                     return itemNip === userNip;
                 });
                 
-                console.log('Filtered data for user:', userJenisKegiatan);
-                console.log('Total items found:', userJenisKegiatan.length);
-                
-                // Clear table body
-                tableBody.innerHTML = '';
-                
-                if (userJenisKegiatan.length === 0) {
-                    console.log('No data found for user NIP:', user.nip);
-                    showNoDataMessage('Tidak ada data jenis kegiatan untuk NIP Anda');
-                } else {
-                    console.log('Displaying', userJenisKegiatan.length, 'items');
-                    noDataMessage.classList.add('hidden');
-                    
-                    userJenisKegiatan.forEach((item, index) => {
-                        console.log(`Rendering item ${index + 1}:`, item);
-                        
-                        const row = document.createElement('tr');
-                        row.className = 'border-b border-white border-opacity-10 hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-600 hover:bg-opacity-80 transition-all duration-300 cursor-pointer transform hover:scale-[1.02]';
-                        
-                        row.innerHTML = `
-                            <td class="py-3 px-2 text-white font-medium text-sm sm:text-base hover:text-white transition-colors duration-300">${item.jenis_kegiatan || '-'}</td>
-                        `;
-                        
-                        // Add click event listener to row for page navigation
-                        row.addEventListener('click', function() {
-                            console.log('Clicked item data:', item);
-                            console.log('Jenis Kegiatan:', item.jenis_kegiatan);
-                            console.log('Golongan:', item.golongan);
-                            console.log('NIP:', item.nip);
-                            
-                            // Pastikan semua field ada
-                            const dataToSend = {
-                                jenis_kegiatan: item.jenis_kegiatan || '',
-                                golongan: item.golongan || '',
-                                nip: item.nip || ''
-                            };
-                            
-                            // Navigate to detail page with jenis kegiatan data
-                            const jenisKegiatanData = encodeURIComponent(JSON.stringify(dataToSend));
-                            console.log('Encoded data:', jenisKegiatanData);
-                            console.log('Full URL:', `/jenis-kegiatan/detail?data=${jenisKegiatanData}`);
-                            window.location.href = `/jenis-kegiatan/detail?data=${jenisKegiatanData}`;
-                        });
-                        
-                        tableBody.appendChild(row);
-                    });
+                console.log('Filtered master kegiatan:', cachedJenisKegiatan);
+
+                // Update badge
+                if (countBadge) {
+                    countBadge.textContent = `${cachedJenisKegiatan.length} Kegiatan`;
+                    countBadge.classList.remove('hidden');
                 }
+
+                // Render table
+                const searchInput = document.getElementById('searchKegiatanInput');
+                renderJenisKegiatanTable(searchInput ? searchInput.value : '');
                 
-                // Show container
-                containerElement.classList.remove('hidden');
-                
+                containerElement?.classList.remove('hidden');
             } catch (error) {
                 console.error('Error loading jenis kegiatan:', error);
                 showNoDataMessage(`Error memuat data: ${error.message}`);
-                containerElement.classList.remove('hidden');
+                containerElement?.classList.remove('hidden');
             } finally {
-                // Hide loading
-                loadingElement.classList.add('hidden');
+                loadingElement?.classList.add('hidden');
             }
         }
-        
-        // Function to open modal
-        function openJenisKegiatanModal(data) {
-            const modal = document.getElementById('jenisKegiatanModal');
-            const input = document.getElementById('jenisKegiatanInput');
-            
-            if (modal && input) {
-                input.value = data.jenis_kegiatan || '';
-                modal.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
+
+        // Function to filter kegiatan based on search input
+        function filterJenisKegiatan() {
+            const searchInput = document.getElementById('searchKegiatanInput');
+            const query = searchInput ? searchInput.value : '';
+            renderJenisKegiatanTable(query);
+        }
+
+        // Function to render table rows
+        function renderJenisKegiatanTable(query = '') {
+            const tableBody = document.getElementById('jenisKegiatanTableBody');
+            const noDataMessage = document.getElementById('noDataMessage');
+            if (!tableBody) return;
+
+            tableBody.innerHTML = '';
+
+            const trimmedQuery = query.trim().toLowerCase();
+            const filteredData = trimmedQuery 
+                ? cachedJenisKegiatan.filter(item => (item.jenis_kegiatan || '').toLowerCase().includes(trimmedQuery))
+                : cachedJenisKegiatan;
+
+            if (filteredData.length === 0) {
+                if (noDataMessage) {
+                    if (cachedJenisKegiatan.length === 0) {
+                        showNoDataMessage('Belum ada master jenis kegiatan untuk NIP Anda. Klik "Tambah Kegiatan" untuk menambahkan kegiatan pertama Anda.');
+                    } else {
+                        showNoDataMessage(`Tidak ditemukan kegiatan dengan kata kunci "${query}".`);
+                    }
+                }
+                return;
             }
+
+            if (noDataMessage) {
+                noDataMessage.classList.add('hidden');
+            }
+
+            filteredData.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-white border-opacity-10 hover:bg-white hover:bg-opacity-5 transition-all duration-200 group';
+
+                row.innerHTML = `
+                    <td class="py-3.5 px-3 text-center text-gray-300 text-sm font-medium">${index + 1}</td>
+                    <td class="py-3.5 px-3">
+                        <div class="cursor-pointer group-hover:text-emerald-300 transition-colors" onclick="navigateToDetailById(${item.id})" title="Klik untuk membuka logbook kegiatan ini">
+                            <span class="text-white font-medium text-sm sm:text-base">${escapeHtml(item.jenis_kegiatan || '-')}</span>
+                        </div>
+                    </td>
+                    <td class="py-3.5 px-3 text-center">
+                        <div class="flex items-center justify-center gap-1.5 sm:gap-2">
+                            <button type="button" onclick="navigateToDetailById(${item.id})" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-blue-600/80 hover:bg-blue-600 text-white rounded-lg text-xs font-semibold shadow hover:shadow-blue-500/25 transition-all transform hover:scale-105" title="Buka dan isi logbook">
+                                <i class="fas fa-clipboard-check"></i>
+                                <span class="hidden sm:inline">Logbook</span>
+                            </button>
+                            <button type="button" onclick="openEditJenisKegiatanModal(${item.id})" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-500/80 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold shadow hover:shadow-amber-500/25 transition-all transform hover:scale-105" title="Edit nama kegiatan">
+                                <i class="fas fa-edit"></i>
+                                <span class="hidden sm:inline">Edit</span>
+                            </button>
+                            <button type="button" onclick="deleteJenisKegiatan(${item.id})" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-red-600/80 hover:bg-red-600 text-white rounded-lg text-xs font-semibold shadow hover:shadow-red-500/25 transition-all transform hover:scale-105" title="Hapus master kegiatan">
+                                <i class="fas fa-trash-alt"></i>
+                                <span class="hidden sm:inline">Hapus</span>
+                            </button>
+                        </div>
+                    </td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Navigate to detail logbook page
+        function navigateToDetailById(id) {
+            const item = cachedJenisKegiatan.find(k => k.id == id);
+            if (!item) {
+                alert('Data kegiatan tidak ditemukan');
+                return;
+            }
+
+            const dataToSend = {
+                jenis_kegiatan: item.jenis_kegiatan || '',
+                golongan: item.golongan || '',
+                nip: item.nip || ''
+            };
+            
+            const jenisKegiatanData = encodeURIComponent(JSON.stringify(dataToSend));
+            window.location.href = `/jenis-kegiatan/detail?data=${jenisKegiatanData}`;
+        }
+        
+        // Function to open modal for creating new item
+        function openCreateJenisKegiatanModal() {
+            const modal = document.getElementById('jenisKegiatanModal');
+            const idInput = document.getElementById('jenisKegiatanId');
+            const input = document.getElementById('jenisKegiatanInput');
+            const title = document.getElementById('modalTitle');
+            const subtitle = document.getElementById('modalSubtitle');
+            const saveBtnText = document.getElementById('saveBtnText');
+            const iconContainer = document.getElementById('modalIconContainer');
+            const icon = document.getElementById('modalIcon');
+            
+            if (!modal) return;
+
+            if (idInput) idInput.value = '';
+            if (input) input.value = '';
+            if (title) title.textContent = 'Tambah Jenis Kegiatan';
+            if (subtitle) subtitle.textContent = 'Tambahkan master kegiatan baru untuk NIP Anda';
+            if (saveBtnText) saveBtnText.textContent = 'Simpan';
+            if (iconContainer) iconContainer.className = 'w-10 h-10 gradient-green rounded-xl flex items-center justify-center';
+            if (icon) icon.className = 'fas fa-plus text-white';
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => input?.focus(), 150);
+        }
+
+        // Function to open modal for editing item
+        function openEditJenisKegiatanModal(id) {
+            const item = cachedJenisKegiatan.find(k => k.id == id);
+            if (!item) {
+                alert('Data kegiatan tidak ditemukan');
+                return;
+            }
+
+            const modal = document.getElementById('jenisKegiatanModal');
+            const idInput = document.getElementById('jenisKegiatanId');
+            const input = document.getElementById('jenisKegiatanInput');
+            const title = document.getElementById('modalTitle');
+            const subtitle = document.getElementById('modalSubtitle');
+            const saveBtnText = document.getElementById('saveBtnText');
+            const iconContainer = document.getElementById('modalIconContainer');
+            const icon = document.getElementById('modalIcon');
+            
+            if (!modal) return;
+
+            if (idInput) idInput.value = item.id;
+            if (input) input.value = item.jenis_kegiatan || '';
+            if (title) title.textContent = 'Edit Jenis Kegiatan';
+            if (subtitle) subtitle.textContent = 'Perbarui nama kegiatan master';
+            if (saveBtnText) saveBtnText.textContent = 'Perbarui';
+            if (iconContainer) iconContainer.className = 'w-10 h-10 gradient-blue rounded-xl flex items-center justify-center';
+            if (icon) icon.className = 'fas fa-edit text-white';
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => input?.focus(), 150);
         }
         
         // Function to close modal
@@ -1048,6 +1259,44 @@
             if (modal) {
                 modal.classList.add('hidden');
                 document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Function to delete jenis kegiatan
+        async function deleteJenisKegiatan(id) {
+            const item = cachedJenisKegiatan.find(k => k.id == id);
+            const nama = item ? item.jenis_kegiatan : 'kegiatan ini';
+
+            if (!confirm(`Apakah Anda yakin ingin menghapus jenis kegiatan:\n"${nama}"?\n\nCatatan: Logbook yang terkait dengan kegiatan ini dapat terpengaruh.`)) {
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Sesi Anda telah berakhir. Silakan login kembali.');
+                window.location.replace('/login');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/jenis-kegiatan/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    await loadJenisKegiatan();
+                } else {
+                    alert(result.message || 'Gagal menghapus jenis kegiatan');
+                }
+            } catch (error) {
+                console.error('Error deleting jenis kegiatan:', error);
+                alert('Terjadi kesalahan koneksi saat menghapus kegiatan');
             }
         }
         
@@ -1076,20 +1325,62 @@
                 });
             }
             
-            // Form submit event
+            // Form submit event (Create / Update)
             if (form) {
-                form.addEventListener('submit', function(e) {
+                form.addEventListener('submit', async function(e) {
                     e.preventDefault();
-                    const jenisKegiatan = document.getElementById('jenisKegiatanInput').value;
+                    const idInput = document.getElementById('jenisKegiatanId');
+                    const input = document.getElementById('jenisKegiatanInput');
+                    const saveBtn = document.getElementById('saveJenisKegiatanBtn');
+                    const saveBtnText = document.getElementById('saveBtnText');
                     
-                    if (jenisKegiatan.trim()) {
-                        // Here you can add logic to save the data
-                        console.log('Saving jenis kegiatan:', jenisKegiatan);
-                        closeJenisKegiatanModal();
-                        // Optionally reload the data
-                        loadJenisKegiatan();
-                    } else {
-                        alert('Mohon isi jenis kegiatan');
+                    const jenisKegiatan = input ? input.value.trim() : '';
+                    if (!jenisKegiatan) {
+                        alert('Mohon isi nama jenis kegiatan');
+                        input?.focus();
+                        return;
+                    }
+
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                        alert('Sesi Anda telah berakhir. Silakan login kembali.');
+                        window.location.replace('/login');
+                        return;
+                    }
+
+                    const isEdit = idInput && idInput.value;
+                    const url = isEdit ? `/api/jenis-kegiatan/${idInput.value}` : '/api/jenis-kegiatan';
+                    const method = isEdit ? 'PUT' : 'POST';
+
+                    const originalText = saveBtnText ? saveBtnText.textContent : 'Simpan';
+                    if (saveBtn) saveBtn.disabled = true;
+                    if (saveBtnText) saveBtnText.textContent = 'Menyimpan...';
+
+                    try {
+                        const response = await fetch(url, {
+                            method: method,
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({ jenis_kegiatan: jenisKegiatan })
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok && result.success) {
+                            closeJenisKegiatanModal();
+                            await loadJenisKegiatan();
+                        } else {
+                            alert(result.message || 'Gagal menyimpan jenis kegiatan');
+                        }
+                    } catch (error) {
+                        console.error('Error saving jenis kegiatan:', error);
+                        alert('Terjadi kesalahan koneksi saat menyimpan data');
+                    } finally {
+                        if (saveBtn) saveBtn.disabled = false;
+                        if (saveBtnText) saveBtnText.textContent = originalText;
                     }
                 });
             }
@@ -1115,23 +1406,46 @@
                 section.classList.add('hidden');
             });
         }
+
+        function updateMobileNav(sectionName) {
+            const mobileBackBtn = document.getElementById('mobileNavBackBtn');
+            const openSidebarBtn = document.getElementById('openSidebar');
+            if (!mobileBackBtn || !openSidebarBtn) return;
+
+            if (sectionName === 'dashboard') {
+                mobileBackBtn.classList.add('hidden');
+                mobileBackBtn.classList.remove('inline-flex');
+                openSidebarBtn.classList.remove('hidden');
+            } else {
+                mobileBackBtn.classList.remove('hidden');
+                mobileBackBtn.classList.add('inline-flex');
+                openSidebarBtn.classList.add('hidden');
+            }
+        }
         
         function showDashboard() {
             hideAllContent();
             const content = document.getElementById('dashboardContent');
             content.classList.remove('hidden');
             content.classList.add('fade-in');
+            updateMobileNav('dashboard');
+            closeSidebarOnMobile();
+        }
+
+        function showMasterKegiatan() {
+            hideAllContent();
+            const content = document.getElementById('masterKegiatanContent');
+            if (content) {
+                content.classList.remove('hidden');
+                content.classList.add('fade-in');
+            }
+            loadJenisKegiatan();
+            updateMobileNav('master-kegiatan');
             closeSidebarOnMobile();
         }
 
         function scrollToActivities() {
-            showDashboard();
-
-            requestAnimationFrame(() => {
-                const activitiesSection = document.getElementById('activitiesSection');
-                activitiesSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                activitiesSection?.focus({ preventScroll: true });
-            });
+            showMasterKegiatan();
         }
         
         function showProfile() {
@@ -1140,6 +1454,7 @@
             content.classList.remove('hidden');
             content.classList.add('fade-in');
             loadProfile();
+            updateMobileNav('profile');
             closeSidebarOnMobile();
         }
         
@@ -1148,6 +1463,8 @@
             const content = document.getElementById('tasksContent');
             content.classList.remove('hidden');
             content.classList.add('fade-in');
+            updateMobileNav('tasks');
+            closeSidebarOnMobile();
         }
         
         function showReports() {
@@ -1155,6 +1472,8 @@
             const content = document.getElementById('reportsContent');
             content.classList.remove('hidden');
             content.classList.add('fade-in');
+            updateMobileNav('reports');
+            closeSidebarOnMobile();
         }
         
         // Load profile
@@ -1261,9 +1580,14 @@
             document.getElementById('profileEdit').innerHTML = `
         <div class="morphism-card rounded-2xl p-4 sm:p-6 lg:p-8 w-full">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="text-xl sm:text-2xl font-bold text-white">Edit Profil</h3>
-                <button onclick="cancelEditProfile()" class="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-all">
-                    <i class="fas fa-times text-white text-lg"></i>
+                <div class="flex items-center space-x-3 min-w-0">
+                    <button type="button" onclick="cancelEditProfile()" class="p-2 sm:p-2.5 glass rounded-xl hover:bg-white hover:bg-opacity-20 transition-all text-white flex items-center justify-center flex-shrink-0" title="Kembali ke Profil">
+                        <i class="fas fa-arrow-left text-base sm:text-lg"></i>
+                    </button>
+                    <h3 class="text-xl sm:text-2xl font-bold text-white truncate">Edit Profil</h3>
+                </div>
+                <button type="button" onclick="cancelEditProfile()" class="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-all text-white" title="Tutup">
+                    <i class="fas fa-times text-lg"></i>
                 </button>
             </div>
             

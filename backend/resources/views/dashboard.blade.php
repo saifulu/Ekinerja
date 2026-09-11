@@ -382,6 +382,9 @@
                             <button id="openSidebar" class="lg:hidden p-2 sm:p-3 hover:bg-white hover:bg-opacity-20 rounded-xl transition-all">
                                 <i class="fas fa-bars text-white text-lg sm:text-xl"></i>
                             </button>
+                            <button id="mobileNavBackBtn" type="button" onclick="showDashboard()" class="hidden lg:hidden p-2 sm:p-3 hover:bg-white hover:bg-opacity-20 rounded-xl transition-all text-white items-center justify-center" title="Kembali ke Dashboard">
+                                <i class="fas fa-arrow-left text-white text-lg sm:text-xl"></i>
+                            </button>
                             <div class="min-w-0 flex-1">
                                 <h1 class="text-white text-lg sm:text-2xl font-bold truncate">e-Kinerja Dashboard</h1>
                                 <p class="text-gray-200 text-xs sm:text-sm hidden sm:block">Advanced Management System</p>
@@ -557,14 +560,25 @@
 
                 <!-- Add User Content -->
                 <div id="addUserContent" class="content-section hidden fade-in">
-                    <div class="morphism-card rounded-2xl p-8 hover-scale">
-                        <div class="flex items-center space-x-4 mb-8">
-                            <div class="w-16 h-16 gradient-purple rounded-2xl flex items-center justify-center neon-glow">
-                                <i class="fas fa-user-plus text-white text-2xl"></i>
+                    <!-- Back Button on Mobile / Sub-page -->
+                    <div class="mb-3 sm:mb-4">
+                        <button type="button" onclick="showDashboard()" class="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 glass rounded-xl text-white font-medium hover:bg-white hover:bg-opacity-20 transition-all text-sm group" title="Kembali ke Dashboard">
+                            <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+                            <span>Kembali ke Dashboard</span>
+                        </button>
+                    </div>
+
+                    <div class="morphism-card rounded-2xl p-4 sm:p-6 lg:p-8 hover-scale">
+                        <div class="flex items-center space-x-3 sm:space-x-4 mb-6 sm:mb-8">
+                            <button type="button" onclick="showDashboard()" class="p-2.5 sm:p-3 glass rounded-xl hover:bg-white hover:bg-opacity-20 transition-all text-white flex items-center justify-center flex-shrink-0" title="Kembali ke Dashboard">
+                                <i class="fas fa-arrow-left text-base sm:text-xl"></i>
+                            </button>
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 gradient-purple rounded-2xl flex items-center justify-center neon-glow flex-shrink-0">
+                                <i class="fas fa-user-plus text-white text-xl sm:text-2xl"></i>
                             </div>
-                            <div>
-                                <h2 class="text-3xl font-bold text-white">Tambah User Baru</h2>
-                                <p class="text-gray-300">Buat akun pengguna baru dengan informasi lengkap</p>
+                            <div class="min-w-0">
+                                <h2 class="text-xl sm:text-3xl font-bold text-white truncate">Tambah User Baru</h2>
+                                <p class="text-xs sm:text-sm text-gray-300 truncate">Buat akun pengguna baru dengan informasi lengkap</p>
                             </div>
                         </div>
                         
@@ -647,19 +661,30 @@
 
                 <!-- User List Content -->
                 <div id="userListContent" class="content-section hidden fade-in">
-                    <div class="morphism-card rounded-2xl p-8 hover-scale">
-                        <div class="flex items-center justify-between mb-8">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-16 h-16 gradient-blue rounded-2xl flex items-center justify-center neon-glow">
-                                    <i class="fas fa-users text-white text-2xl"></i>
+                    <!-- Back Button on Mobile / Sub-page -->
+                    <div class="mb-3 sm:mb-4">
+                        <button type="button" onclick="showDashboard()" class="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 glass rounded-xl text-white font-medium hover:bg-white hover:bg-opacity-20 transition-all text-sm group" title="Kembali ke Dashboard">
+                            <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+                            <span>Kembali ke Dashboard</span>
+                        </button>
+                    </div>
+
+                    <div class="morphism-card rounded-2xl p-4 sm:p-6 lg:p-8 hover-scale">
+                        <div class="flex items-center justify-between mb-6 sm:mb-8">
+                            <div class="flex items-center space-x-3 sm:space-x-4 min-w-0">
+                                <button type="button" onclick="showDashboard()" class="p-2.5 sm:p-3 glass rounded-xl hover:bg-white hover:bg-opacity-20 transition-all text-white flex items-center justify-center flex-shrink-0" title="Kembali ke Dashboard">
+                                    <i class="fas fa-arrow-left text-base sm:text-xl"></i>
+                                </button>
+                                <div class="w-12 h-12 sm:w-16 sm:h-16 gradient-blue rounded-2xl flex items-center justify-center neon-glow flex-shrink-0">
+                                    <i class="fas fa-users text-white text-xl sm:text-2xl"></i>
                                 </div>
-                                <div>
-                                    <h2 class="text-3xl font-bold text-white">Daftar User</h2>
-                                    <p class="text-gray-300">Kelola semua pengguna sistem</p>
+                                <div class="min-w-0">
+                                    <h2 class="text-xl sm:text-3xl font-bold text-white truncate">Daftar User</h2>
+                                    <p class="text-xs sm:text-sm text-gray-300 truncate">Kelola semua pengguna sistem</p>
                                 </div>
                             </div>
-                            <button onclick="showAddUser()" class="px-6 py-3 gradient-purple rounded-xl text-white font-semibold hover:scale-105 transition-all duration-300 neon-glow">
-                                <i class="fas fa-plus mr-2"></i>Tambah User
+                            <button onclick="showAddUser()" class="px-4 py-2 sm:px-6 sm:py-3 gradient-purple rounded-xl text-white font-semibold hover:scale-105 transition-all duration-300 neon-glow text-sm sm:text-base flex-shrink-0">
+                                <i class="fas fa-plus mr-1 sm:mr-2"></i><span class="hidden sm:inline">Tambah User</span><span class="sm:hidden">Tambah</span>
                             </button>
                         </div>
                         <div id="userTable" class="overflow-x-auto">
@@ -670,14 +695,25 @@
 
                 <!-- Profile Content -->
                 <div id="profileContent" class="content-section hidden fade-in">
-                    <div class="morphism-card rounded-2xl p-8 hover-scale">
-                        <div class="flex items-center space-x-4 mb-8">
-                            <div class="w-16 h-16 gradient-pink rounded-2xl flex items-center justify-center neon-glow">
-                                <i class="fas fa-user-cog text-white text-2xl"></i>
+                    <!-- Back Button on Mobile / Sub-page -->
+                    <div class="mb-3 sm:mb-4">
+                        <button type="button" onclick="showDashboard()" class="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 glass rounded-xl text-white font-medium hover:bg-white hover:bg-opacity-20 transition-all text-sm group" title="Kembali ke Dashboard">
+                            <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+                            <span>Kembali ke Dashboard</span>
+                        </button>
+                    </div>
+
+                    <div class="morphism-card rounded-2xl p-4 sm:p-6 lg:p-8 hover-scale">
+                        <div class="flex items-center space-x-3 sm:space-x-4 mb-6 sm:mb-8">
+                            <button type="button" onclick="showDashboard()" class="p-2.5 sm:p-3 glass rounded-xl hover:bg-white hover:bg-opacity-20 transition-all text-white flex items-center justify-center flex-shrink-0" title="Kembali ke Dashboard">
+                                <i class="fas fa-arrow-left text-base sm:text-xl"></i>
+                            </button>
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 gradient-pink rounded-2xl flex items-center justify-center neon-glow flex-shrink-0">
+                                <i class="fas fa-user-cog text-white text-xl sm:text-2xl"></i>
                             </div>
-                            <div>
-                                <h2 class="text-3xl font-bold text-white">Profil Admin</h2>
-                                <p class="text-gray-300">Kelola informasi akun administrator</p>
+                            <div class="min-w-0">
+                                <h2 class="text-xl sm:text-3xl font-bold text-white truncate">Profil Admin</h2>
+                                <p class="text-xs sm:text-sm text-gray-300 truncate">Kelola informasi akun administrator</p>
                             </div>
                         </div>
                         <div id="profileInfo">
@@ -791,12 +827,29 @@
                 section.classList.add('hidden');
             });
         }
+
+        function updateMobileNav(sectionName) {
+            const mobileBackBtn = document.getElementById('mobileNavBackBtn');
+            const openSidebarBtn = document.getElementById('openSidebar');
+            if (!mobileBackBtn || !openSidebarBtn) return;
+
+            if (sectionName === 'dashboard') {
+                mobileBackBtn.classList.add('hidden');
+                mobileBackBtn.classList.remove('inline-flex');
+                openSidebarBtn.classList.remove('hidden');
+            } else {
+                mobileBackBtn.classList.remove('hidden');
+                mobileBackBtn.classList.add('inline-flex');
+                openSidebarBtn.classList.add('hidden');
+            }
+        }
         
         function showDashboard() {
             hideAllContent();
             const content = document.getElementById('dashboardContent');
             content.classList.remove('hidden');
             content.classList.add('fade-in');
+            updateMobileNav('dashboard');
             loadDashboardStats();
         }
         
@@ -805,6 +858,10 @@
             const content = document.getElementById('addUserContent');
             content.classList.remove('hidden');
             content.classList.add('fade-in');
+            updateMobileNav('addUser');
+            sidebar.classList.add('-translate-x-full');
+            document.getElementById('mobileBackdrop')?.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
         }
         
         function showUserList() {
@@ -812,6 +869,10 @@
             const content = document.getElementById('userListContent');
             content.classList.remove('hidden');
             content.classList.add('fade-in');
+            updateMobileNav('userList');
+            sidebar.classList.add('-translate-x-full');
+            document.getElementById('mobileBackdrop')?.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
             loadUsers();
         }
         
@@ -820,6 +881,10 @@
             const content = document.getElementById('profileContent');
             content.classList.remove('hidden');
             content.classList.add('fade-in');
+            updateMobileNav('profile');
+            sidebar.classList.add('-translate-x-full');
+            document.getElementById('mobileBackdrop')?.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
             loadProfile();
         }
         

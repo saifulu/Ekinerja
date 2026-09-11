@@ -379,6 +379,9 @@ class DetailJenisKegiatanController extends Controller
             \Log::info('User NIP: ' . $user->nip);
             
             $units = UnitRuangan::getRuanganByNip($user->nip);
+            if (empty($units)) {
+                $units = UnitRuangan::select('nama_ruangan')->distinct()->pluck('nama_ruangan')->toArray();
+            }
             
             // Debug logging
             \Log::info('Units found: ' . json_encode($units));
