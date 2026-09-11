@@ -4,55 +4,105 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="theme-color" content="#0f172a">
     <title>Detail Jenis Kegiatan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(145deg, #0f172a 0%, #312e81 52%, #172554 100%);
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #f8fafc;
         }
         .glass-card {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
+            background: rgba(30, 41, 59, 0.82);
+            backdrop-filter: blur(20px);
             border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 16px 40px rgba(2, 6, 23, 0.35);
         }
         .form-control, .form-select {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
             border-radius: 10px;
+            background: rgba(15, 23, 42, 0.92) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: #ffffff !important;
+            border-radius: 12px;
         }
         .form-control:focus, .form-select:focus {
             background: rgba(255, 255, 255, 0.2);
             border-color: rgba(255, 255, 255, 0.5);
             color: white;
             box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+            background: rgba(15, 23, 42, 0.98) !important;
+            border-color: #10b981 !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.25) !important;
         }
         .form-control::placeholder {
             color: rgba(255, 255, 255, 0.7);
+            color: rgba(148, 163, 184, 0.8) !important;
+        }
+        .form-control[readonly] {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border-color: rgba(255, 255, 255, 0.12) !important;
+            color: #cbd5e1 !important;
+        }
+        .form-select option {
+            background: #0f172a;
+            color: #ffffff;
         }
         .form-label {
             color: white;
+            color: #e2e8f0;
             font-weight: 600;
         }
         .btn-primary {
             background: linear-gradient(45deg, #667eea, #764ba2);
             border: none;
             border-radius: 10px;
+            background: linear-gradient(135deg, #10b981 0%, #0d9488 100%) !important;
+            border: none !important;
+            border-radius: 12px;
             padding: 12px 30px;
             font-weight: 600;
+            color: #ffffff !important;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #059669 0%, #0f766e 100%) !important;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+            transform: translateY(-1px);
+            color: #ffffff !important;
         }
         .btn-secondary {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: white;
             border-radius: 10px;
+            background: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.18) !important;
+            color: #f1f5f9 !important;
+            border-radius: 12px;
             padding: 12px 30px;
             font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.16) !important;
+            color: #ffffff !important;
+            border-color: rgba(255, 255, 255, 0.3) !important;
         }
         .status-badge {
             padding: 8px 16px;
@@ -64,18 +114,27 @@
         .status-submitted { background: rgba(13, 202, 240, 0.2); color: #0dcaf0; }
         .status-approved { background: rgba(25, 135, 84, 0.2); color: #198754; }
         .status-rejected { background: rgba(220, 53, 69, 0.2); color: #dc3545; }
+        .status-draft { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); }
+        .status-submitted { background: rgba(6, 182, 212, 0.2); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.35); }
+        .status-approved { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); }
+        .status-rejected { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); }
         
         /* Documentation Styles */
         .documentation-section {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
             padding: 20px;
             margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .camera-container {
             position: relative;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 10px;
+            background: rgba(15, 23, 42, 0.85);
+            border-radius: 14px;
             overflow: hidden;
             margin-bottom: 15px;
             min-height: 300px;
@@ -83,6 +142,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .media-section {
@@ -149,21 +209,27 @@
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.95);
             border: 3px solid rgba(255, 255, 255, 0.8);
+            background: linear-gradient(135deg, #10b981 0%, #0d9488 100%);
+            border: 3px solid rgba(255, 255, 255, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
         }
         .capture-btn:hover {
             transform: scale(1.1);
             background: rgba(255, 255, 255, 1);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #059669 0%, #0f766e 100%);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
         }
         .capture-btn i {
             font-size: 18px;
             color: #333;
+            color: #ffffff;
         }
         .btn-sm {
             padding: 8px 12px;
@@ -195,17 +261,25 @@
         .signature-section {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
             padding: 20px;
             margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .signature-box {
             background: rgba(255, 255, 255, 0.08);
             border-radius: 10px;
             padding: 15px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
         }
         .signature-label {
             color: white;
+            color: #f8fafc;
             font-weight: 600;
             font-size: 14px;
             margin-bottom: 10px;
@@ -214,6 +288,8 @@
         .signature-area {
             background: rgba(255, 255, 255, 0.9);
             border-radius: 8px;
+            background: rgba(15, 23, 42, 0.7);
+            border-radius: 10px;
             height: 120px;
             display: flex;
             align-items: center;
@@ -221,26 +297,36 @@
             cursor: pointer;
             transition: all 0.3s ease;
             border: 2px dashed rgba(0, 0, 0, 0.2);
+            border: 2px dashed rgba(255, 255, 255, 0.2);
         }
         .signature-area:hover {
             background: rgba(255, 255, 255, 0.95);
             border-color: rgba(0, 0, 0, 0.3);
+            background: rgba(15, 23, 42, 0.85);
+            border-color: #10b981;
         }
         .signature-placeholder {
             text-align: center;
             color: #666;
+            color: #94a3b8;
         }
         .signature-placeholder i {
             opacity: 0.6;
+            opacity: 0.8;
+            color: #10b981;
         }
         .signature-placeholder p {
             font-size: 12px;
             margin: 0;
+            color: #cbd5e1;
         }
         .signature-info {
             background: rgba(0, 0, 0, 0.2);
             border-radius: 6px;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 8px;
             padding: 8px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         .signature-actions {
             display: flex;
@@ -250,10 +336,16 @@
             width: 100%;
             height: 100%;
             border-radius: 6px;
+            border-radius: 8px;
+            background: #ffffff;
+            object-fit: contain;
+            padding: 4px;
         }
         .signature-signed {
             background: rgba(76, 175, 80, 0.1);
             border-color: rgba(76, 175, 80, 0.3);
+            background: rgba(16, 185, 129, 0.12);
+            border-color: rgba(16, 185, 129, 0.45);
         }
         
         /* Signature Modal */
@@ -264,6 +356,8 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -274,12 +368,16 @@
         .signature-modal-content {
             background: white;
             border-radius: 15px;
+            background: #1e293b;
+            border-radius: 18px;
             padding: 24px;
             width: 100%;
             max-width: 600px;
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6);
             animation: modalSlideIn 0.3s ease-out;
         }
         
@@ -301,12 +399,16 @@
             margin-bottom: 24px;
             padding-bottom: 16px;
             border-bottom: 2px solid #f0f0f0;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             flex-wrap: wrap;
             gap: 12px;
         }
         .signature-modal-header h5 {
             margin: 0;
             color: #333;
+            color: #f8fafc;
             font-size: 18px;
             font-weight: 600;
             flex: 1;
@@ -314,10 +416,13 @@
         }
         .btn-close {
             background: none;
+            background: rgba(255, 255, 255, 0.08);
             border: none;
             font-size: 24px;
+            font-size: 16px;
             cursor: pointer;
             color: #666;
+            color: #94a3b8;
             padding: 8px;
             border-radius: 50%;
             transition: all 0.2s ease;
@@ -326,10 +431,14 @@
             justify-content: center;
             width: 40px;
             height: 40px;
+            width: 36px;
+            height: 36px;
         }
         .btn-close:hover {
             background: #f5f5f5;
             color: #333;
+            background: rgba(255, 255, 255, 0.18);
+            color: #ffffff;
         }
         
         .signature-modal-body {
@@ -344,8 +453,10 @@
             min-height: 200px;
             max-height: 300px;
             border: 2px solid #e0e0e0;
+            border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
             background: white;
+            background: #ffffff;
             cursor: crosshair;
             touch-action: none;
         }
@@ -362,6 +473,9 @@
             padding: 12px 24px;
             border-radius: 8px;
             font-weight: 500;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-weight: 600;
             transition: all 0.2s ease;
             border: none;
             cursor: pointer;
@@ -371,20 +485,31 @@
         .signature-modal-actions .btn-secondary {
             background: #6c757d;
             color: white;
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: #e2e8f0 !important;
         }
         
         .signature-modal-actions .btn-secondary:hover {
             background: #5a6268;
+            background: rgba(255, 255, 255, 0.2) !important;
+            color: #ffffff !important;
             transform: translateY(-1px);
         }
         
         .signature-modal-actions .btn-primary {
             background: #007bff;
             color: white;
+            background: linear-gradient(135deg, #10b981 0%, #0d9488 100%) !important;
+            border: none !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
         }
         
         .signature-modal-actions .btn-primary:hover {
             background: #0056b3;
+            background: linear-gradient(135deg, #059669 0%, #0f766e 100%) !important;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
             transform: translateY(-1px);
         }
         
@@ -392,11 +517,16 @@
             background: transparent;
             color: #6c757d;
             border: 2px solid #6c757d;
+            background: transparent !important;
+            color: #cbd5e1 !important;
+            border: 1px solid rgba(255, 255, 255, 0.25) !important;
         }
         
         .signature-modal-actions .btn-outline-secondary:hover {
             background: #6c757d;
             color: white;
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: #ffffff !important;
             transform: translateY(-1px);
         }
         
@@ -634,12 +764,15 @@
                                             <div class="primary-controls">
                                                 <button type="button" id="startCameraBtn" class="capture-btn" title="Mulai Kamera">
                                                     <i class="fas fa-camera text-dark"></i>
+                                                    <i class="fas fa-camera text-white"></i>
                                                 </button>
                                                 <button type="button" id="capturePhoto" class="capture-btn" style="display: none;" title="Ambil Foto">
                                                     <i class="fas fa-circle text-dark"></i>
+                                                    <i class="fas fa-circle text-white"></i>
                                                 </button>
                                                 <button type="button" id="uploadPhoto" class="capture-btn" onclick="document.getElementById('fileInput').click()" title="Upload Foto">
                                                     <i class="fas fa-upload text-dark"></i>
+                                                    <i class="fas fa-upload text-white"></i>
                                                 </button>
                                             </div>
                                             
@@ -815,6 +948,7 @@
             window.addEventListener('resize', resizeCanvas);
             
             canvas.style.border = '2px solid #e0e0e0';
+            canvas.style.border = '2px solid rgba(255, 255, 255, 0.2)';
             canvas.style.borderRadius = '12px';
             canvas.style.background = 'white';
             canvas.style.cursor = 'crosshair';
@@ -1628,20 +1762,25 @@
             // Create notification element
             const notification = document.createElement('div');
             notification.className = `notification fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-md transition-all duration-300 transform translate-x-full`;
+            notification.className = `notification fixed top-4 right-4 z-50 p-4 rounded-xl shadow-2xl backdrop-blur-md max-w-md transition-all duration-300 transform translate-x-full border`;
             
             // Set notification style based on type
             switch(type) {
                 case 'success':
                     notification.classList.add('bg-green-500', 'text-white');
+                    notification.classList.add('bg-emerald-900/90', 'border-emerald-500/40', 'text-white');
                     break;
                 case 'error':
                     notification.classList.add('bg-red-500', 'text-white');
+                    notification.classList.add('bg-rose-900/90', 'border-rose-500/40', 'text-white');
                     break;
                 case 'warning':
                     notification.classList.add('bg-yellow-500', 'text-black');
+                    notification.classList.add('bg-amber-900/90', 'border-amber-500/40', 'text-amber-100');
                     break;
                 default:
                     notification.classList.add('bg-blue-500', 'text-white');
+                    notification.classList.add('bg-slate-900/90', 'border-slate-700', 'text-white');
             }
             
             notification.innerHTML = `

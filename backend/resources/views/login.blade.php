@@ -7,6 +7,7 @@
     
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#667eea">
+    <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="e-Kinerja">
@@ -29,22 +30,29 @@
         
         .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(145deg, #0f172a 0%, #312e81 52%, #172554 100%);
         }
         
         .glass-effect {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 45px rgba(2, 6, 23, 0.5);
         }
         
         .input-focus:focus {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.15);
         }
         
         .btn-hover:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35);
         }
         
         .fade-in {
@@ -68,11 +76,13 @@
             bottom: 20px;
             right: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #10b981 0%, #0d9488 100%);
             color: white;
             border: none;
             border-radius: 50px;
             padding: 12px 20px;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
@@ -89,6 +99,7 @@
         .pwa-install-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
         }
         
         .pwa-install-btn.show {
@@ -168,6 +179,8 @@
                 <div class="text-center mb-8">
                     <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 mb-2">Selamat Datang</h3>
                     <p class="text-gray-600 text-sm sm:text-base">Masuk ke akun Anda untuk melanjutkan</p>
+                    <h3 class="text-xl sm:text-2xl font-bold text-white mb-2">Selamat Datang</h3>
+                    <p class="text-gray-300 text-sm sm:text-base">Masuk ke akun Anda untuk melanjutkan</p>
                 </div>
                 
                 <form class="space-y-6" id="loginForm">
@@ -175,23 +188,30 @@
                         <div class="relative">
                             <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
                                 <i class="fas fa-envelope mr-2 text-indigo-500"></i>Email Address
+                            <label for="email" class="block text-sm font-medium text-gray-200 mb-2">
+                                <i class="fas fa-envelope mr-2 text-emerald-400"></i>Email Address
                             </label>
                             <input id="email" name="email" type="email" required 
                                    class="input-focus appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300" 
+                                   class="input-focus appearance-none relative block w-full px-4 py-3 bg-slate-900/90 border border-white/20 placeholder-gray-400 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm sm:text-base transition-all duration-300" 
                                    placeholder="Masukkan email Anda">
                         </div>
                         
                         <div class="relative">
                             <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
                                 <i class="fas fa-lock mr-2 text-indigo-500"></i>Password
+                            <label for="password" class="block text-sm font-medium text-gray-200 mb-2">
+                                <i class="fas fa-lock mr-2 text-emerald-400"></i>Password
                             </label>
                             <div class="relative">
                                 <input id="password" name="password" type="password" required 
                                        class="input-focus appearance-none relative block w-full px-4 py-3 pr-12 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300" 
+                                       class="input-focus appearance-none relative block w-full px-4 py-3 pr-12 bg-slate-900/90 border border-white/20 placeholder-gray-400 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm sm:text-base transition-all duration-300" 
                                        placeholder="Masukkan password Anda">
                                 <button type="button" onclick="togglePassword()" 
                                         class="absolute inset-y-0 right-0 pr-3 flex items-center">
                                     <i id="passwordIcon" class="fas fa-eye text-gray-400 hover:text-gray-600"></i>
+                                    <i id="passwordIcon" class="fas fa-eye text-gray-400 hover:text-gray-200"></i>
                                 </button>
                             </div>
                         </div>
@@ -202,11 +222,14 @@
                             <input id="remember-me" name="remember-me" type="checkbox" 
                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                             <label for="remember-me" class="ml-2 block text-sm text-gray-700">
+                                   class="h-4 w-4 text-emerald-500 focus:ring-emerald-500 border-white/20 bg-slate-900 rounded">
+                            <label for="remember-me" class="ml-2 block text-sm text-gray-300">
                                 Ingat saya
                             </label>
                         </div>
                         <div class="text-sm">
                             <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500 transition-colors">
+                            <a href="#" class="font-medium text-emerald-400 hover:text-emerald-300 transition-colors">
                                 Lupa password?
                             </a>
                         </div>
@@ -215,8 +238,10 @@
                     <div>
                         <button type="submit" 
                             class="btn-hover group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm sm:text-base font-medium rounded-lg text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300">
+                            class="btn-hover group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm sm:text-base font-semibold rounded-xl text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 shadow-lg hover:shadow-emerald-500/25 transition-all duration-300">
                             <span class="absolute left-0 inset-y-0 flex items-center pl-3">
                                 <i class="fas fa-sign-in-alt text-indigo-300 group-hover:text-indigo-200"></i>
+                                <i class="fas fa-sign-in-alt text-emerald-200 group-hover:text-white"></i>
                             </span>
                             <span id="loginText">Masuk ke Sistem</span>
                             <div id="loginSpinner" class="hidden ml-2">
@@ -230,15 +255,18 @@
                     <div class="relative">
                         <div class="absolute inset-0 flex items-center">
                             <div class="w-full border-t border-gray-300"></div>
+                            <div class="w-full border-t border-white/10"></div>
                         </div>
                         <div class="relative flex justify-center text-sm">
                             <span class="px-2 bg-white text-gray-500 rounded-md">Atau masuk dengan</span>
+                            <span class="px-3 py-0.5 bg-slate-800 text-gray-400 rounded-md text-xs">Atau masuk dengan</span>
                         </div>
                     </div>
 
                     <div class="mt-6">
                         <a href="/auth/google"
                             class="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300">
+                            class="w-full flex justify-center items-center py-3 px-4 border border-white/20 rounded-xl shadow-sm bg-slate-900/80 hover:bg-slate-800 text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300">
                             <img class="h-5 w-5 mr-2" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google logo">
                             <span>Google</span>
                         </a>
@@ -252,14 +280,17 @@
             <!-- Footer -->
             <div class="text-center fade-in">
                 <p class="text-indigo-100 text-xs sm:text-sm">
+                <p class="text-gray-400 text-xs sm:text-sm">
                     © 2025 e-Kinerja. Dikembangkan dengan ❤️
                 </p>
             </div>
             <!-- Register Link -->
             <div class="mt-6 text-center">
                 <p class="text-white text-opacity-70 text-sm sm:text-base">
+                <p class="text-gray-300 text-sm sm:text-base">
                     Belum punya akun? 
                     <a href="/register" class="text-white font-semibold hover:text-opacity-80 transition-all duration-200">
+                    <a href="/register" class="text-emerald-400 font-semibold hover:text-emerald-300 transition-all duration-200">
                         Daftar di sini
                     </a>
                 </p>
@@ -275,16 +306,24 @@
     <!-- PWA Install Modal -->
     <div id="pwaInstallModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
         <div class="bg-white rounded-lg p-6 m-4 max-w-sm w-full">
+    <div id="pwaInstallModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-effect rounded-2xl p-6 max-w-sm w-full border border-white/20 text-white shadow-2xl">
             <div class="text-center">
                 <i class="fas fa-mobile-alt text-blue-500 text-4xl mb-4"></i>
                 <h3 class="text-lg font-semibold mb-2">Install e-Kinerja</h3>
                 <p class="text-gray-600 mb-4">Install aplikasi ini di perangkat Anda untuk akses yang lebih cepat dan mudah.</p>
+                <i class="fas fa-mobile-alt text-emerald-400 text-4xl mb-4"></i>
+                <h3 class="text-lg font-bold mb-2 text-white">Install e-Kinerja</h3>
+                <p class="text-gray-300 text-sm mb-5">Install aplikasi ini di perangkat Anda untuk akses yang lebih cepat dan mudah.</p>
                 <div class="flex space-x-3">
                     <button id="installCancel" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                    <button id="installCancel" class="flex-1 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 border border-white/15 rounded-xl text-gray-300 text-sm font-medium transition-colors">
                         Batal
                     </button>
                     <button id="installConfirm" class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
                         <i class="fas fa-download mr-2"></i>
+                    <button id="installConfirm" class="flex-1 px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl text-sm font-semibold shadow-md transition-colors">
+                        <i class="fas fa-download mr-1.5"></i>
                         Install
                     </button>
                 </div>

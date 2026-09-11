@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard User - e-Kinerja</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -357,6 +358,16 @@
             background: linear-gradient(145deg, rgba(51, 65, 85, 0.98), rgba(67, 56, 202, 0.88));
             border-color: rgba(255, 255, 255, 0.55);
         }
+
+        .quick-card-emerald {
+            background: linear-gradient(145deg, rgba(6, 78, 59, 0.75), rgba(15, 23, 42, 0.95)) !important;
+            border-color: rgba(16, 185, 129, 0.5) !important;
+        }
+        .quick-card-emerald:hover {
+            background: linear-gradient(145deg, rgba(6, 78, 59, 0.92), rgba(15, 23, 42, 0.98)) !important;
+            border-color: rgba(52, 211, 153, 0.8) !important;
+            box-shadow: 0 14px 30px rgba(16, 185, 129, 0.3) !important;
+        }
         
         @keyframes countUp {
             from { opacity: 0; transform: scale(0.5); }
@@ -364,6 +375,17 @@
         }
     </style>
     @include('partials.mobile-ux')
+    <style>
+        /* Specific mobile layout optimizations */
+        @media (max-width: 767px) {
+            #activitiesSection table {
+                min-width: 100% !important;
+            }
+            #activitiesSection th, #activitiesSection td {
+                white-space: normal !important;
+            }
+        }
+    </style>
 </head>
 <body class="user-dashboard-theme min-h-screen">
     <div class="min-h-screen flex relative overflow-hidden w-full">
@@ -406,8 +428,18 @@
                         <i class="fas fa-clipboard-list text-white text-sm sm:text-base"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <span class="font-semibold text-sm sm:text-base">Master Kegiatan</span>
-                        <p class="text-xs text-gray-300 truncate">Kelola Jenis Kegiatan</p>
+                        <span class="font-semibold text-sm sm:text-base">Input Kegiatan</span>
+                        <p class="text-xs text-gray-300 truncate">Catat Kegiatan & Logbook</p>
+                    </div>
+                </button>
+
+                <button type="button" onclick="showMasterUnit()" data-section="master-unit" class="nav-item w-full text-left flex items-center space-x-3 sm:space-x-4 text-white hover:bg-white hover:bg-opacity-20 rounded-xl p-3 sm:p-4 transition-all duration-300 group">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-teal-400 to-cyan-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fas fa-hospital text-white text-sm sm:text-base"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <span class="font-semibold text-sm sm:text-base">Master Unit</span>
+                        <p class="text-xs text-gray-300 truncate">Kelola Unit & Ruangan</p>
                     </div>
                 </button>
                 
@@ -458,39 +490,40 @@
         <!-- Main Content -->
         <div class="dashboard-main flex-1 flex flex-col overflow-hidden relative z-10 lg:w-auto">
             <!-- Top Navigation -->
-            <nav class="glass backdrop-blur-xl border-b border-white border-opacity-20 w-full">
-                <div class="w-full px-4 sm:px-6 lg:px-8">
-                    <div class="flex items-center justify-between h-16 sm:h-20">
-                        <div class="flex items-center space-x-2 sm:space-x-4">
-                            <button id="openSidebar" class="lg:hidden p-2 sm:p-3 hover:bg-white hover:bg-opacity-20 rounded-xl transition-all">
-                                <i class="fas fa-bars text-white text-lg sm:text-xl"></i>
+            <nav class="glass backdrop-blur-xl border-b border-white border-opacity-20 w-full sticky top-0 z-30">
+                <div class="w-full px-3 sm:px-6 lg:px-8">
+                    <div class="flex items-center justify-between h-14 sm:h-20">
+                        <div class="flex items-center space-x-2 sm:space-x-4 min-w-0">
+                            <button id="openSidebar" class="lg:hidden p-2 sm:p-3 hover:bg-white hover:bg-opacity-20 rounded-xl transition-all text-white flex-shrink-0" title="Buka Menu">
+                                <i class="fas fa-bars text-lg sm:text-xl"></i>
                             </button>
-                            <button id="mobileNavBackBtn" type="button" onclick="showDashboard()" class="hidden lg:hidden p-2 sm:p-3 hover:bg-white hover:bg-opacity-20 rounded-xl transition-all text-white items-center justify-center" title="Kembali ke Dashboard">
-                                <i class="fas fa-arrow-left text-white text-lg sm:text-xl"></i>
+                            <button id="mobileNavBackBtn" type="button" onclick="showDashboard()" class="hidden lg:hidden p-2 sm:p-3 hover:bg-white hover:bg-opacity-20 rounded-xl transition-all text-white items-center justify-center flex-shrink-0" title="Kembali ke Dashboard">
+                                <i class="fas fa-arrow-left text-lg sm:text-xl"></i>
                             </button>
                             <div class="min-w-0 flex-1">
-                                <h1 class="text-white text-lg sm:text-2xl font-bold truncate">e-Kinerja Dashboard</h1>
+                                <h1 id="topNavTitle" class="text-white text-base sm:text-2xl font-bold truncate">e-Kinerja Dashboard</h1>
                                 <p class="text-gray-200 text-xs sm:text-sm hidden sm:block">Personal Workspace</p>
                             </div>
                         </div>
-                        <div class="flex items-center space-x-2 sm:space-x-6">
-                            <div class="hidden sm:flex items-center space-x-4">
+                        <div class="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
+                            <div class="hidden sm:flex items-center space-x-3">
                                 <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                                 <span id="userWelcome" class="text-white font-medium text-sm sm:text-base"></span>
                             </div>
-                            <div class="flex items-center space-x-2 sm:space-x-3">
-                                <button class="p-2 sm:p-3 glass rounded-xl hover:bg-white hover:bg-opacity-20 transition-all relative">
-                                    <i class="fas fa-bell text-white text-sm sm:text-base"></i>
-                                    <span class="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">2</span>
-                                </button>
-                            </div>
+                            <!-- Mobile User Avatar -->
+                            <button type="button" onclick="showProfile()" class="sm:hidden flex items-center justify-center w-9 h-9 rounded-xl gradient-blue text-white font-bold text-xs shadow hover:opacity-90 transition-opacity" title="Profil Saya">
+                                <span id="mobileUserAvatarChar">U</span>
+                            </button>
+                            <button type="button" onclick="logout()" class="p-2 sm:p-3 glass rounded-xl hover:bg-red-500/20 text-red-300 hover:text-red-200 transition-all flex items-center justify-center" title="Keluar">
+                                <i class="fas fa-sign-out-alt text-sm sm:text-base"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
             </nav>
             
             <!-- Main Content Area -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto p-4 sm:p-6 lg:p-8 w-full">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto p-3.5 sm:p-6 lg:p-8 w-full">
                 <!-- Dashboard Content -->
                 <div id="dashboardContent" class="content-section fade-in">
                     <!-- Welcome Section -->
@@ -513,13 +546,21 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-                            <button type="button" onclick="showMasterKegiatan()" class="quick-menu-card group min-h-36 sm:min-h-40 rounded-2xl p-4 sm:p-5 text-left transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-80">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                            <button type="button" onclick="showMasterKegiatan()" class="quick-menu-card quick-card-emerald group min-h-36 sm:min-h-40 rounded-2xl p-4 sm:p-5 text-left transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-emerald-400">
                                 <span class="w-12 h-12 sm:w-14 sm:h-14 gradient-green rounded-2xl flex items-center justify-center shadow-lg mb-4 transition-transform duration-300 group-hover:scale-110">
                                     <i class="fas fa-clipboard-check text-white text-xl sm:text-2xl"></i>
                                 </span>
-                                <span class="block text-white font-bold text-sm sm:text-base">Master Kegiatan</span>
-                                <span class="block text-gray-300 text-xs sm:text-sm mt-1 leading-snug">Kelola kegiatan & isi logbook</span>
+                                <span class="block text-white font-bold text-sm sm:text-base">Input Kegiatan</span>
+                                <span class="block text-gray-300 text-xs sm:text-sm mt-1 leading-snug">Catat kegiatan & isi logbook</span>
+                            </button>
+
+                            <button type="button" onclick="showMasterUnit()" class="quick-menu-card group min-h-36 sm:min-h-40 rounded-2xl p-4 sm:p-5 text-left transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-80">
+                                <span class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-teal-400 to-cyan-600 rounded-2xl flex items-center justify-center shadow-lg mb-4 transition-transform duration-300 group-hover:scale-110">
+                                    <i class="fas fa-hospital text-white text-xl sm:text-2xl"></i>
+                                </span>
+                                <span class="block text-white font-bold text-sm sm:text-base">Master Unit</span>
+                                <span class="block text-gray-300 text-xs sm:text-sm mt-1 leading-snug">Kelola unit & ruangan</span>
                             </button>
 
                             <button type="button" onclick="showProfile()" class="quick-menu-card group min-h-36 sm:min-h-40 rounded-2xl p-4 sm:p-5 text-left transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-80">
@@ -530,32 +571,84 @@
                                 <span class="block text-gray-300 text-xs sm:text-sm mt-1 leading-snug">Lengkapi data kepegawaian</span>
                             </button>
 
-                            <button type="button" onclick="navigateToLaporan()" class="quick-menu-card group col-span-2 sm:col-span-1 min-h-36 sm:min-h-40 rounded-2xl p-4 sm:p-5 text-left transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-80">
+                            <button type="button" onclick="navigateToLaporan()" class="quick-menu-card group min-h-36 sm:min-h-40 rounded-2xl p-4 sm:p-5 text-left transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-80">
                                 <span class="w-12 h-12 sm:w-14 sm:h-14 gradient-orange rounded-2xl flex items-center justify-center shadow-lg mb-4 transition-transform duration-300 group-hover:scale-110">
                                     <i class="fas fa-chart-column text-white text-xl sm:text-2xl"></i>
                                 </span>
                                 <span class="block text-white font-bold text-sm sm:text-base">Laporan</span>
-                                <span class="block text-gray-300 text-xs sm:text-sm mt-1 leading-snug">Pantau hasil dan status kinerja</span>
+                                <span class="block text-gray-300 text-xs sm:text-sm mt-1 leading-snug">Pantau hasil & status kinerja</span>
                             </button>
                         </div>
                     </section>
 
-                    <!-- Overview Summary Card -->
-                    <div class="morphism-card rounded-2xl p-4 sm:p-6 lg:p-8">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div class="flex items-center space-x-3 sm:space-x-4">
-                                <div class="w-12 h-12 sm:w-14 sm:h-14 gradient-emerald rounded-2xl flex items-center justify-center neon-glow flex-shrink-0">
-                                    <i class="fas fa-clipboard-list text-white text-xl sm:text-2xl"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-base sm:text-lg lg:text-xl font-bold text-white">Ringkasan Master Kegiatan</h3>
-                                    <p class="text-gray-300 text-xs sm:text-sm">Kelola master kegiatan dan isi logbook kinerja Anda melalui menu Master Kegiatan.</p>
-                                </div>
+                    <!-- Panduan Alur Kerja Pegawai (Interactive Workflow Guide) -->
+                    <div class="morphism-card rounded-2xl p-4 sm:p-6 lg:p-8 mb-4 sm:mb-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                            <div>
+                                <h3 class="text-base sm:text-xl font-bold text-white flex items-center gap-2">
+                                    <i class="fas fa-route text-emerald-400"></i>
+                                    <span>Alur Kerja Harian e-Kinerja</span>
+                                </h3>
+                                <p class="text-gray-300 text-xs sm:text-sm mt-1">Ikuti 3 langkah mudah berikut untuk mencatat aktivitas kinerja Anda</p>
                             </div>
-                            <div class="flex items-center gap-2.5">
-                                <button type="button" onclick="showMasterKegiatan()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold rounded-xl text-sm transition-all shadow hover:shadow-emerald-500/25">
-                                    <i class="fas fa-arrow-right"></i>
-                                    <span>Buka Master Kegiatan</span>
+                            <button type="button" onclick="showMasterKegiatan()" class="inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-xl shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 transform hover:scale-105 text-xs sm:text-sm flex-shrink-0">
+                                <i class="fas fa-pencil-alt"></i>
+                                <span>Mulai Isi Logbook Sekarang</span>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
+                            <!-- Step 1 -->
+                            <div class="glass rounded-xl p-3.5 sm:p-5 border border-white/10 hover:border-emerald-500/40 transition-all flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-2.5">
+                                        <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-xs border border-emerald-500/30">
+                                            1
+                                        </div>
+                                        <h4 class="text-white font-semibold text-sm">Pilih Kegiatan</h4>
+                                    </div>
+                                    <p class="text-gray-300 text-xs leading-relaxed mb-3">
+                                        Buka menu <strong>Input Kegiatan</strong> di sidebar. Pilih jenis tugas yang Anda laksanakan hari ini.
+                                    </p>
+                                </div>
+                                <button type="button" onclick="showMasterKegiatan()" class="text-emerald-400 hover:text-emerald-300 text-xs font-semibold inline-flex items-center gap-1 group self-start">
+                                    <span>Buka Kegiatan</span>
+                                    <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                                </button>
+                            </div>
+
+                            <!-- Step 2 -->
+                            <div class="glass rounded-xl p-3.5 sm:p-5 border border-white/10 hover:border-blue-500/40 transition-all flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-2.5">
+                                        <div class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 font-bold flex items-center justify-center text-xs border border-blue-500/30">
+                                            2
+                                        </div>
+                                        <h4 class="text-white font-semibold text-sm">Isi Logbook & Bukti</h4>
+                                    </div>
+                                    <p class="text-gray-300 text-xs leading-relaxed mb-3">
+                                        Klik tombol <span class="px-1.5 py-0.5 rounded bg-blue-600 text-white text-[10px] font-bold">Logbook</span> pada kegiatan. Masukkan tanggal, unit/ruangan, uraian temuan, dan foto bukti.
+                                    </p>
+                                </div>
+                                <span class="text-blue-300 text-[11px] font-medium">Tersimpan otomatis</span>
+                            </div>
+
+                            <!-- Step 3 -->
+                            <div class="glass rounded-xl p-3.5 sm:p-5 border border-white/10 hover:border-amber-500/40 transition-all flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-2.5">
+                                        <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center text-xs border border-amber-500/30">
+                                            3
+                                        </div>
+                                        <h4 class="text-white font-semibold text-sm">Pantau & Cetak Laporan</h4>
+                                    </div>
+                                    <p class="text-gray-300 text-xs leading-relaxed mb-3">
+                                        Buka menu <strong>Laporan</strong> untuk melihat statistik bulanan, grafik kegiatan per ruangan, dan cetak laporan kinerja.
+                                    </p>
+                                </div>
+                                <button type="button" onclick="navigateToLaporan()" class="text-amber-400 hover:text-amber-300 text-xs font-semibold inline-flex items-center gap-1 group self-start">
+                                    <span>Lihat Laporan</span>
+                                    <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
                                 </button>
                             </div>
                         </div>
@@ -574,24 +667,21 @@
 
                     <!-- Jenis Kegiatan Section -->
                     <div id="activitiesSection" tabindex="-1" class="morphism-card rounded-2xl p-3 sm:p-4 lg:p-6 xl:p-8 mb-4 sm:mb-6 lg:mb-8 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-70">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-5 sm:mb-6">
                             <div class="flex items-center space-x-3 sm:space-x-4">
-                                <button type="button" onclick="showDashboard()" class="p-2.5 sm:p-3 glass rounded-xl hover:bg-white hover:bg-opacity-20 transition-all text-white flex items-center justify-center flex-shrink-0" title="Kembali ke Dashboard">
-                                    <i class="fas fa-arrow-left text-base sm:text-xl"></i>
-                                </button>
-                                <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 gradient-green rounded-2xl flex items-center justify-center neon-glow flex-shrink-0">
-                                    <i class="fas fa-clipboard-list text-white text-lg sm:text-xl lg:text-2xl"></i>
+                                <div class="w-11 h-11 sm:w-14 sm:h-14 lg:w-16 lg:h-16 gradient-green rounded-2xl flex items-center justify-center neon-glow flex-shrink-0">
+                                    <i class="fas fa-clipboard-list text-white text-base sm:text-xl lg:text-2xl"></i>
                                 </div>
-                                <div>
-                                    <div class="flex items-center gap-2">
-                                        <h3 class="text-lg sm:text-xl lg:text-2xl font-bold text-white">Master Jenis Kegiatan</h3>
+                                <div class="min-w-0">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <h3 class="text-base sm:text-xl lg:text-2xl font-bold text-white leading-tight">Input Kegiatan</h3>
                                         <span id="activityCountBadge" class="hidden text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-semibold"></span>
                                     </div>
-                                    <p class="text-gray-300 text-xs sm:text-sm">Kelola master kegiatan kinerja Anda & isi logbook</p>
+                                    <p class="text-gray-300 text-xs sm:text-sm mt-0.5">Pilih kegiatan untuk mengisi logbook kinerja harian Anda</p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-2.5 self-start sm:self-auto">
-                                <button type="button" onclick="openCreateJenisKegiatanModal()" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base">
+                            <div class="w-full sm:w-auto">
+                                <button type="button" onclick="openCreateJenisKegiatanModal()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-emerald-500/30 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base">
                                     <i class="fas fa-plus"></i>
                                     <span>Tambah Kegiatan</span>
                                 </button>
@@ -604,18 +694,19 @@
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
                                     <i class="fas fa-search text-sm"></i>
                                 </div>
-                                <input type="text" id="searchKegiatanInput" oninput="filterJenisKegiatan()" placeholder="Cari jenis kegiatan..." class="w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                                <input type="text" id="searchKegiatanInput" oninput="filterJenisKegiatan()" placeholder="Cari kegiatan..." class="w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                             </div>
                         </div>
                         
                         <div id="jenisKegiatanContainer">
                             <div class="glass rounded-xl p-3 sm:p-5">
-                                <div class="overflow-x-auto">
+                                <!-- Desktop / Tablet Table View (Hidden on mobile) -->
+                                <div class="hidden md:block overflow-x-auto">
                                     <table class="w-full text-left">
                                         <thead>
                                             <tr class="border-b border-white border-opacity-20 text-gray-300 text-xs sm:text-sm uppercase tracking-wider font-semibold">
                                                 <th class="py-3 px-3 w-12 text-center">No</th>
-                                                <th class="py-3 px-3">Nama Jenis Kegiatan</th>
+                                                <th class="py-3 px-3">Nama Kegiatan</th>
                                                 <th class="py-3 px-3 w-48 sm:w-56 text-center">Aksi</th>
                                             </tr>
                                         </thead>
@@ -624,9 +715,15 @@
                                         </tbody>
                                     </table>
                                 </div>
+
+                                <!-- Mobile Card View (md:hidden) -->
+                                <div id="jenisKegiatanCardList" class="md:hidden space-y-3">
+                                    <!-- Mobile cards will be loaded here -->
+                                </div>
+
                                 <div id="noDataMessage" class="text-center py-8 hidden">
                                     <i class="fas fa-inbox text-gray-400 text-4xl mb-4"></i>
-                                    <p class="text-gray-400">Tidak ada data jenis kegiatan untuk NIP Anda</p>
+                                    <p class="text-gray-400">Tidak ada data kegiatan untuk NIP Anda</p>
                                 </div>
                             </div>
                         </div>
@@ -634,26 +731,29 @@
                         <div id="jenisKegiatanLoading" class="text-center py-8">
                             <div class="inline-flex items-center space-x-3">
                                 <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-green-400"></div>
-                                <span class="text-white">Memuat data jenis kegiatan...</span>
+                                <span class="text-white">Memuat data kegiatan...</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Modal Form Jenis Kegiatan -->
-                <div id="jenisKegiatanModal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-                    <div class="glass morphism-card rounded-2xl p-5 sm:p-6 w-full max-w-lg mx-auto shadow-2xl border border-white border-opacity-20">
-                        <div class="flex justify-between items-center mb-5 border-b border-white border-opacity-10 pb-4">
+                <div id="jenisKegiatanModal" class="fixed inset-0 bg-black/70 hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm transition-all duration-300">
+                    <div class="glass morphism-card rounded-t-3xl sm:rounded-2xl p-5 sm:p-6 w-full max-w-lg mx-auto shadow-2xl border-t sm:border border-white/20 max-h-[90dvh] overflow-y-auto">
+                        <!-- Mobile bottom sheet drag pill -->
+                        <div class="w-12 h-1.5 bg-white/30 rounded-full mx-auto mb-3 sm:hidden"></div>
+                        
+                        <div class="flex justify-between items-center mb-4 sm:mb-5 border-b border-white/10 pb-3 sm:pb-4">
                             <div class="flex items-center space-x-3">
-                                <div id="modalIconContainer" class="w-10 h-10 gradient-green rounded-xl flex items-center justify-center">
+                                <div id="modalIconContainer" class="w-10 h-10 gradient-green rounded-xl flex items-center justify-center flex-shrink-0">
                                     <i id="modalIcon" class="fas fa-plus text-white"></i>
                                 </div>
                                 <div>
-                                    <h3 id="modalTitle" class="text-lg sm:text-xl font-bold text-white">Tambah Jenis Kegiatan</h3>
-                                    <p id="modalSubtitle" class="text-xs text-gray-300">Tambahkan kegiatan baru untuk master kinerja Anda</p>
+                                    <h3 id="modalTitle" class="text-base sm:text-xl font-bold text-white">Tambah Kegiatan</h3>
+                                    <p id="modalSubtitle" class="text-xs text-gray-300">Tambahkan kegiatan baru untuk pencatatan logbook</p>
                                 </div>
                             </div>
-                            <button type="button" id="closeModal" class="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white hover:bg-opacity-10 transition-colors">
+                            <button type="button" id="closeModal" class="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors">
                                 <i class="fas fa-times text-lg"></i>
                             </button>
                         </div>
@@ -661,8 +761,8 @@
                         <form id="jenisKegiatanForm" class="space-y-4">
                             <input type="hidden" id="jenisKegiatanId" value="">
                             <div>
-                                <label for="jenisKegiatanInput" class="block text-sm font-medium text-gray-200 mb-2">Nama Jenis Kegiatan <span class="text-red-400">*</span></label>
-                                <textarea id="jenisKegiatanInput" rows="3" required class="w-full px-4 py-3 bg-slate-900 border border-white border-opacity-20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm resize-none" placeholder="Masukkan nama jenis kegiatan..."></textarea>
+                                <label for="jenisKegiatanInput" class="block text-sm font-medium text-gray-200 mb-2">Nama Kegiatan <span class="text-red-400">*</span></label>
+                                <textarea id="jenisKegiatanInput" rows="3" required class="w-full px-4 py-3 bg-slate-900 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm resize-none" placeholder="Masukkan nama kegiatan..."></textarea>
                                 <p class="text-xs text-gray-400 mt-1">Nama kegiatan yang akan muncul pada daftar logbook kinerja.</p>
                             </div>
                             
@@ -673,6 +773,130 @@
                                 <button type="submit" id="saveJenisKegiatanBtn" class="flex-1 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white py-3 px-4 rounded-xl font-semibold shadow-lg hover:shadow-emerald-500/30 transition-all duration-200 flex items-center justify-center space-x-2">
                                     <i class="fas fa-save"></i>
                                     <span id="saveBtnText">Simpan</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Master Unit Content -->
+                <div id="masterUnitContent" class="content-section hidden fade-in">
+                    <!-- Back Button -->
+                    <div class="mb-3 sm:mb-4">
+                        <button type="button" onclick="showDashboard()" class="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 glass rounded-xl text-white font-medium hover:bg-white hover:bg-opacity-20 transition-all text-sm group" title="Kembali ke Dashboard">
+                            <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+                            <span>Kembali ke Dashboard</span>
+                        </button>
+                    </div>
+
+                    <!-- Unit Ruangan Card -->
+                    <div id="unitRuanganSection" tabindex="-1" class="morphism-card rounded-2xl p-3 sm:p-4 lg:p-6 xl:p-8 mb-4 sm:mb-6 lg:mb-8 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-70">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-5 sm:mb-6">
+                            <div class="flex items-center space-x-3 sm:space-x-4">
+                                <div class="w-11 h-11 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-r from-teal-400 to-cyan-600 rounded-2xl flex items-center justify-center neon-glow flex-shrink-0">
+                                    <i class="fas fa-hospital text-white text-base sm:text-xl lg:text-2xl"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <h3 class="text-base sm:text-xl lg:text-2xl font-bold text-white leading-tight">Master Unit / Ruangan</h3>
+                                        <span id="unitCountBadge" class="hidden text-xs px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30 font-semibold"></span>
+                                    </div>
+                                    <p class="text-gray-300 text-xs sm:text-sm mt-0.5">Kelola daftar unit/ruangan kerja untuk pencatatan logbook Anda</p>
+                                </div>
+                            </div>
+                            <div class="w-full sm:w-auto">
+                                <button type="button" onclick="openCreateUnitModal()" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-cyan-500/30 transition-all duration-300 transform hover:scale-105 text-sm sm:text-base">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Tambah Unit</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Search & Filter Bar -->
+                        <div class="mb-4">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                    <i class="fas fa-search text-sm"></i>
+                                </div>
+                                <input type="text" id="searchUnitInput" oninput="filterUnitRuangan()" placeholder="Cari nama unit / ruangan..." class="w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm">
+                            </div>
+                        </div>
+                        
+                        <div id="unitRuanganContainer">
+                            <div class="glass rounded-xl p-3 sm:p-5">
+                                <!-- Desktop / Tablet Table View (Hidden on mobile) -->
+                                <div class="hidden md:block overflow-x-auto">
+                                    <table class="w-full text-left">
+                                        <thead>
+                                            <tr class="border-b border-white border-opacity-20 text-gray-300 text-xs sm:text-sm uppercase tracking-wider font-semibold">
+                                                <th class="py-3 px-3 w-12 text-center">No</th>
+                                                <th class="py-3 px-3">Nama Unit / Ruangan</th>
+                                                <th class="py-3 px-3 w-40 text-center">Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="unitRuanganTableBody">
+                                            <!-- Data will be loaded here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Mobile Card View (md:hidden) -->
+                                <div id="unitRuanganCardList" class="md:hidden space-y-3">
+                                    <!-- Mobile cards will be loaded here -->
+                                </div>
+
+                                <div id="noUnitDataMessage" class="text-center py-8 hidden">
+                                    <i class="fas fa-inbox text-gray-400 text-4xl mb-4"></i>
+                                    <p class="text-gray-400">Belum ada data unit/ruangan untuk NIP Anda</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="unitRuanganLoading" class="text-center py-8">
+                            <div class="inline-flex items-center space-x-3">
+                                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-cyan-400"></div>
+                                <span class="text-white">Memuat data unit ruangan...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Form Unit Ruangan -->
+                <div id="unitRuanganModal" class="fixed inset-0 bg-black/70 hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm transition-all duration-300">
+                    <div class="glass morphism-card rounded-t-3xl sm:rounded-2xl p-5 sm:p-6 w-full max-w-lg mx-auto shadow-2xl border-t sm:border border-white/20 max-h-[90dvh] overflow-y-auto">
+                        <!-- Mobile bottom sheet drag pill -->
+                        <div class="w-12 h-1.5 bg-white/30 rounded-full mx-auto mb-3 sm:hidden"></div>
+                        
+                        <div class="flex justify-between items-center mb-4 sm:mb-5 border-b border-white/10 pb-3 sm:pb-4">
+                            <div class="flex items-center space-x-3">
+                                <div id="unitModalIconContainer" class="w-10 h-10 bg-gradient-to-r from-teal-400 to-cyan-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <i id="unitModalIcon" class="fas fa-plus text-white"></i>
+                                </div>
+                                <div>
+                                    <h3 id="unitModalTitle" class="text-base sm:text-xl font-bold text-white">Tambah Unit / Ruangan</h3>
+                                    <p id="unitModalSubtitle" class="text-xs text-gray-300">Tambahkan nama unit atau ruangan kerja</p>
+                                </div>
+                            </div>
+                            <button type="button" id="closeUnitModal" class="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-colors">
+                                <i class="fas fa-times text-lg"></i>
+                            </button>
+                        </div>
+                        
+                        <form id="unitRuanganForm" class="space-y-4">
+                            <input type="hidden" id="unitRuanganId" value="">
+                            <div>
+                                <label for="namaRuanganInput" class="block text-sm font-medium text-gray-200 mb-2">Nama Unit / Ruangan <span class="text-red-400">*</span></label>
+                                <input type="text" id="namaRuanganInput" required class="w-full px-4 py-3 bg-slate-900 border border-white/20 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm" placeholder="Contoh: ICU, Ruang Operasi (OK), Melati...">
+                                <p class="text-xs text-gray-400 mt-1">Nama unit/ruangan yang akan menjadi pilihan saat mengisi logbook.</p>
+                            </div>
+                            
+                            <div class="flex space-x-3 pt-2">
+                                <button type="button" id="cancelUnitModal" class="flex-1 bg-gray-700/80 hover:bg-gray-600 text-white py-3 px-4 rounded-xl font-medium transition-all duration-200">
+                                    Batal
+                                </button>
+                                <button type="submit" id="saveUnitBtn" class="flex-1 bg-gradient-to-r from-teal-500 to-cyan-600 hover:from-teal-600 hover:to-cyan-700 text-white py-3 px-4 rounded-xl font-semibold shadow-lg hover:shadow-cyan-500/30 transition-all duration-200 flex items-center justify-center space-x-2">
+                                    <i class="fas fa-save"></i>
+                                    <span id="saveUnitBtnText">Simpan</span>
                                 </button>
                             </div>
                         </form>
@@ -918,10 +1142,21 @@
                     return;
                 }
 
-                document.getElementById('userWelcome').textContent = user.name || 'Pengguna';
+                const userName = user.name || 'Pengguna';
+                const welcomeEl = document.getElementById('userWelcome');
+                if (welcomeEl) welcomeEl.textContent = userName;
+
+                const mobileAvatar = document.getElementById('mobileUserAvatarChar');
+                if (mobileAvatar) {
+                    mobileAvatar.textContent = userName.trim().charAt(0).toUpperCase() || 'U';
+                }
+
                 updateDateTime();
                 showDashboard();
-                await loadJenisKegiatan();
+                await Promise.allSettled([
+                    loadJenisKegiatan(),
+                    loadUnitRuangan()
+                ]);
             } catch (error) {
                 console.error('Validasi sesi gagal:', error);
                 clearSession();
@@ -1116,13 +1351,15 @@
             renderJenisKegiatanTable(query);
         }
 
-        // Function to render table rows
+        // Function to render table rows & mobile cards
         function renderJenisKegiatanTable(query = '') {
             const tableBody = document.getElementById('jenisKegiatanTableBody');
+            const cardList = document.getElementById('jenisKegiatanCardList');
             const noDataMessage = document.getElementById('noDataMessage');
             if (!tableBody) return;
 
             tableBody.innerHTML = '';
+            if (cardList) cardList.innerHTML = '';
 
             const trimmedQuery = query.trim().toLowerCase();
             const filteredData = trimmedQuery 
@@ -1132,7 +1369,7 @@
             if (filteredData.length === 0) {
                 if (noDataMessage) {
                     if (cachedJenisKegiatan.length === 0) {
-                        showNoDataMessage('Belum ada master jenis kegiatan untuk NIP Anda. Klik "Tambah Kegiatan" untuk menambahkan kegiatan pertama Anda.');
+                        showNoDataMessage('Belum ada kegiatan untuk NIP Anda. Klik "Tambah Kegiatan" untuk menambahkan kegiatan pertama Anda.');
                     } else {
                         showNoDataMessage(`Tidak ditemukan kegiatan dengan kata kunci "${query}".`);
                     }
@@ -1145,6 +1382,7 @@
             }
 
             filteredData.forEach((item, index) => {
+                // Render Desktop Table Row
                 const row = document.createElement('tr');
                 row.className = 'border-b border-white border-opacity-10 hover:bg-white hover:bg-opacity-5 transition-all duration-200 group';
 
@@ -1165,7 +1403,7 @@
                                 <i class="fas fa-edit"></i>
                                 <span class="hidden sm:inline">Edit</span>
                             </button>
-                            <button type="button" onclick="deleteJenisKegiatan(${item.id})" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-red-600/80 hover:bg-red-600 text-white rounded-lg text-xs font-semibold shadow hover:shadow-red-500/25 transition-all transform hover:scale-105" title="Hapus master kegiatan">
+                            <button type="button" onclick="deleteJenisKegiatan(${item.id})" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-red-600/80 hover:bg-red-600 text-white rounded-lg text-xs font-semibold shadow hover:shadow-red-500/25 transition-all transform hover:scale-105" title="Hapus kegiatan">
                                 <i class="fas fa-trash-alt"></i>
                                 <span class="hidden sm:inline">Hapus</span>
                             </button>
@@ -1174,6 +1412,35 @@
                 `;
 
                 tableBody.appendChild(row);
+
+                // Render Mobile Card
+                if (cardList) {
+                    const card = document.createElement('div');
+                    card.className = 'group bg-gradient-to-br from-emerald-950/35 via-slate-900/90 to-slate-900/95 border border-emerald-500/30 hover:border-emerald-400/60 rounded-xl p-2.5 sm:p-3 transition-all duration-200 active:scale-[0.995] relative overflow-hidden shadow-sm';
+                    card.innerHTML = `
+                        <div class="flex items-start gap-2.5">
+                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-[11px] font-bold flex-shrink-0 mt-0.5">${index + 1}</span>
+                            <div class="flex-1 min-w-0 cursor-pointer" onclick="navigateToDetailById(${item.id})">
+                                <h4 class="text-white font-medium text-xs sm:text-sm leading-snug break-words group-hover:text-emerald-300 transition-colors">${escapeHtml(item.jenis_kegiatan || '-')}</h4>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between gap-2 pt-2 mt-2 border-t border-white/10">
+                            <button type="button" onclick="navigateToDetailById(${item.id})" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500 text-emerald-300 hover:text-white border border-emerald-500/40 rounded-lg text-xs font-semibold shadow-sm transition-all duration-200 active:scale-95">
+                                <i class="fas fa-clipboard-check text-[11px]"></i>
+                                <span>Isi Logbook</span>
+                            </button>
+                            <div class="flex items-center gap-1">
+                                <button type="button" onclick="openEditJenisKegiatanModal(${item.id})" class="inline-flex items-center justify-center w-7 h-7 text-gray-400 hover:text-amber-300 hover:bg-amber-400/10 rounded-lg transition-colors" title="Edit kegiatan" aria-label="Edit kegiatan">
+                                    <i class="fas fa-pen text-[11px]"></i>
+                                </button>
+                                <button type="button" onclick="deleteJenisKegiatan(${item.id})" class="inline-flex items-center justify-center w-7 h-7 text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors" title="Hapus kegiatan" aria-label="Hapus kegiatan">
+                                    <i class="fas fa-trash-alt text-[11px]"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    cardList.appendChild(card);
+                }
             });
         }
 
@@ -1210,8 +1477,8 @@
 
             if (idInput) idInput.value = '';
             if (input) input.value = '';
-            if (title) title.textContent = 'Tambah Jenis Kegiatan';
-            if (subtitle) subtitle.textContent = 'Tambahkan master kegiatan baru untuk NIP Anda';
+            if (title) title.textContent = 'Tambah Kegiatan';
+            if (subtitle) subtitle.textContent = 'Tambahkan nama kegiatan untuk pencatatan logbook';
             if (saveBtnText) saveBtnText.textContent = 'Simpan';
             if (iconContainer) iconContainer.className = 'w-10 h-10 gradient-green rounded-xl flex items-center justify-center';
             if (icon) icon.className = 'fas fa-plus text-white';
@@ -1242,8 +1509,8 @@
 
             if (idInput) idInput.value = item.id;
             if (input) input.value = item.jenis_kegiatan || '';
-            if (title) title.textContent = 'Edit Jenis Kegiatan';
-            if (subtitle) subtitle.textContent = 'Perbarui nama kegiatan master';
+            if (title) title.textContent = 'Edit Kegiatan';
+            if (subtitle) subtitle.textContent = 'Perbarui nama kegiatan';
             if (saveBtnText) saveBtnText.textContent = 'Perbarui';
             if (iconContainer) iconContainer.className = 'w-10 h-10 gradient-blue rounded-xl flex items-center justify-center';
             if (icon) icon.className = 'fas fa-edit text-white';
@@ -1267,7 +1534,7 @@
             const item = cachedJenisKegiatan.find(k => k.id == id);
             const nama = item ? item.jenis_kegiatan : 'kegiatan ini';
 
-            if (!confirm(`Apakah Anda yakin ingin menghapus jenis kegiatan:\n"${nama}"?\n\nCatatan: Logbook yang terkait dengan kegiatan ini dapat terpengaruh.`)) {
+            if (!confirm(`Apakah Anda yakin ingin menghapus kegiatan:\n"${nama}"?\n\nCatatan: Logbook yang terkait dengan kegiatan ini dapat terpengaruh.`)) {
                 return;
             }
 
@@ -1292,11 +1559,251 @@
                 if (response.ok && result.success) {
                     await loadJenisKegiatan();
                 } else {
-                    alert(result.message || 'Gagal menghapus jenis kegiatan');
+                    alert(result.message || 'Gagal menghapus kegiatan');
                 }
             } catch (error) {
                 console.error('Error deleting jenis kegiatan:', error);
                 alert('Terjadi kesalahan koneksi saat menghapus kegiatan');
+            }
+        }
+
+        // ==================== MASTER UNIT / RUANGAN ====================
+        let cachedUnitRuangan = [];
+
+        async function loadUnitRuangan() {
+            const token = localStorage.getItem('token');
+            const loadingElement = document.getElementById('unitRuanganLoading');
+            const containerElement = document.getElementById('unitRuanganContainer');
+            const countBadge = document.getElementById('unitCountBadge');
+
+            if (!token) return;
+
+            try {
+                loadingElement?.classList.remove('hidden');
+                containerElement?.classList.add('hidden');
+
+                const response = await fetch('/api/unit-ruangan', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                cachedUnitRuangan = result.data || [];
+
+                if (countBadge) {
+                    countBadge.textContent = `${cachedUnitRuangan.length} Unit`;
+                    countBadge.classList.remove('hidden');
+                }
+
+                const searchInput = document.getElementById('searchUnitInput');
+                renderUnitRuanganTable(searchInput ? searchInput.value : '');
+
+                containerElement?.classList.remove('hidden');
+            } catch (error) {
+                console.error('Error loading unit ruangan:', error);
+                const noData = document.getElementById('noUnitDataMessage');
+                if (noData) {
+                    noData.innerHTML = `
+                        <i class="fas fa-exclamation-triangle text-yellow-400 text-4xl mb-4"></i>
+                        <p class="text-yellow-400 font-medium">Gagal memuat data unit: ${escapeHtml(error.message)}</p>
+                    `;
+                    noData.classList.remove('hidden');
+                }
+                containerElement?.classList.remove('hidden');
+            } finally {
+                loadingElement?.classList.add('hidden');
+            }
+        }
+
+        function filterUnitRuangan() {
+            const searchInput = document.getElementById('searchUnitInput');
+            const query = searchInput ? searchInput.value : '';
+            renderUnitRuanganTable(query);
+        }
+
+        function renderUnitRuanganTable(query = '') {
+            const tableBody = document.getElementById('unitRuanganTableBody');
+            const cardList = document.getElementById('unitRuanganCardList');
+            const noDataMessage = document.getElementById('noUnitDataMessage');
+            if (!tableBody) return;
+
+            tableBody.innerHTML = '';
+            if (cardList) cardList.innerHTML = '';
+
+            const trimmedQuery = query.trim().toLowerCase();
+            const filteredData = trimmedQuery
+                ? cachedUnitRuangan.filter(item => (item.nama_ruangan || '').toLowerCase().includes(trimmedQuery))
+                : cachedUnitRuangan;
+
+            if (filteredData.length === 0) {
+                if (noDataMessage) {
+                    noDataMessage.innerHTML = `
+                        <i class="fas fa-inbox text-gray-400 text-4xl mb-4"></i>
+                        <p class="text-gray-400">${cachedUnitRuangan.length === 0 ? 'Belum ada data unit/ruangan untuk NIP Anda. Klik "Tambah Unit" untuk menambahkan.' : `Tidak ditemukan unit dengan kata kunci "${escapeHtml(query)}".`}</p>
+                    `;
+                    noDataMessage.classList.remove('hidden');
+                }
+                return;
+            }
+
+            if (noDataMessage) {
+                noDataMessage.classList.add('hidden');
+            }
+
+            filteredData.forEach((item, index) => {
+                // Desktop row
+                const row = document.createElement('tr');
+                row.className = 'border-b border-white border-opacity-10 hover:bg-white hover:bg-opacity-5 transition-all duration-200 group';
+                row.innerHTML = `
+                    <td class="py-3.5 px-3 text-center text-gray-300 text-sm font-medium">${index + 1}</td>
+                    <td class="py-3.5 px-3">
+                        <span class="text-white font-medium text-sm sm:text-base">${escapeHtml(item.nama_ruangan || '-')}</span>
+                    </td>
+                    <td class="py-3.5 px-3 text-center">
+                        <div class="flex items-center justify-center gap-1.5 sm:gap-2">
+                            <button type="button" onclick="openEditUnitModal(${item.id})" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-amber-500/80 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold shadow hover:shadow-amber-500/25 transition-all transform hover:scale-105" title="Edit nama unit">
+                                <i class="fas fa-edit"></i>
+                                <span class="hidden sm:inline">Edit</span>
+                            </button>
+                            <button type="button" onclick="deleteUnitRuangan(${item.id})" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-red-600/80 hover:bg-red-600 text-white rounded-lg text-xs font-semibold shadow hover:shadow-red-500/25 transition-all transform hover:scale-105" title="Hapus unit">
+                                <i class="fas fa-trash-alt"></i>
+                                <span class="hidden sm:inline">Hapus</span>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+
+                // Mobile card
+                if (cardList) {
+                    const card = document.createElement('div');
+                    card.className = 'group bg-gradient-to-br from-teal-950/35 via-slate-900/90 to-slate-900/95 border border-teal-500/30 hover:border-teal-400/60 rounded-xl p-2.5 sm:p-3 transition-all duration-200 active:scale-[0.995] relative overflow-hidden shadow-sm';
+                    card.innerHTML = `
+                        <div class="flex items-start gap-2.5">
+                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-md bg-teal-500/15 text-teal-300 border border-teal-500/30 text-[11px] font-bold flex-shrink-0 mt-0.5">${index + 1}</span>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-white font-medium text-xs sm:text-sm leading-snug break-words group-hover:text-teal-300 transition-colors">${escapeHtml(item.nama_ruangan || '-')}</h4>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end gap-1 pt-2 mt-2 border-t border-white/10">
+                            <button type="button" onclick="openEditUnitModal(${item.id})" class="inline-flex items-center gap-1 px-2.5 py-1 text-gray-400 hover:text-amber-300 hover:bg-amber-400/10 rounded-lg text-xs font-medium transition-colors" title="Edit unit" aria-label="Edit unit">
+                                <i class="fas fa-pen text-[11px]"></i>
+                                <span>Edit</span>
+                            </button>
+                            <button type="button" onclick="deleteUnitRuangan(${item.id})" class="inline-flex items-center gap-1 px-2.5 py-1 text-gray-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg text-xs font-medium transition-colors" title="Hapus unit" aria-label="Hapus unit">
+                                <i class="fas fa-trash-alt text-[11px]"></i>
+                                <span>Hapus</span>
+                            </button>
+                        </div>
+                    `;
+                    cardList.appendChild(card);
+                }
+            });
+        }
+
+        function openCreateUnitModal() {
+            const modal = document.getElementById('unitRuanganModal');
+            const form = document.getElementById('unitRuanganForm');
+            const idInput = document.getElementById('unitRuanganId');
+            const input = document.getElementById('namaRuanganInput');
+            const title = document.getElementById('unitModalTitle');
+            const subtitle = document.getElementById('unitModalSubtitle');
+            const saveBtnText = document.getElementById('saveUnitBtnText');
+            const iconContainer = document.getElementById('unitModalIconContainer');
+            const icon = document.getElementById('unitModalIcon');
+
+            if (!modal) return;
+            form?.reset();
+            if (idInput) idInput.value = '';
+            if (title) title.textContent = 'Tambah Unit / Ruangan';
+            if (subtitle) subtitle.textContent = 'Tambahkan nama unit atau ruangan kerja';
+            if (saveBtnText) saveBtnText.textContent = 'Simpan';
+            if (iconContainer) iconContainer.className = 'w-10 h-10 bg-gradient-to-r from-teal-400 to-cyan-600 rounded-xl flex items-center justify-center flex-shrink-0';
+            if (icon) icon.className = 'fas fa-plus text-white';
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => input?.focus(), 150);
+        }
+
+        function openEditUnitModal(id) {
+            const item = cachedUnitRuangan.find(u => u.id == id);
+            if (!item) {
+                alert('Data unit tidak ditemukan');
+                return;
+            }
+
+            const modal = document.getElementById('unitRuanganModal');
+            const idInput = document.getElementById('unitRuanganId');
+            const input = document.getElementById('namaRuanganInput');
+            const title = document.getElementById('unitModalTitle');
+            const subtitle = document.getElementById('unitModalSubtitle');
+            const saveBtnText = document.getElementById('saveUnitBtnText');
+            const iconContainer = document.getElementById('unitModalIconContainer');
+            const icon = document.getElementById('unitModalIcon');
+
+            if (!modal) return;
+            if (idInput) idInput.value = item.id;
+            if (input) input.value = item.nama_ruangan || '';
+            if (title) title.textContent = 'Edit Unit / Ruangan';
+            if (subtitle) subtitle.textContent = 'Perbarui nama unit atau ruangan kerja';
+            if (saveBtnText) saveBtnText.textContent = 'Perbarui';
+            if (iconContainer) iconContainer.className = 'w-10 h-10 gradient-blue rounded-xl flex items-center justify-center flex-shrink-0';
+            if (icon) icon.className = 'fas fa-edit text-white';
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => input?.focus(), 150);
+        }
+
+        function closeUnitModal() {
+            const modal = document.getElementById('unitRuanganModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        async function deleteUnitRuangan(id) {
+            const item = cachedUnitRuangan.find(u => u.id == id);
+            const nama = item ? item.nama_ruangan : 'unit ini';
+
+            if (!confirm(`Apakah Anda yakin ingin menghapus unit/ruangan:\n"${nama}"?\n\nCatatan: Logbook yang menggunakan unit ini dapat terpengaruh.`)) {
+                return;
+            }
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Sesi Anda telah berakhir. Silakan login kembali.');
+                window.location.replace('/login');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/unit-ruangan/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    await loadUnitRuangan();
+                } else {
+                    alert(result.message || 'Gagal menghapus unit/ruangan');
+                }
+            } catch (error) {
+                console.error('Error deleting unit ruangan:', error);
+                alert('Terjadi kesalahan koneksi saat menghapus unit');
             }
         }
         
@@ -1336,7 +1843,7 @@
                     
                     const jenisKegiatan = input ? input.value.trim() : '';
                     if (!jenisKegiatan) {
-                        alert('Mohon isi nama jenis kegiatan');
+                        alert('Mohon isi nama kegiatan');
                         input?.focus();
                         return;
                     }
@@ -1373,10 +1880,82 @@
                             closeJenisKegiatanModal();
                             await loadJenisKegiatan();
                         } else {
-                            alert(result.message || 'Gagal menyimpan jenis kegiatan');
+                            alert(result.message || 'Gagal menyimpan kegiatan');
                         }
                     } catch (error) {
                         console.error('Error saving jenis kegiatan:', error);
+                        alert('Terjadi kesalahan koneksi saat menyimpan data');
+                    } finally {
+                        if (saveBtn) saveBtn.disabled = false;
+                        if (saveBtnText) saveBtnText.textContent = originalText;
+                    }
+                });
+            }
+
+            // Unit Ruangan modal events
+            const closeUnitModalBtn = document.getElementById('closeUnitModal');
+            const cancelUnitModalBtn = document.getElementById('cancelUnitModal');
+            const unitModal = document.getElementById('unitRuanganModal');
+            const unitForm = document.getElementById('unitRuanganForm');
+
+            if (closeUnitModalBtn) closeUnitModalBtn.addEventListener('click', closeUnitModal);
+            if (cancelUnitModalBtn) cancelUnitModalBtn.addEventListener('click', closeUnitModal);
+            if (unitModal) {
+                unitModal.addEventListener('click', function(e) {
+                    if (e.target === unitModal) closeUnitModal();
+                });
+            }
+            if (unitForm) {
+                unitForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const token = localStorage.getItem('token');
+                    const idInput = document.getElementById('unitRuanganId');
+                    const input = document.getElementById('namaRuanganInput');
+                    const saveBtn = document.getElementById('saveUnitBtn');
+                    const saveBtnText = document.getElementById('saveUnitBtnText');
+
+                    const nama = input ? input.value.trim() : '';
+                    if (!nama) {
+                        alert('Mohon isi nama unit / ruangan');
+                        input?.focus();
+                        return;
+                    }
+
+                    if (!token) {
+                        alert('Sesi Anda telah berakhir. Silakan login kembali.');
+                        window.location.replace('/login');
+                        return;
+                    }
+
+                    const isEdit = idInput && idInput.value;
+                    const url = isEdit ? `/api/unit-ruangan/${idInput.value}` : '/api/unit-ruangan';
+                    const method = isEdit ? 'PUT' : 'POST';
+
+                    const originalText = saveBtnText ? saveBtnText.textContent : 'Simpan';
+                    if (saveBtn) saveBtn.disabled = true;
+                    if (saveBtnText) saveBtnText.textContent = 'Menyimpan...';
+
+                    try {
+                        const response = await fetch(url, {
+                            method: method,
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({ nama_ruangan: nama })
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok && result.success) {
+                            closeUnitModal();
+                            await loadUnitRuangan();
+                        } else {
+                            alert(result.message || 'Gagal menyimpan unit / ruangan');
+                        }
+                    } catch (error) {
+                        console.error('Error saving unit ruangan:', error);
                         alert('Terjadi kesalahan koneksi saat menyimpan data');
                     } finally {
                         if (saveBtn) saveBtn.disabled = false;
@@ -1410,16 +1989,31 @@
         function updateMobileNav(sectionName) {
             const mobileBackBtn = document.getElementById('mobileNavBackBtn');
             const openSidebarBtn = document.getElementById('openSidebar');
-            if (!mobileBackBtn || !openSidebarBtn) return;
+            const topNavTitle = document.getElementById('topNavTitle');
 
-            if (sectionName === 'dashboard') {
-                mobileBackBtn.classList.add('hidden');
-                mobileBackBtn.classList.remove('inline-flex');
-                openSidebarBtn.classList.remove('hidden');
-            } else {
-                mobileBackBtn.classList.remove('hidden');
-                mobileBackBtn.classList.add('inline-flex');
-                openSidebarBtn.classList.add('hidden');
+            if (mobileBackBtn && openSidebarBtn) {
+                if (sectionName === 'dashboard') {
+                    mobileBackBtn.classList.add('hidden');
+                    mobileBackBtn.classList.remove('inline-flex');
+                    openSidebarBtn.classList.remove('hidden');
+                } else {
+                    mobileBackBtn.classList.remove('hidden');
+                    mobileBackBtn.classList.add('inline-flex');
+                    openSidebarBtn.classList.add('hidden');
+                }
+            }
+
+            // Update top navigation title
+            if (topNavTitle) {
+                const titles = {
+                    'dashboard': 'e-Kinerja Dashboard',
+                    'master-kegiatan': 'Input Kegiatan',
+                    'master-unit': 'Master Unit / Ruangan',
+                    'profile': 'Profil Saya',
+                    'reports': 'Laporan Kinerja',
+                    'tasks': 'Daftar Tugas'
+                };
+                topNavTitle.textContent = titles[sectionName] || 'e-Kinerja';
             }
         }
         
@@ -1441,6 +2035,18 @@
             }
             loadJenisKegiatan();
             updateMobileNav('master-kegiatan');
+            closeSidebarOnMobile();
+        }
+
+        function showMasterUnit() {
+            hideAllContent();
+            const content = document.getElementById('masterUnitContent');
+            if (content) {
+                content.classList.remove('hidden');
+                content.classList.add('fade-in');
+            }
+            loadUnitRuangan();
+            updateMobileNav('master-unit');
             closeSidebarOnMobile();
         }
 
