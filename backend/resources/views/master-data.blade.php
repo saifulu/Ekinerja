@@ -93,6 +93,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
     </style>
+    @include('partials.mobile-ux')
 </head>
 <body class="gradient-bg min-h-screen">
     <div class="min-h-screen p-4 sm:p-6 lg:p-8">
@@ -103,13 +104,13 @@
             <div class="absolute top-40 left-40 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-pulse" style="animation-delay: 4s;"></div>
         </div>
         <!-- Header -->
-        <div class="morphism-card rounded-2xl p-6 mb-8 fade-in">
-            <div class="flex items-center justify-between">
+        <div class="morphism-card rounded-2xl p-4 sm:p-6 mb-4 sm:mb-8 fade-in">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 class="text-3xl font-bold text-white mb-2">Master Data</h1>
                     <p class="text-gray-200">Kelola data master sistem e-Kinerja</p>
                 </div>
-                <a href="/dashboard" class="btn-primary text-white px-6 py-3 rounded-xl hover:scale-105 transition-all">
+                <a href="/dashboard" class="btn-primary text-white px-6 py-3 rounded-xl hover:scale-105 transition-all text-center">
                     <i class="fas fa-arrow-left mr-2"></i>
                     Kembali ke Dashboard
                 </a>

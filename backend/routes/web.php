@@ -2,10 +2,15 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DetailJenisKegiatanController;
+use App\Http\Controllers\SocialLoginController;
 
 Route::get('/', function () {
     return redirect('/login');
 });
+
+// Google Socialite Routes
+Route::get('/auth/google', [SocialLoginController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('/auth/google/callback', [SocialLoginController::class, 'handleGoogleCallback']);
 
 Route::get('/register', function () {
     return view('register');

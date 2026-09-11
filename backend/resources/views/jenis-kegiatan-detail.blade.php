@@ -527,6 +527,7 @@
             justify-content: center;
         }
     </style>
+    @include('partials.mobile-ux')
 </head>
 <body>
     <div class="container-fluid py-4">

@@ -69,7 +69,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email:rfc,dns|max:255',
+            'email' => 'required|email:rfc|max:255',
             'password' => 'required|string|min:8|max:255'
         ]);
     
@@ -86,7 +86,7 @@ class AuthController extends Controller
         $password = $request->password;
     
         // Rate limiting untuk login attempts
-        $key = 'login_attempts:' . $request->ip();
+        $key = 'login_attempts:' . hash('sha256', strtolower($email) . '|' . $request->ip());
         if (RateLimiter::tooManyAttempts($key, 5)) {
             return response()->json([
                 'success' => false,

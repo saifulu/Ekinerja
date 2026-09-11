@@ -32,6 +32,7 @@
         }
     </style>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @include('partials.mobile-ux')
 </head>
 <body class="gradient-bg min-h-screen flex items-center justify-center p-4">
     <!-- Background Elements -->

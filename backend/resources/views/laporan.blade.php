@@ -350,6 +350,7 @@
             }
         }
     </style>
+    @include('partials.mobile-ux')
 </head>
 <body>
     <div class="container">

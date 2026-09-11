@@ -19,7 +19,8 @@ class User extends Authenticatable
         'golongan',
         'instansi',
         'ruangan',
-        'role'
+        'role',
+        'google_id'
     ];
 
     protected $hidden = [

@@ -83,7 +83,7 @@
         }
         
         .gradient-blue {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #2563eb 0%, #0891b2 100%);
         }
         
         .gradient-purple {
@@ -95,11 +95,11 @@
         }
         
         .gradient-orange {
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            background: linear-gradient(135deg, #ea580c 0%, #d97706 100%);
         }
         
         .gradient-green {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            background: linear-gradient(135deg, #059669 0%, #0f766e 100%);
         }
         
         .floating {
@@ -164,176 +164,9 @@
             50% { box-shadow: 0 0 30px rgba(102, 126, 234, 0.6); }
         }
         
-        /* Extra small mobile screens */
-        @media (max-width: 480px) {
-            .morphism-card {
-                padding: 0.5rem;
-                margin-bottom: 0.5rem;
-            }
-            
-            .text-3xl {
-                font-size: 1rem;
-            }
-            
-            .text-2xl {
-                font-size: 0.875rem;
-            }
-            
-            .text-xl {
-                font-size: 0.75rem;
-            }
-            
-            .text-lg {
-                font-size: 0.625rem;
-            }
-            
-            .stats-counter {
-                font-size: 1.25rem !important;
-            }
-            
-            .w-10, .h-10 {
-                width: 1.5rem;
-                height: 1.5rem;
-            }
-            
-            .w-12, .h-12 {
-                width: 1.75rem;
-                height: 1.75rem;
-            }
-            
-            .gap-3 {
-                gap: 0.25rem;
-            }
-            
-            .space-x-2 > :not([hidden]) ~ :not([hidden]) {
-                margin-left: 0.25rem;
-            }
-            
-            .mb-3 {
-                margin-bottom: 0.5rem;
-            }
-            
-            .mb-4 {
-                margin-bottom: 0.75rem;
-            }
-        }
-        
-        /* Mobile layout */
-        @media (max-width: 1024px) {
-            .min-h-screen.flex {
-                flex-direction: column;
-            }
-            
-            .flex-1 {
-                width: 100vw !important;
-                max-width: 100vw !important;
-            }
-        }
-        
-        @media (max-width: 640px) {
-            #sidebar {
-                width: 100vw !important;
-                max-width: 320px !important;
-            }
-            
-            .morphism-card {
-                padding: 0.75rem;
-            }
-            
-            .text-4xl {
-                font-size: 1.75rem;
-            }
-            
-            .text-3xl {
-                font-size: 1.25rem;
-            }
-            
-            .text-2xl {
-                font-size: 1.125rem;
-            }
-            
-            .text-xl {
-                font-size: 1rem;
-            }
-            
-            .text-lg {
-                font-size: 0.875rem;
-            }
-            
-            .gap-8 {
-                gap: 0.75rem;
-            }
-            
-            .gap-6 {
-                gap: 0.5rem;
-            }
-            
-            .mb-8 {
-                margin-bottom: 1rem;
-            }
-            
-            .mb-6 {
-                margin-bottom: 0.75rem;
-            }
-            
-            .p-8 {
-                padding: 0.75rem;
-            }
-            
-            .p-6 {
-                padding: 0.5rem;
-            }
-            
-            .p-4 {
-                padding: 0.5rem;
-            }
-            
-            /* Fix card layout for very small screens */
-            .stats-counter {
-                font-size: 1.5rem !important;
-            }
-            
-            .w-12 {
-                width: 2rem;
-            }
-            
-            .h-12 {
-                height: 2rem;
-            }
-            
-            .w-10 {
-                width: 1.75rem;
-            }
-            
-            .h-10 {
-                height: 1.75rem;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .grid-cols-4 {
-                grid-template-columns: repeat(1, minmax(0, 1fr));
-            }
-            
-            .grid-cols-3 {
-                grid-template-columns: repeat(1, minmax(0, 1fr));
-            }
-            
-            .grid-cols-2 {
-                grid-template-columns: repeat(1, minmax(0, 1fr));
-            }
-            
-            .lg\\:grid-cols-4 {
-                grid-template-columns: repeat(1, minmax(0, 1fr));
-            }
-            
-            .lg\\:grid-cols-3 {
-                grid-template-columns: repeat(1, minmax(0, 1fr));
-            }
-            
-            .md\\:grid-cols-2 {
-                grid-template-columns: repeat(1, minmax(0, 1fr));
-            }
+        .dashboard-main {
+            min-width: 0;
+            width: 100%;
         }
         
         /* Touch-friendly improvements */
@@ -449,14 +282,90 @@
         .stats-counter {
             animation: countUp 2s ease-out;
         }
+
+        .user-dashboard-theme {
+            background: linear-gradient(145deg, #0f172a 0%, #312e81 52%, #172554 100%);
+            color: #f8fafc;
+        }
+
+        .user-dashboard-theme .glass {
+            background: rgba(15, 23, 42, 0.72);
+            border-color: rgba(255, 255, 255, 0.24);
+            box-shadow: 0 12px 32px rgba(2, 6, 23, 0.24);
+        }
+
+        .user-dashboard-theme .morphism-card {
+            background: rgba(30, 41, 59, 0.82);
+            border-color: rgba(255, 255, 255, 0.22);
+            box-shadow: 0 16px 40px rgba(2, 6, 23, 0.3);
+        }
+
+        .user-dashboard-theme .text-gray-200 { color: #f1f5f9; }
+        .user-dashboard-theme .text-gray-300 { color: #e2e8f0; }
+        .user-dashboard-theme .text-gray-400 { color: #cbd5e1; }
+        .user-dashboard-theme .text-white { color: #ffffff; }
+
+        .user-dashboard-theme input.glass,
+        .user-dashboard-theme select.glass,
+        .user-dashboard-theme textarea.glass {
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(203, 213, 225, 0.55);
+            color: #ffffff;
+        }
+
+        .user-dashboard-theme input::placeholder,
+        .user-dashboard-theme textarea::placeholder {
+            color: #cbd5e1;
+            opacity: 1;
+        }
+
+        .user-dashboard-theme select option {
+            background: #0f172a;
+            color: #ffffff;
+        }
+
+        .profile-form-section {
+            background: #111827;
+            border: 1px solid #475569;
+            box-shadow: 0 10px 24px rgba(2, 6, 23, 0.24);
+        }
+
+        .profile-form-section label,
+        .profile-form-section h4 {
+            color: #f8fafc;
+        }
+
+        .profile-password-note {
+            background: rgba(146, 64, 14, 0.35);
+            border: 1px solid #f59e0b;
+            color: #fef3c7;
+        }
+
+        .user-dashboard-theme #jenisKegiatanInput {
+            background: #0f172a;
+            border-color: #64748b;
+            color: #ffffff;
+        }
+
+        .quick-menu-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.96), rgba(49, 46, 129, 0.82));
+            border: 1px solid rgba(226, 232, 240, 0.3);
+            box-shadow: 0 12px 28px rgba(2, 6, 23, 0.28);
+        }
+
+        .quick-menu-card:hover {
+            background: linear-gradient(145deg, rgba(51, 65, 85, 0.98), rgba(67, 56, 202, 0.88));
+            border-color: rgba(255, 255, 255, 0.55);
+        }
         
         @keyframes countUp {
             from { opacity: 0; transform: scale(0.5); }
             to { opacity: 1; transform: scale(1); }
         }
     </style>
+    @include('partials.mobile-ux')
 </head>
-<body class="gradient-bg min-h-screen">
+<body class="user-dashboard-theme min-h-screen">
     <div class="min-h-screen flex relative overflow-hidden w-full">
         <!-- Animated Background Elements -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
@@ -482,7 +391,7 @@
             </div>
             
             <nav class="space-y-2 sm:space-y-3">
-                <a href="#" onclick="showDashboard()" class="nav-item flex items-center space-x-3 sm:space-x-4 text-white hover:bg-white hover:bg-opacity-20 rounded-xl p-3 sm:p-4 transition-all duration-300 group">
+                <button type="button" onclick="showDashboard()" data-section="dashboard" class="nav-item w-full text-left flex items-center space-x-3 sm:space-x-4 text-white hover:bg-white hover:bg-opacity-20 rounded-xl p-3 sm:p-4 transition-all duration-300 group">
                     <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                         <i class="fas fa-tachometer-alt text-white text-sm sm:text-base"></i>
                     </div>
@@ -490,9 +399,9 @@
                         <span class="font-semibold text-sm sm:text-base">Dashboard</span>
                         <p class="text-xs text-gray-300 truncate">Overview & Stats</p>
                     </div>
-                </a>
+                </button>
                 
-                <a href="#" onclick="showProfile()" class="nav-item flex items-center space-x-3 sm:space-x-4 text-white hover:bg-white hover:bg-opacity-20 rounded-xl p-3 sm:p-4 transition-all duration-300 group">
+                <button type="button" onclick="showProfile()" data-section="profile" class="nav-item w-full text-left flex items-center space-x-3 sm:space-x-4 text-white hover:bg-white hover:bg-opacity-20 rounded-xl p-3 sm:p-4 transition-all duration-300 group">
                     <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-green-400 to-green-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                         <i class="fas fa-user-cog text-white text-sm sm:text-base"></i>
                     </div>
@@ -500,19 +409,9 @@
                         <span class="font-semibold text-sm sm:text-base">Profil Saya</span>
                         <p class="text-xs text-gray-300 truncate">Personal Info</p>
                     </div>
-                </a>
+                </button>
                 
-                <a href="/master-data" class="nav-item flex items-center space-x-3 sm:space-x-4 text-white hover:bg-white hover:bg-opacity-20 rounded-xl p-3 sm:p-4 transition-all duration-300 group">
-                    <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-indigo-400 to-indigo-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <i class="fas fa-database text-white text-sm sm:text-base"></i>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <span class="font-semibold text-sm sm:text-base">Master Data</span>
-                        <p class="text-xs text-gray-300 truncate">Data Management</p>
-                    </div>
-                </a>
-                
-                <a href="#" onclick="navigateToLaporan()" class="nav-item flex items-center space-x-3 sm:space-x-4 text-white hover:bg-white hover:bg-opacity-20 rounded-xl p-3 sm:p-4 transition-all duration-300 group">
+                <button type="button" onclick="navigateToLaporan()" class="nav-item w-full text-left flex items-center space-x-3 sm:space-x-4 text-white hover:bg-white hover:bg-opacity-20 rounded-xl p-3 sm:p-4 transition-all duration-300 group">
                     <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-orange-400 to-orange-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                         <i class="fas fa-chart-bar text-white text-sm sm:text-base"></i>
                     </div>
@@ -520,13 +419,13 @@
                         <span class="font-semibold text-sm sm:text-base">Laporan</span>
                         <p class="text-xs text-gray-300 truncate">Performance Reports</p>
                     </div>
-                </a>
+                </button>
                 
                 <!-- Divider -->
                 <div class="border-t border-white border-opacity-20 my-4"></div>
                 
                 <!-- Logout Menu -->
-                <a href="#" onclick="logout()" class="nav-item flex items-center space-x-3 sm:space-x-4 text-white hover:bg-red-500 hover:bg-opacity-20 rounded-xl p-3 sm:p-4 transition-all duration-300 group">
+                <button type="button" onclick="logout()" class="nav-item w-full text-left flex items-center space-x-3 sm:space-x-4 text-white hover:bg-red-500 hover:bg-opacity-20 rounded-xl p-3 sm:p-4 transition-all duration-300 group">
                     <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-red-400 to-red-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                         <i class="fas fa-sign-out-alt text-white text-sm sm:text-base"></i>
                     </div>
@@ -534,7 +433,7 @@
                         <span class="font-semibold text-sm sm:text-base">Logout</span>
                         <p class="text-xs text-gray-300 truncate">Sign Out</p>
                     </div>
-                </a>
+                </button>
             </nav>
             
             <!-- Sidebar Footer -->
@@ -547,7 +446,7 @@
         <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden lg:hidden"></div>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden relative z-10 w-full lg:w-auto">
+        <div class="dashboard-main flex-1 flex flex-col overflow-hidden relative z-10 lg:w-auto">
             <!-- Top Navigation -->
             <nav class="glass backdrop-blur-xl border-b border-white border-opacity-20 w-full">
                 <div class="w-full px-4 sm:px-6 lg:px-8">
@@ -592,8 +491,44 @@
                         </div>
                     </div>
 
+                    <!-- Quick Menu -->
+                    <section aria-labelledby="quickMenuTitle" class="mb-4 sm:mb-6 lg:mb-8">
+                        <div class="flex items-end justify-between gap-3 mb-3 sm:mb-4">
+                            <div>
+                                <h3 id="quickMenuTitle" class="text-lg sm:text-xl font-bold text-white">Menu Utama</h3>
+                                <p class="text-xs sm:text-sm text-gray-300">Akses cepat layanan e-Kinerja</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                            <button type="button" onclick="scrollToActivities()" class="quick-menu-card group min-h-36 sm:min-h-40 rounded-2xl p-4 sm:p-5 text-left transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-80">
+                                <span class="w-12 h-12 sm:w-14 sm:h-14 gradient-green rounded-2xl flex items-center justify-center shadow-lg mb-4 transition-transform duration-300 group-hover:scale-110">
+                                    <i class="fas fa-clipboard-check text-white text-xl sm:text-2xl"></i>
+                                </span>
+                                <span class="block text-white font-bold text-sm sm:text-base">Kegiatan Saya</span>
+                                <span class="block text-gray-300 text-xs sm:text-sm mt-1 leading-snug">Lihat dan isi detail kegiatan</span>
+                            </button>
+
+                            <button type="button" onclick="showProfile()" class="quick-menu-card group min-h-36 sm:min-h-40 rounded-2xl p-4 sm:p-5 text-left transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-80">
+                                <span class="w-12 h-12 sm:w-14 sm:h-14 gradient-blue rounded-2xl flex items-center justify-center shadow-lg mb-4 transition-transform duration-300 group-hover:scale-110">
+                                    <i class="fas fa-user-circle text-white text-xl sm:text-2xl"></i>
+                                </span>
+                                <span class="block text-white font-bold text-sm sm:text-base">Profil Saya</span>
+                                <span class="block text-gray-300 text-xs sm:text-sm mt-1 leading-snug">Lengkapi data kepegawaian</span>
+                            </button>
+
+                            <button type="button" onclick="navigateToLaporan()" class="quick-menu-card group col-span-2 sm:col-span-1 min-h-36 sm:min-h-40 rounded-2xl p-4 sm:p-5 text-left transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-80">
+                                <span class="w-12 h-12 sm:w-14 sm:h-14 gradient-orange rounded-2xl flex items-center justify-center shadow-lg mb-4 transition-transform duration-300 group-hover:scale-110">
+                                    <i class="fas fa-chart-column text-white text-xl sm:text-2xl"></i>
+                                </span>
+                                <span class="block text-white font-bold text-sm sm:text-base">Laporan</span>
+                                <span class="block text-gray-300 text-xs sm:text-sm mt-1 leading-snug">Pantau hasil dan status kinerja</span>
+                            </button>
+                        </div>
+                    </section>
+
                     <!-- Jenis Kegiatan Section -->
-                    <div class="morphism-card rounded-2xl p-3 sm:p-4 lg:p-6 xl:p-8 mb-4 sm:mb-6 lg:mb-8">
+                    <div id="activitiesSection" tabindex="-1" class="morphism-card rounded-2xl p-3 sm:p-4 lg:p-6 xl:p-8 mb-4 sm:mb-6 lg:mb-8 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-70">
                         <div class="flex items-center space-x-4 mb-6">
                             <div class="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 gradient-green rounded-2xl flex items-center justify-center neon-glow">
                                 <i class="fas fa-clipboard-list text-white text-lg sm:text-xl lg:text-2xl"></i>
@@ -675,7 +610,7 @@
                                 <!-- Profile view will be loaded here -->
                             </div>
                             
-                            <div id="profileEdit" class="hidden">
+                            <div id="profileEdit" class="hidden lg:col-span-2">
                                 <!-- Profile edit form will be loaded here -->
                             </div>
                         </div>
@@ -818,24 +753,60 @@
     </div>
 
     <script>
-        // Check if user is logged in
         const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        
-        console.log('Dashboard - Token check:', !!token);
-        console.log('Dashboard - User data:', user);
-        
-        if (!token) {
-            console.log('Dashboard - No token, redirecting to login');
-            window.location.href = '/login';
-        } else if (user.role === 'admin') {
-            console.log('Dashboard - Admin user, redirecting to admin dashboard');
-            window.location.href = '/dashboard';
-        } else {
-            console.log('Dashboard - Regular user, loading dashboard');
-            document.getElementById('userWelcome').textContent = `${user.name}`;
-            updateDateTime();
-            loadJenisKegiatan();
+        let user = getStoredUser();
+
+        function getStoredUser() {
+            try {
+                return JSON.parse(localStorage.getItem('user') || '{}');
+            } catch (error) {
+                console.error('Data sesi lokal tidak valid:', error);
+                return {};
+            }
+        }
+
+        function clearSession() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+        }
+
+        async function initializeDashboard() {
+            if (!token) {
+                clearSession();
+                window.location.replace('/login');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const result = await response.json();
+                user = result.data || {};
+                localStorage.setItem('user', JSON.stringify(user));
+
+                if (user.role === 'admin') {
+                    window.location.replace('/dashboard');
+                    return;
+                }
+
+                document.getElementById('userWelcome').textContent = user.name || 'Pengguna';
+                updateDateTime();
+                showDashboard();
+                await loadJenisKegiatan();
+            } catch (error) {
+                console.error('Validasi sesi gagal:', error);
+                clearSession();
+                window.location.replace('/login');
+            }
         }
         
         // Enhanced sidebar toggle - Override Tailwind classes
@@ -843,39 +814,31 @@
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
             
-            console.log('Toggle sidebar clicked');
-            
             if (!sidebar || !overlay) {
                 console.error('Sidebar or overlay element not found');
                 return;
             }
             
             const isVisible = sidebar.classList.contains('show');
-            console.log('Sidebar currently visible:', isVisible);
-            
             if (isVisible) {
-                // Hide sidebar
                 sidebar.classList.remove('show');
                 overlay.classList.add('hidden');
-                document.body.style.overflow = 'auto';
-                console.log('Hiding sidebar');
+                document.body.style.overflow = '';
             } else {
-                // Show sidebar - Force override Tailwind
                 sidebar.classList.add('show');
                 overlay.classList.remove('hidden');
                 document.body.style.overflow = 'hidden';
-                
-                // Force styles to override Tailwind
-                sidebar.style.transform = 'translateX(0)';
-                sidebar.style.zIndex = '9999';
-                sidebar.style.position = 'fixed';
-                sidebar.style.display = 'block';
-                
-                overlay.style.display = 'block';
-                overlay.style.zIndex = '9998';
-                
-                console.log('Showing sidebar with forced styles');
             }
+        }
+
+        function closeSidebarOnMobile() {
+            if (window.innerWidth >= 1024) {
+                return;
+            }
+
+            document.getElementById('sidebar')?.classList.remove('show');
+            document.getElementById('sidebarOverlay')?.classList.add('hidden');
+            document.body.style.overflow = '';
         }
         
         // Update current date and time
@@ -898,14 +861,20 @@
         // Function to navigate to laporan
         function navigateToLaporan() {
             const token = localStorage.getItem('token');
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const user = getStoredUser();
             
             console.log('Navigating to laporan - Token:', !!token);
             console.log('Navigating to laporan - User NIP:', user.nip);
             
-            if (!token || !user.nip) {
-                alert('Sesi Anda telah berakhir atau data tidak lengkap. Silakan login kembali.');
-                window.location.href = '/login';
+            if (!token) {
+                clearSession();
+                window.location.replace('/login');
+                return;
+            }
+
+            if (!user.nip) {
+                showProfile();
+                alert('Lengkapi NIP pada profil Anda sebelum membuka laporan.');
                 return;
             }
             
@@ -916,21 +885,22 @@
         // Function to load jenis kegiatan data
         async function loadJenisKegiatan() {
             const token = localStorage.getItem('token');
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const user = getStoredUser();
             
             console.log('Loading jenis kegiatan for user:', user);
             console.log('User NIP:', user.nip);
             console.log('Token exists:', !!token);
             
             if (!token) {
-                console.log('No token found');
-                showNoDataMessage('Token tidak ditemukan. Silakan login ulang.');
+                clearSession();
+                window.location.replace('/login');
                 return;
             }
             
             if (!user.nip) {
-                console.log('No NIP found for user');
-                showNoDataMessage('NIP tidak ditemukan. Silakan lengkapi profil Anda.');
+                document.getElementById('jenisKegiatanLoading')?.classList.add('hidden');
+                document.getElementById('jenisKegiatanContainer')?.classList.remove('hidden');
+                showNoDataMessage('NIP belum diisi. Lengkapi profil untuk menampilkan kegiatan.', true);
                 return;
             }
             
@@ -1126,14 +1096,15 @@
         });
         
         // Helper function to show no data message
-        function showNoDataMessage(message) {
+        function showNoDataMessage(message, showProfileAction = false) {
             const noDataMessage = document.getElementById('noDataMessage');
             if (noDataMessage) {
                 noDataMessage.innerHTML = `
                     <i class="fas fa-exclamation-triangle text-yellow-400 text-4xl mb-4"></i>
-                    <p class="text-yellow-400 font-medium">${message}</p>
-                    <p class="text-gray-400 text-sm mt-2">Silakan refresh halaman atau hubungi administrator jika masalah berlanjut</p>
+                    <p class="no-data-text text-yellow-400 font-medium"></p>
+                    ${showProfileAction ? '<button type="button" class="mt-4 px-5 py-3 gradient-blue rounded-xl text-white font-semibold" onclick="showProfile()">Lengkapi Profil</button>' : '<p class="text-gray-400 text-sm mt-2">Silakan coba kembali atau hubungi administrator jika masalah berlanjut.</p>'}
                 `;
+                noDataMessage.querySelector('.no-data-text').textContent = message;
                 noDataMessage.classList.remove('hidden');
             }
         }
@@ -1150,6 +1121,17 @@
             const content = document.getElementById('dashboardContent');
             content.classList.remove('hidden');
             content.classList.add('fade-in');
+            closeSidebarOnMobile();
+        }
+
+        function scrollToActivities() {
+            showDashboard();
+
+            requestAnimationFrame(() => {
+                const activitiesSection = document.getElementById('activitiesSection');
+                activitiesSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                activitiesSection?.focus({ preventScroll: true });
+            });
         }
         
         function showProfile() {
@@ -1158,6 +1140,7 @@
             content.classList.remove('hidden');
             content.classList.add('fade-in');
             loadProfile();
+            closeSidebarOnMobile();
         }
         
         function showTasks() {
@@ -1176,7 +1159,7 @@
         
         // Load profile
         function loadProfile() {
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const user = getStoredUser();
             const profileView = document.getElementById('profileView');
             if (!profileView) {
                 console.error('Profile view element not found');
@@ -1271,7 +1254,7 @@
         
         // Show edit profile form
         function showEditProfile() {
-            const user = JSON.parse(localStorage.getItem('user'));
+            const user = getStoredUser();
             document.getElementById('profileView').classList.add('hidden');
             document.getElementById('profileEdit').classList.remove('hidden');
             
@@ -1286,7 +1269,7 @@
             
             <form id="editProfileForm" class="space-y-6">
                 <!-- Personal Information Section -->
-                <div class="bg-white bg-opacity-5 rounded-xl p-4 sm:p-6">
+                <div class="profile-form-section rounded-xl p-4 sm:p-6">
                     <h4 class="text-lg font-semibold text-white mb-4 flex items-center">
                         <i class="fas fa-user mr-2 text-blue-400"></i>
                         Informasi Personal
@@ -1311,7 +1294,7 @@
                 </div>
                 
                 <!-- Work Information Section -->
-                <div class="bg-white bg-opacity-5 rounded-xl p-4 sm:p-6">
+                <div class="profile-form-section rounded-xl p-4 sm:p-6">
                     <h4 class="text-lg font-semibold text-white mb-4 flex items-center">
                         <i class="fas fa-briefcase mr-2 text-green-400"></i>
                         Informasi Kepegawaian
@@ -1341,7 +1324,7 @@
                 </div>
                         
                         <!-- Password Section -->
-                        <div class="bg-white bg-opacity-5 rounded-xl p-4 sm:p-6">
+                        <div class="profile-form-section rounded-xl p-4 sm:p-6">
                             <h4 class="text-lg font-semibold text-white mb-4 flex items-center">
                                 <i class="fas fa-lock mr-2 text-yellow-400"></i>
                                 Ubah Password (Opsional)
@@ -1363,8 +1346,8 @@
                                            class="w-full px-4 py-3 glass rounded-xl text-white placeholder-gray-300 focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all text-sm sm:text-base">
                                 </div>
                             </div>
-                            <div class="mt-4 p-3 bg-yellow-500 bg-opacity-10 rounded-lg border border-yellow-500 border-opacity-30">
-                                <p class="text-yellow-200 text-xs sm:text-sm flex items-start">
+                            <div class="profile-password-note mt-4 p-3 rounded-lg">
+                                <p class="text-xs sm:text-sm flex items-start">
                                     <i class="fas fa-info-circle mr-2 mt-0.5 text-yellow-400"></i>
                                     Kosongkan field password jika tidak ingin mengubah password. Password harus minimal 8 karakter.
                                 </p>
@@ -1470,14 +1453,24 @@
             document.getElementById('loadingOverlay').classList.add('hidden');
         }
         
-        function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = '/login';
+        async function logout() {
+            try {
+                if (token) {
+                    await fetch('/api/auth/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Accept': 'application/json'
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Logout API gagal:', error);
+            } finally {
+                clearSession();
+                window.location.replace('/login');
+            }
         }
-        
-        // Initialize dashboard
-        showDashboard();
         
         // Add smooth scrolling and enhanced interactions
         document.addEventListener('DOMContentLoaded', function() {
@@ -1508,11 +1501,9 @@
                     element.style.transform = `translateY(${yPos}px)`;
                 });
             });
+
+            initializeDashboard();
         });
     </script>
 </body>
-</html>
-</html>
-</html>
-</html>
 </html>

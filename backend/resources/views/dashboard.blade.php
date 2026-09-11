@@ -284,6 +284,7 @@
             }
         }
     </style>
+    @include('partials.mobile-ux')
 </head>
 <body class="gradient-bg min-h-screen">
     <div class="min-h-screen flex relative overflow-hidden">

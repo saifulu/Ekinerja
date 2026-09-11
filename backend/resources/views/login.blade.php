@@ -140,6 +140,7 @@
             50% { transform: translateY(-10px); }
         }
     </style>
+    @include('partials.mobile-ux')
 </head>
 <body class="gradient-bg min-h-screen">
     <!-- Background Pattern -->
@@ -224,6 +225,25 @@
                         </button>
                     </div>
                 </form>
+
+                <div class="mt-6">
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-300"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-2 bg-white text-gray-500 rounded-md">Atau masuk dengan</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <a href="/auth/google"
+                            class="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300">
+                            <img class="h-5 w-5 mr-2" src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google logo">
+                            <span>Google</span>
+                        </a>
+                    </div>
+                </div>
 
                 <!-- Message Area -->
                 <div id="message" class="hidden mt-6 p-4 rounded-lg transition-all duration-300"></div>
