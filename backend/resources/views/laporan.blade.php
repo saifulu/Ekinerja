@@ -835,10 +835,21 @@
                                                 @if($item->dokumentasi && is_array($item->dokumentasi) && count($item->dokumentasi) > 0)
                                                     <div class="flex items-center justify-center gap-1.5 flex-wrap max-w-[120px] mx-auto">
                                                         @foreach(array_slice($item->dokumentasi, 0, 2) as $docIdx => $doc)
-                                                            <img src="{{ asset('storage/' . $doc) }}" 
+                                                            @php
+                                                                $imgSrc = $doc;
+                                                                if (!str_starts_with($imgSrc, 'http://') && !str_starts_with($imgSrc, 'https://') && !str_starts_with($imgSrc, 'data:')) {
+                                                                    $cleanDoc = ltrim($imgSrc, '/');
+                                                                    if (!str_starts_with($cleanDoc, 'storage/')) {
+                                                                        $cleanDoc = 'storage/' . $cleanDoc;
+                                                                    }
+                                                                    $imgSrc = asset($cleanDoc);
+                                                                }
+                                                            @endphp
+                                                            <img src="{{ $imgSrc }}" 
                                                                  alt="Dokumentasi {{ $docIdx + 1 }}" 
                                                                  class="doc-thumb"
-                                                                 onclick="showImageModal('{{ asset('storage/' . $doc) }}', 'Dokumentasi {{ $docIdx + 1 }} - {{ $item->jenis_kegiatan }}')"
+                                                                 onclick="showImageModal('{{ $imgSrc }}', 'Dokumentasi {{ $docIdx + 1 }} - {{ $item->jenis_kegiatan }}')"
+                                                                 onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'1.5\'><rect width=\'18\' height=\'18\' x=\'3\' y=\'3\' rx=\'2\'/><circle cx=\'9\' cy=\'9\' r=\'2\'/><path d=\'m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\'/></svg>';"
                                                                  title="Klik untuk memperbesar">
                                                         @endforeach
                                                         @if(count($item->dokumentasi) > 2)
@@ -1519,11 +1530,18 @@
 
             if (docs.length > 0) {
                 docs.forEach((doc, idx) => {
-                    const docUrl = `/storage/${doc}`;
+                    let docUrl = doc;
+                    if (!docUrl.startsWith('http://') && !docUrl.startsWith('https://') && !docUrl.startsWith('data:')) {
+                        let clean = docUrl.replace(/^\/+/, '');
+                        if (!clean.startsWith('storage/')) {
+                            clean = 'storage/' + clean;
+                        }
+                        docUrl = '/' + clean;
+                    }
                     const thumbWrap = document.createElement('div');
-                    thumbWrap.className = 'relative group cursor-pointer overflow-hidden rounded-xl border border-slate-700';
+                    thumbWrap.className = 'relative group cursor-pointer overflow-hidden rounded-xl border border-slate-700 bg-slate-800/50';
                     thumbWrap.innerHTML = `
-                        <img src="${docUrl}" class="w-full h-20 object-cover transition-transform group-hover:scale-105" alt="Dokumentasi ${idx + 1}">
+                        <img src="${docUrl}" class="w-full h-20 object-cover transition-transform group-hover:scale-105" alt="Dokumentasi ${idx + 1}" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'40\\' height=\\'40\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'%2364748b\\' stroke-width=\\'1.5\\'><rect width=\\'18\\' height=\\'18\\' x=\\'3\\' y=\\'3\\' rx=\\'2\\'/><circle cx=\\'9\\' cy=\\'9\\' r=\\'2\\'/><path d=\\'m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\\'/></svg>';">
                         <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-[11px] font-semibold">
                             <i class="fas fa-magnifying-glass-plus mr-1"></i> Perbesar
                         </div>
