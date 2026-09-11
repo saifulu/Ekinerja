@@ -56,23 +56,23 @@
         .stat-card {
             background: rgba(15, 23, 42, 0.82);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 18px;
-            padding: 20px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 14px;
+            padding: 12px 16px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
             cursor: pointer;
         }
 
         .stat-card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             border-color: rgba(16, 185, 129, 0.35);
         }
 
         .stat-card.active {
             background: linear-gradient(145deg, rgba(15, 23, 42, 0.95) 0%, rgba(6, 78, 59, 0.45) 100%);
             border-color: rgba(16, 185, 129, 0.6);
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+            box-shadow: 0 0 16px rgba(16, 185, 129, 0.15);
         }
 
         /* Form Controls */
@@ -415,51 +415,53 @@
             </div>
 
             <!-- Desktop Metric Cards (Hidden on mobile) -->
-            <div class="hidden md:grid grid-cols-3 gap-4">
+            <div class="hidden md:grid grid-cols-3 gap-3.5">
                 <!-- Card 1: Laporan Kegiatan -->
-                <div class="stat-card active" id="laporanKegiatanCard" onclick="showLaporanKegiatan()">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <span class="text-xs font-semibold text-emerald-400 tracking-wider uppercase">Tab Tampilan</span>
-                            <h3 class="text-slate-300 font-bold text-base mt-1">Laporan Kegiatan</h3>
-                            <div class="text-2xl font-extrabold text-white mt-1">
-                                {{ ($statusStats['draft'] ?? 0) + ($statusStats['submitted'] ?? 0) + ($statusStats['approved'] ?? 0) + ($statusStats['rejected'] ?? 0) }}
+                <div class="stat-card active flex flex-col justify-between" id="laporanKegiatanCard" onclick="showLaporanKegiatan()">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-sm shrink-0">
+                                <i class="fas fa-clipboard-list"></i>
                             </div>
-                            <div class="text-[11px] text-slate-400 mt-0.5">Total seluruh kegiatan tercatat</div>
+                            <div class="min-w-0">
+                                <h3 class="text-slate-200 font-bold text-xs leading-tight truncate">Laporan Kegiatan</h3>
+                                <div class="text-[11px] text-slate-400">Total aktivitas</div>
+                            </div>
                         </div>
-                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-lg">
-                            <i class="fas fa-clipboard-list"></i>
+                        <div class="text-xl font-extrabold text-white leading-none shrink-0">
+                            {{ ($statusStats['draft'] ?? 0) + ($statusStats['submitted'] ?? 0) + ($statusStats['approved'] ?? 0) + ($statusStats['rejected'] ?? 0) }}
                         </div>
                     </div>
-                    <div class="mt-3 pt-2.5 border-t border-slate-700/60 flex flex-wrap gap-1.5 text-[11px]">
-                        <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/20">
+                    <div class="mt-2 pt-2 border-t border-slate-700/60 flex items-center gap-1.5 text-[10px]">
+                        <span class="px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/20 font-medium">
                             {{ $statusStats['approved'] ?? 0 }} Approved
                         </span>
-                        <span class="px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/20">
+                        <span class="px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/20 font-medium">
                             {{ $statusStats['submitted'] ?? 0 }} Submitted
                         </span>
-                        <span class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/20">
+                        <span class="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/20 font-medium">
                             {{ $statusStats['draft'] ?? 0 }} Draft
                         </span>
                     </div>
                 </div>
 
                 <!-- Card 2: Rekap Laporan -->
-                <div class="stat-card" id="rekapLaporanCard" onclick="showRekapLaporan()">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <span class="text-xs font-semibold text-teal-400 tracking-wider uppercase">Tab Tampilan</span>
-                            <h3 class="text-slate-300 font-bold text-base mt-1">Rekap Disetujui</h3>
-                            <div class="text-2xl font-extrabold text-white mt-1">
-                                {{ $statusStats['approved'] ?? 0 }}
+                <div class="stat-card flex flex-col justify-between" id="rekapLaporanCard" onclick="showRekapLaporan()">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-8 h-8 rounded-lg bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center text-sm shrink-0">
+                                <i class="fas fa-file-circle-check"></i>
                             </div>
-                            <div class="text-[11px] text-slate-400 mt-0.5">Kegiatan tervalidasi & disetujui</div>
+                            <div class="min-w-0">
+                                <h3 class="text-slate-200 font-bold text-xs leading-tight truncate">Rekap Disetujui</h3>
+                                <div class="text-[11px] text-slate-400">Tervalidasi</div>
+                            </div>
                         </div>
-                        <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center text-lg">
-                            <i class="fas fa-file-circle-check"></i>
+                        <div class="text-xl font-extrabold text-white leading-none shrink-0">
+                            {{ $statusStats['approved'] ?? 0 }}
                         </div>
                     </div>
-                    <div class="mt-3 pt-2.5 border-t border-slate-700/60 flex items-center justify-between text-xs text-slate-400">
+                    <div class="mt-2 pt-2 border-t border-slate-700/60 flex items-center justify-between text-[11px] text-slate-400">
                         <span>Persetujuan:</span>
                         <span class="font-bold text-emerald-400">
                             @php
@@ -472,23 +474,22 @@
                 </div>
 
                 <!-- Card 3: Ringkasan Unit -->
-                <div class="stat-card" onclick="showLaporanKegiatan()">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <span class="text-xs font-semibold text-cyan-400 tracking-wider uppercase">Distribusi</span>
-                            <h3 class="text-slate-300 font-bold text-base mt-1">Unit & Lingkup</h3>
-                            <div class="text-2xl font-extrabold text-white mt-1">
-                                {{ isset($unitStats) ? $unitStats->count() : 0 }} <span class="text-xs font-medium text-slate-400">Unit</span>
+                <div class="stat-card flex flex-col justify-between" onclick="showLaporanKegiatan()">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div class="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-sm shrink-0">
+                                <i class="fas fa-layer-group"></i>
                             </div>
-                            <div class="text-[11px] text-slate-400 mt-0.5">
-                                {{ isset($jenisKegiatanStats) ? $jenisKegiatanStats->count() : 0 }} variasi kegiatan
+                            <div class="min-w-0">
+                                <h3 class="text-slate-200 font-bold text-xs leading-tight truncate">Unit & Lingkup</h3>
+                                <div class="text-[11px] text-slate-400 truncate">{{ isset($jenisKegiatanStats) ? $jenisKegiatanStats->count() : 0 }} kegiatan</div>
                             </div>
                         </div>
-                        <div class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-lg">
-                            <i class="fas fa-layer-group"></i>
+                        <div class="text-xl font-extrabold text-white leading-none shrink-0">
+                            {{ isset($unitStats) ? $unitStats->count() : 0 }} <span class="text-xs font-medium text-slate-400">Unit</span>
                         </div>
                     </div>
-                    <div class="mt-3 pt-2.5 border-t border-slate-700/60 flex items-center justify-between text-xs text-slate-400">
+                    <div class="mt-2 pt-2 border-t border-slate-700/60 flex items-center justify-between text-[11px] text-slate-400">
                         <span>Status PJ:</span>
                         <span class="font-semibold text-slate-200">Validasi Digital</span>
                     </div>
