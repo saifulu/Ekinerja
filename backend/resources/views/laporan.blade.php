@@ -28,8 +28,6 @@
         }
 
         body {
-            background: radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.12) 0%, transparent 40%),
-                        radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 40%),
             background: radial-gradient(circle at 10% 10%, rgba(16, 185, 129, 0.1) 0%, transparent 40%),
                         radial-gradient(circle at 90% 90%, rgba(6, 182, 212, 0.08) 0%, transparent 40%),
                         linear-gradient(145deg, #090e1a 0%, #0f172a 50%, #031e17 100%);
@@ -44,7 +42,6 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
             box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
             border-radius: 20px;
         }
@@ -67,33 +64,15 @@
             cursor: pointer;
         }
 
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: transparent;
-            transition: all 0.3s ease;
-        }
-
         .stat-card:hover {
-            transform: translateY(-4px);
             transform: translateY(-3px);
             border-color: rgba(16, 185, 129, 0.35);
-            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
         }
 
         .stat-card.active {
             background: linear-gradient(145deg, rgba(15, 23, 42, 0.95) 0%, rgba(6, 78, 59, 0.45) 100%);
             border-color: rgba(16, 185, 129, 0.6);
-            box-shadow: 0 0 25px rgba(16, 185, 129, 0.25), 0 16px 36px rgba(0, 0, 0, 0.4);
             box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
-        }
-
-        .stat-card.active::before {
-            background: linear-gradient(90deg, #10b981, #06b6d4);
         }
 
         /* Form Controls */
@@ -102,7 +81,6 @@
             border: 1px solid rgba(255, 255, 255, 0.12);
             color: #f8fafc;
             border-radius: 12px;
-            padding: 10px 14px;
             padding: 9px 14px;
             font-size: 0.875rem;
             transition: all 0.2s ease;
@@ -124,7 +102,6 @@
             border: 1px solid rgba(255, 255, 255, 0.12);
             color: #f8fafc;
             border-radius: 12px;
-            padding: 10px 14px;
             padding: 9px 14px;
             font-size: 0.875rem;
             cursor: pointer;
@@ -142,24 +119,12 @@
             color: #f8fafc;
         }
 
-        /* Custom Table Styling */
         /* Custom Desktop Table */
         .table-responsive {
             border-radius: 16px;
             overflow-x: auto;
             scrollbar-width: thin;
             scrollbar-color: rgba(16, 185, 129, 0.3) rgba(15, 23, 42, 0.5);
-        }
-
-        .table-responsive::-webkit-scrollbar {
-            height: 8px;
-        }
-        .table-responsive::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.5);
-        }
-        .table-responsive::-webkit-scrollbar-thumb {
-            background: rgba(16, 185, 129, 0.3);
-            border-radius: 4px;
         }
 
         #dataTable {
@@ -175,20 +140,17 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.06em;
-            padding: 14px 16px;
             padding: 13px 15px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             white-space: nowrap;
         }
 
         #dataTable td {
-            padding: 16px;
             padding: 15px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             color: #e2e8f0;
             font-size: 0.875rem;
             vertical-align: middle;
-            transition: background 0.15s ease;
         }
 
         #dataTable tr:hover td {
@@ -199,8 +161,6 @@
         .status-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
             gap: 5px;
             padding: 3px 9px;
             border-radius: 9999px;
@@ -239,9 +199,6 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 34px;
-            height: 34px;
-            border-radius: 10px;
             width: 32px;
             height: 32px;
             border-radius: 9px;
@@ -257,8 +214,6 @@
         .btn-action-view:hover {
             background: #0891b2;
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.35);
         }
 
         .btn-action-edit {
@@ -270,15 +225,11 @@
         .btn-action-edit:hover {
             background: #059669;
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
         }
 
         /* Thumbnails */
         .signature-box {
             background: rgba(255, 255, 255, 0.95);
-            border-radius: 10px;
-            padding: 4px 8px;
             border-radius: 8px;
             padding: 3px 6px;
             display: inline-flex;
@@ -286,25 +237,19 @@
             justify-content: center;
             border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
             cursor: pointer;
         }
 
         .signature-box:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
             transform: scale(1.04);
             border-color: #10b981;
         }
 
         .doc-thumb {
-            width: 44px;
-            height: 44px;
             width: 40px;
             height: 40px;
             object-fit: cover;
-            border-radius: 8px;
             border-radius: 7px;
             border: 1.5px solid rgba(255, 255, 255, 0.15);
             transition: all 0.2s ease;
@@ -312,10 +257,8 @@
         }
 
         .doc-thumb:hover {
-            transform: scale(1.1);
             transform: scale(1.08);
             border-color: #10b981;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
         }
 
         /* Pagination Buttons */
@@ -323,11 +266,6 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-width: 36px;
-            height: 36px;
-            padding: 0 12px;
-            border-radius: 10px;
-            font-size: 0.85rem;
             min-width: 34px;
             height: 34px;
             padding: 0 10px;
@@ -393,40 +331,28 @@
     </style>
     @include('partials.mobile-ux')
 </head>
-<body class="p-3 md:p-6 lg:p-8">
 <body class="p-3 sm:p-5 md:p-6 lg:p-8">
 
-    <div class="max-w-7xl mx-auto space-y-6">
     <div class="max-w-7xl mx-auto space-y-4 md:space-y-6">
 
         <!-- Top Navigation Bar -->
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-2">
         <div class="flex items-center justify-between gap-3 pb-1">
             <a href="/user-dashboard{{ isset($currentUser->nip) ? '?nip='.$currentUser->nip : '' }}" 
-               class="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/60 text-slate-200 hover:text-emerald-400 text-sm font-medium transition-all shadow-md group">
                class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/60 text-slate-200 hover:text-emerald-400 text-xs sm:text-sm font-medium transition-all shadow-md group">
                 <i class="fas fa-arrow-left text-xs transition-transform group-hover:-translate-x-1 text-emerald-400"></i>
-                <span>Kembali ke Dashboard</span>
                 <span class="hidden xs:inline">Kembali ke </span>Dashboard
             </a>
 
             <!-- User Info Pill -->
-            <div class="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-slate-800/60 border border-slate-700/60 backdrop-blur-md">
-                <div class="w-8 h-8 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold text-xs">
             <div class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-slate-800/60 border border-slate-700/60 backdrop-blur-md">
                 <div class="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold text-xs">
                     {{ strtoupper(substr($currentUser->name ?? 'User', 0, 2)) }}
                 </div>
                 <div class="text-left text-xs">
-                    <div class="text-white font-semibold flex items-center gap-1.5">
-                        <span>{{ $currentUser->name ?? 'Pegawai' }}</span>
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
                     <div class="text-white font-semibold flex items-center gap-1 leading-tight">
                         <span class="max-w-[110px] sm:max-w-[180px] truncate">{{ $currentUser->name ?? 'Pegawai' }}</span>
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                     </div>
-                    <div class="text-slate-400">
-                        NIP: {{ $currentUser->nip ?? '-' }} &bull; {{ $currentUser->instansi ?? 'RSUD' }}
                     <div class="text-slate-400 text-[11px] leading-tight">
                         NIP: {{ $currentUser->nip ?? '-' }}
                     </div>
@@ -434,16 +360,6 @@
             </div>
         </div>
 
-        <!-- Hero Header -->
-        <div class="glass-card p-6 md:p-8 relative overflow-hidden">
-            <div class="absolute -right-16 -top-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
-                <div class="space-y-2">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold">
-                        <i class="fas fa-shield-check"></i>
-                        <span>Audit & Monitoring Kinerja</span>
         <!-- Hero Header (Clean & Compact on Mobile) -->
         <div class="glass-card p-4 sm:p-6 md:p-7 relative overflow-hidden">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 relative z-10">
@@ -452,27 +368,16 @@
                         <i class="fas fa-file-signature text-[10px]"></i>
                         <span>Monitoring Kinerja</span>
                     </div>
-                    <h1 class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white tracking-tight flex items-center gap-3">
                     <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight">
                         <span class="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-200 to-cyan-400">
                             Laporan Kinerja Pegawai
                         </span>
                     </h1>
-                    <p class="text-slate-400 text-sm md:text-base max-w-2xl leading-relaxed">
-                        Pantau seluruh riwayat pencatatan aktivitas, validasi tanda tangan elektronik, dan arsipkan rekapitulasi data kegiatan kinerja secara profesional.
                     <p class="text-slate-400 text-xs sm:text-sm hidden md:block max-w-xl">
                         Pantau seluruh riwayat pencatatan aktivitas, validasi tanda tangan elektronik, dan arsipkan rekapitulasi data kegiatan kinerja.
                     </p>
                 </div>
 
-                <div class="flex items-center gap-3 self-stretch sm:self-auto">
-                    <button type="button" 
-                            id="exportPdfButton" 
-                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-5 py-3 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-semibold text-sm shadow-lg shadow-rose-600/30 hover:shadow-rose-600/50 transition-all transform hover:-translate-y-0.5">
-                        <i class="fas fa-file-pdf text-base"></i>
-                        <span>Export PDF Laporan</span>
-                    </button>
-                </div>
                 <!-- Export PDF Button -->
                 <button type="button" 
                         id="exportPdfButton" 
@@ -484,17 +389,11 @@
         </div>
 
         @if(isset($error))
-            <div class="p-4 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 flex items-center gap-3">
-                <i class="fas fa-triangle-exclamation text-lg"></i>
-                <span class="text-sm font-medium">{{ $error }}</span>
             <div class="p-3.5 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 flex items-center gap-2 text-xs sm:text-sm">
                 <i class="fas fa-triangle-exclamation text-base"></i>
                 <span>{{ $error }}</span>
             </div>
         @else
-            <!-- Statistics Metric Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                
             <!-- Mobile Segmented Tab Switcher (Takes minimal vertical space!) -->
             <div class="block md:hidden bg-slate-900/90 p-1.5 rounded-2xl border border-slate-700/60 shadow-md">
                 <div class="flex items-center gap-1">
@@ -522,33 +421,23 @@
                     <div class="flex items-start justify-between">
                         <div>
                             <span class="text-xs font-semibold text-emerald-400 tracking-wider uppercase">Tab Tampilan</span>
-                            <h3 class="text-slate-300 font-bold text-lg mt-1">Laporan Kegiatan</h3>
-                            <div class="text-3xl font-extrabold text-white mt-2">
                             <h3 class="text-slate-300 font-bold text-base mt-1">Laporan Kegiatan</h3>
                             <div class="text-2xl font-extrabold text-white mt-1">
                                 {{ ($statusStats['draft'] ?? 0) + ($statusStats['submitted'] ?? 0) + ($statusStats['approved'] ?? 0) + ($statusStats['rejected'] ?? 0) }}
                             </div>
-                            <div class="text-xs text-slate-400 mt-1">Total seluruh kegiatan tercatat</div>
                             <div class="text-[11px] text-slate-400 mt-0.5">Total seluruh kegiatan tercatat</div>
                         </div>
-                        <div class="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-xl shadow-lg shadow-emerald-500/20">
                         <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-lg">
                             <i class="fas fa-clipboard-list"></i>
                         </div>
                     </div>
-
-                    <!-- Mini Status Badges Breakdown -->
-                    <div class="mt-4 pt-3 border-t border-slate-700/60 flex flex-wrap gap-2 text-xs">
-                        <span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/20">
                     <div class="mt-3 pt-2.5 border-t border-slate-700/60 flex flex-wrap gap-1.5 text-[11px]">
                         <span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/20">
                             {{ $statusStats['approved'] ?? 0 }} Approved
                         </span>
-                        <span class="px-2 py-0.5 rounded-md bg-cyan-500/15 text-cyan-300 border border-cyan-500/20">
                         <span class="px-2 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/20">
                             {{ $statusStats['submitted'] ?? 0 }} Submitted
                         </span>
-                        <span class="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/20">
                         <span class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/20">
                             {{ $statusStats['draft'] ?? 0 }} Draft
                         </span>
@@ -560,24 +449,16 @@
                     <div class="flex items-start justify-between">
                         <div>
                             <span class="text-xs font-semibold text-teal-400 tracking-wider uppercase">Tab Tampilan</span>
-                            <h3 class="text-slate-300 font-bold text-lg mt-1">Rekap Laporan Disetujui</h3>
-                            <div class="text-3xl font-extrabold text-white mt-2">
                             <h3 class="text-slate-300 font-bold text-base mt-1">Rekap Disetujui</h3>
                             <div class="text-2xl font-extrabold text-white mt-1">
                                 {{ $statusStats['approved'] ?? 0 }}
                             </div>
-                            <div class="text-xs text-slate-400 mt-1">Kegiatan tervalidasi & disetujui</div>
                             <div class="text-[11px] text-slate-400 mt-0.5">Kegiatan tervalidasi & disetujui</div>
                         </div>
-                        <div class="w-12 h-12 rounded-xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center text-xl shadow-lg shadow-teal-500/20">
                         <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center text-lg">
                             <i class="fas fa-file-circle-check"></i>
                         </div>
                     </div>
-
-                    <!-- Additional Context -->
-                    <div class="mt-4 pt-3 border-t border-slate-700/60 flex items-center justify-between text-xs text-slate-400">
-                        <span>Efektivitas Persetujuan:</span>
                     <div class="mt-3 pt-2.5 border-t border-slate-700/60 flex items-center justify-between text-xs text-slate-400">
                         <span>Persetujuan:</span>
                         <span class="font-bold text-emerald-400">
@@ -590,52 +471,33 @@
                     </div>
                 </div>
 
-                <!-- Card 3: Ringkasan Unit / Lingkup -->
                 <!-- Card 3: Ringkasan Unit -->
                 <div class="stat-card" onclick="showLaporanKegiatan()">
                     <div class="flex items-start justify-between">
                         <div>
-                            <span class="text-xs font-semibold text-cyan-400 tracking-wider uppercase">Distribusi Kerja</span>
-                            <h3 class="text-slate-300 font-bold text-lg mt-1">Unit & Kegiatan Terpantau</h3>
-                            <div class="text-3xl font-extrabold text-white mt-2">
-                                {{ isset($unitStats) ? $unitStats->count() : 0 }} <span class="text-sm font-medium text-slate-400">Unit</span>
                             <span class="text-xs font-semibold text-cyan-400 tracking-wider uppercase">Distribusi</span>
                             <h3 class="text-slate-300 font-bold text-base mt-1">Unit & Lingkup</h3>
                             <div class="text-2xl font-extrabold text-white mt-1">
                                 {{ isset($unitStats) ? $unitStats->count() : 0 }} <span class="text-xs font-medium text-slate-400">Unit</span>
                             </div>
-                            <div class="text-xs text-slate-400 mt-1">
                             <div class="text-[11px] text-slate-400 mt-0.5">
                                 {{ isset($jenisKegiatanStats) ? $jenisKegiatanStats->count() : 0 }} variasi kegiatan
                             </div>
                         </div>
-                        <div class="w-12 h-12 rounded-xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-xl shadow-lg shadow-cyan-500/20">
                         <div class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-lg">
                             <i class="fas fa-layer-group"></i>
                         </div>
                     </div>
-
-                    <!-- Additional Context -->
-                    <div class="mt-4 pt-3 border-t border-slate-700/60 flex items-center justify-between text-xs text-slate-400">
-                        <span>Pemberi Tugas / PJ:</span>
-                        <span class="font-semibold text-slate-200">Tervalidasi Digital</span>
                     <div class="mt-3 pt-2.5 border-t border-slate-700/60 flex items-center justify-between text-xs text-slate-400">
                         <span>Status PJ:</span>
                         <span class="font-semibold text-slate-200">Validasi Digital</span>
                     </div>
                 </div>
-
             </div>
 
-            <!-- Main Data Table Container -->
-            <div class="glass-card p-5 md:p-7 space-y-6">
             <!-- Main Data Table & Card Feed Container -->
             <div class="glass-card p-4 sm:p-5 md:p-6 space-y-4">
 
-                <!-- Header Table & Live Stats -->
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-700/60">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-lg">
                 <!-- Table Header & Counter -->
                 <div class="flex items-center justify-between gap-3 pb-3 border-b border-slate-700/60">
                     <div class="flex items-center gap-2.5">
@@ -643,11 +505,9 @@
                             <i class="fas fa-table" id="tableIcon"></i>
                         </div>
                         <div>
-                            <h3 class="text-lg font-bold text-white flex items-center gap-2" id="tableTitle">
                             <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-1.5" id="tableTitle">
                                 <span id="titleText">Data Kegiatan Lengkap</span>
                             </h3>
-                            <p class="text-xs text-slate-400" id="tableSubtitle">
                             <p class="text-[11px] text-slate-400 hidden sm:block" id="tableSubtitle">
                                 Daftar seluruh rekaman aktivitas pekerjaan dengan tanda tangan dan foto dokumentasi
                             </p>
@@ -655,25 +515,12 @@
                     </div>
 
                     <!-- Live Count Indicator -->
-                    <div class="flex items-center gap-2 text-xs text-slate-400 bg-slate-800/80 px-3.5 py-1.5 rounded-xl border border-slate-700/60">
                     <div class="text-[11px] text-slate-300 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700/60 flex items-center gap-1.5 shrink-0">
                         <i class="fas fa-list-check text-emerald-400"></i>
-                        <span>Menampilkan: <strong class="text-white" id="visibleCountIndicator">{{ $laporanData ? $laporanData->count() : 0 }}</strong> kegiatan</span>
                         <span><strong class="text-white font-bold" id="visibleCountIndicator">{{ $laporanData ? $laporanData->count() : 0 }}</strong> data</span>
                     </div>
                 </div>
 
-                <!-- Table Controls (Search, Status Filter, Date Filter) -->
-                <div class="table-controls flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-4">
-                    
-                    <!-- Search Input -->
-                    <div class="relative flex-1 min-w-[260px]">
-                        <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                        <input type="text" 
-                               id="searchInput" 
-                               class="custom-input w-full pl-10 pr-4" 
-                               placeholder="Cari jenis kegiatan, NIP, nama, unit, hasil temuan...">
-                    </div>
                 <!-- Controls Bar: Search & Expandable Filter (Clean & Uncluttered) -->
                 <div class="table-controls space-y-3">
                     <div class="flex items-center gap-2">
@@ -686,39 +533,14 @@
                                    placeholder="Cari kegiatan, nama, unit, hasil temuan...">
                         </div>
 
-                    <!-- Status Filter Dropdown -->
-                    <div class="w-full xl:w-48">
-                        <select id="statusFilter" class="custom-select w-full">
-                            <option value="">Semua Status</option>
-                            <option value="draft">Draft</option>
-                            <option value="submitted">Submitted</option>
-                            <option value="approved">Approved</option>
-                            <option value="rejected">Rejected</option>
-                        </select>
-                    </div>
-
-                    <!-- Date Filter Range -->
-                    <div class="date-filter-container flex flex-wrap items-center gap-2 bg-slate-800/60 p-1.5 rounded-xl border border-slate-700/60">
-                        <span class="text-xs font-semibold text-slate-400 pl-2">Periode:</span>
-                        <input type="date" id="startDate" class="custom-input py-1.5 text-xs w-auto">
-                        <span class="text-slate-400 text-xs">s/d</span>
-                        <input type="date" id="endDate" class="custom-input py-1.5 text-xs w-auto">
                         <!-- Toggle Filter Button (for compact mobile experience) -->
                         <button type="button" 
-                                id="filterButton" 
-                                class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs transition-all shadow-md shadow-emerald-600/20">
-                            <i class="fas fa-filter mr-1"></i> Filter
                                 id="toggleFilterBtn" 
                                 onclick="toggleMobileFilter()" 
                                 class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-emerald-400 text-xs font-semibold transition-all shrink-0">
                             <i class="fas fa-sliders text-xs"></i>
                             <span class="hidden xs:inline">Filter</span>
                             <span id="activeFilterBadge" class="hidden w-2 h-2 rounded-full bg-emerald-400"></span>
-                        </button>
-                        <button type="button" 
-                                id="resetButton" 
-                                class="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium text-xs transition-all">
-                            Reset
                         </button>
                     </div>
 
@@ -768,11 +590,9 @@
                     </div>
                 </div>
 
-                <!-- View 1: Laporan Kegiatan Table -->
                 <!-- View 1: Laporan Kegiatan (Desktop Table + Mobile Cards) -->
                 <div id="laporanKegiatanTable">
                     @if($laporanData && $laporanData->count() > 0)
-                        <div class="table-responsive">
                         
                         <!-- 1. Mobile Feed View (Clean, simple, no horizontal overflow - Shown on < lg) -->
                         <div class="block lg:hidden space-y-3" id="mobileCardsContainer">
@@ -885,7 +705,6 @@
                             <table id="dataTable">
                                 <thead>
                                     <tr>
-                                        <th style="width: 50px;" class="text-center">No</th>
                                         <th style="width: 45px;" class="text-center">No</th>
                                         <th>Jenis Kegiatan</th>
                                         <th>NIP</th>
@@ -896,7 +715,6 @@
                                         <th class="text-center">Signature Pelaksana</th>
                                         <th class="text-center">Signature PJ</th>
                                         <th class="text-center">Dokumentasi</th>
-                                        <th class="text-center" style="width: 90px;">Aksi</th>
                                         <th class="text-center" style="width: 85px;">Aksi</th>
                                     </tr>
                                 </thead>
@@ -907,7 +725,6 @@
                                             $statusLabel = ucfirst($itemStatus);
                                             $creatorName = $item->user ? $item->user->name : ($item->creator ? $item->creator->name : ($currentUser->name ?? '-'));
                                             
-                                            // Format signatures
                                             $sigPelaksana = $item->signature_pelaksana;
                                             if ($sigPelaksana && !str_starts_with($sigPelaksana, 'data:image/')) {
                                                 $sigPelaksana = 'data:image/png;base64,' . $sigPelaksana;
@@ -982,7 +799,6 @@
                                                     <div class="flex flex-col items-center gap-1">
                                                         <div class="signature-box" 
                                                              onclick="showImageModal('{{ $sigPelaksana }}', 'Tanda Tangan Pelaksana - {{ $item->nama_pelaksana ?? $creatorName }}')">
-                                                            <img src="{{ $sigPelaksana }}" alt="Tanda Tangan Pelaksana" style="max-height: 44px; max-width: 80px;">
                                                             <img src="{{ $sigPelaksana }}" alt="Tanda Tangan Pelaksana" style="max-height: 42px; max-width: 80px;">
                                                         </div>
                                                         <span class="text-[11px] font-medium text-slate-300 flex items-center gap-1">
@@ -1001,7 +817,6 @@
                                                     <div class="flex flex-col items-center gap-1">
                                                         <div class="signature-box" 
                                                              onclick="showImageModal('{{ $sigPJ }}', 'Tanda Tangan Penanggung Jawab - {{ $item->nama_pj ?? 'Penanggung Jawab' }}')">
-                                                            <img src="{{ $sigPJ }}" alt="Tanda Tangan PJ" style="max-height: 44px; max-width: 80px;">
                                                             <img src="{{ $sigPJ }}" alt="Tanda Tangan PJ" style="max-height: 42px; max-width: 80px;">
                                                         </div>
                                                         <span class="text-[11px] font-medium text-slate-300 flex items-center gap-1">
@@ -1028,7 +843,6 @@
                                                         @if(count($item->dokumentasi) > 2)
                                                             <button type="button" 
                                                                     onclick="viewDetail({{ $item->id }})" 
-                                                                    class="w-11 h-11 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-emerald-400 text-xs font-bold transition-colors"
                                                                     class="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-emerald-400 text-xs font-bold transition-colors"
                                                                     title="Lihat semua foto">
                                                                 +{{ count($item->dokumentasi) - 2 }}
@@ -1062,11 +876,9 @@
                                     @empty
                                         <tr>
                                             <td colspan="11" class="text-center py-12">
-                                                <div class="w-16 h-16 mx-auto rounded-2xl bg-slate-800/80 border border-slate-700 text-slate-500 flex items-center justify-center text-2xl mb-3">
                                                 <div class="w-14 h-14 mx-auto rounded-2xl bg-slate-800/80 border border-slate-700 text-slate-500 flex items-center justify-center text-xl mb-3">
                                                     <i class="fas fa-inbox"></i>
                                                 </div>
-                                                <h4 class="text-slate-300 font-semibold text-base">Belum Ada Data Laporan</h4>
                                                 <h4 class="text-slate-300 font-semibold text-sm">Belum Ada Data Laporan</h4>
                                                 <p class="text-slate-500 text-xs mt-1">Lakukan pencatatan kegiatan melalui Dashboard User.</p>
                                             </td>
@@ -1077,26 +889,20 @@
                         </div>
 
                         <!-- Smart Pagination -->
-                        <div class="pagination flex items-center justify-center gap-2 pt-4" id="pagination">
                         <div class="pagination flex items-center justify-center gap-1.5 pt-3" id="pagination">
                             <!-- Populated dynamically by JavaScript -->
                         </div>
                     @else
                         <!-- Empty State -->
-                        <div class="text-center py-16 px-4">
-                            <div class="w-20 h-20 mx-auto rounded-3xl bg-slate-800/60 border border-slate-700/80 text-emerald-400 flex items-center justify-center text-3xl mb-4 shadow-xl">
                         <div class="text-center py-12 px-4">
                             <div class="w-16 h-16 mx-auto rounded-2xl bg-slate-800/60 border border-slate-700/80 text-emerald-400 flex items-center justify-center text-2xl mb-3 shadow-lg">
                                 <i class="fas fa-clipboard-question"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-white mb-2">Belum Ada Kegiatan Tercatat</h3>
-                            <p class="text-slate-400 text-sm max-w-md mx-auto mb-6">
                             <h3 class="text-lg font-bold text-white mb-1">Belum Ada Kegiatan Tercatat</h3>
                             <p class="text-slate-400 text-xs max-w-sm mx-auto mb-5">
                                 Anda belum memiliki laporan kegiatan tersimpan untuk akun NIP ini. Silakan mulai entri formulir kinerja di dashboard.
                             </p>
                             <a href="/user-dashboard{{ isset($currentUser->nip) ? '?nip='.$currentUser->nip : '' }}" 
-                               class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-sm font-semibold shadow-lg shadow-emerald-600/30 hover:shadow-emerald-600/50 transition-all">
                                class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-semibold shadow-md shadow-emerald-600/30 transition-all">
                                 <i class="fas fa-plus"></i>
                                 <span>Buat Kegiatan Baru</span>
@@ -1105,22 +911,16 @@
                     @endif
                 </div>
 
-                <!-- View 2: Rekap Laporan Table (Summary Breakdown) -->
-                <div id="rekapLaporanTable" style="display: none;" class="space-y-6">
                 <!-- View 2: Rekap Laporan View (Summary Breakdown) -->
                 <div id="rekapLaporanTable" style="display: none;" class="space-y-4">
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Breakdown per Status -->
-                        <div class="glass-panel p-5 rounded-2xl space-y-4">
-                            <h4 class="text-sm font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
                         <div class="glass-panel p-4 rounded-2xl space-y-3">
                             <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
                                 <i class="fas fa-chart-pie"></i>
                                 <span>Distribusi Status Laporan</span>
                             </h4>
-                            <div class="space-y-3">
                             <div class="space-y-2.5">
                                 @php
                                     $tot = ($statusStats['draft'] ?? 0) + ($statusStats['submitted'] ?? 0) + ($statusStats['approved'] ?? 0) + ($statusStats['rejected'] ?? 0);
@@ -1128,7 +928,6 @@
                                 <!-- Approved -->
                                 <div>
                                     <div class="flex justify-between text-xs mb-1 font-medium">
-                                        <span class="text-emerald-400">Approved (Disetujui)</span>
                                         <span class="text-emerald-400">Approved</span>
                                         <span class="text-slate-300">{{ $statusStats['approved'] ?? 0 }} ({{ $tot > 0 ? round(($statusStats['approved'] ?? 0)/$tot*100) : 0 }}%)</span>
                                     </div>
@@ -1139,7 +938,6 @@
                                 <!-- Submitted -->
                                 <div>
                                     <div class="flex justify-between text-xs mb-1 font-medium">
-                                        <span class="text-cyan-400">Submitted (Menunggu Verifikasi)</span>
                                         <span class="text-cyan-400">Submitted</span>
                                         <span class="text-slate-300">{{ $statusStats['submitted'] ?? 0 }} ({{ $tot > 0 ? round(($statusStats['submitted'] ?? 0)/$tot*100) : 0 }}%)</span>
                                     </div>
@@ -1150,7 +948,6 @@
                                 <!-- Draft -->
                                 <div>
                                     <div class="flex justify-between text-xs mb-1 font-medium">
-                                        <span class="text-amber-400">Draft (Belum Disubmit)</span>
                                         <span class="text-amber-400">Draft</span>
                                         <span class="text-slate-300">{{ $statusStats['draft'] ?? 0 }} ({{ $tot > 0 ? round(($statusStats['draft'] ?? 0)/$tot*100) : 0 }}%)</span>
                                     </div>
@@ -1161,7 +958,6 @@
                                 <!-- Rejected -->
                                 <div>
                                     <div class="flex justify-between text-xs mb-1 font-medium">
-                                        <span class="text-rose-400">Rejected (Ditolak / Perlu Revisi)</span>
                                         <span class="text-rose-400">Rejected</span>
                                         <span class="text-slate-300">{{ $statusStats['rejected'] ?? 0 }} ({{ $tot > 0 ? round(($statusStats['rejected'] ?? 0)/$tot*100) : 0 }}%)</span>
                                     </div>
@@ -1173,109 +969,41 @@
                         </div>
 
                         <!-- Rekap per Unit Kerja -->
-                        <div class="glass-panel p-5 rounded-2xl space-y-4">
-                            <h4 class="text-sm font-bold text-teal-400 uppercase tracking-wider flex items-center gap-2">
                         <div class="glass-panel p-4 rounded-2xl space-y-3">
                             <h4 class="text-xs font-bold text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
                                 <i class="fas fa-hospital-user"></i>
-                                <span>Rekap Kegiatan per Ruangan / Unit</span>
                                 <span>Rekap per Ruangan / Unit</span>
                             </h4>
-                            <div class="space-y-2 max-h-[220px] overflow-y-auto pr-2">
                             <div class="space-y-2 max-h-[190px] overflow-y-auto pr-1 text-xs">
                                 @if(isset($unitStats) && $unitStats->count() > 0)
                                     @foreach($unitStats as $unitName => $unitCount)
-                                        <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                                            <div class="flex items-center gap-2 text-xs text-slate-200">
-                                                <i class="fas fa-door-closed text-emerald-400"></i>
-                                                <span class="font-medium">{{ $unitName ?: 'Tidak Ada Unit' }}</span>
                                         <div class="flex items-center justify-between p-2 rounded-xl bg-slate-800/60 border border-slate-700/50">
                                             <div class="flex items-center gap-2 text-slate-200">
                                                 <i class="fas fa-door-closed text-emerald-400 text-xs"></i>
                                                 <span class="font-medium truncate max-w-[170px]">{{ $unitName ?: 'Tidak Ada Unit' }}</span>
                                             </div>
-                                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 text-xs font-bold">
-                                                {{ $unitCount }} kegiatan
                                             <span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 text-[11px] font-bold">
                                                 {{ $unitCount }}
                                             </span>
                                         </div>
                                     @endforeach
                                 @else
-                                    <div class="text-xs text-slate-500 italic py-4 text-center">Belum ada data unit</div>
                                     <div class="text-xs text-slate-500 italic py-3 text-center">Belum ada data unit</div>
                                 @endif
                             </div>
                         </div>
                     </div>
 
-                    <!-- Rekap Tabel Disetujui -->
-                    <div class="glass-panel p-5 rounded-2xl space-y-4">
                     <!-- Rekap Laporan Approved List -->
                     <div class="glass-panel p-4 rounded-2xl space-y-3">
                         <div class="flex items-center justify-between">
-                            <h4 class="text-sm font-bold text-white flex items-center gap-2">
                             <h4 class="text-xs font-bold text-white flex items-center gap-1.5">
                                 <i class="fas fa-stamp text-emerald-400"></i>
-                                <span>Daftar Seluruh Laporan yang Telah Disetujui (Valid)</span>
                                 <span>Laporan yang Disetujui (Approved)</span>
                             </h4>
-                            <span class="text-xs text-slate-400">Hanya menampilkan status Approved</span>
                             <span class="text-[11px] text-slate-400">Tervalidasi</span>
                         </div>
 
-                        <div class="table-responsive">
-                            <table class="w-full text-xs">
-                                <thead>
-                                    <tr class="text-slate-400 border-b border-slate-700/60 text-left">
-                                        <th class="py-3 px-3">Tanggal</th>
-                                        <th class="py-3 px-3">Jenis Kegiatan</th>
-                                        <th class="py-3 px-3">Unit</th>
-                                        <th class="py-3 px-3">Pelaksana</th>
-                                        <th class="py-3 px-3">Penanggung Jawab</th>
-                                        <th class="py-3 px-3 text-center">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php
-                                        $approvedItems = $laporanData ? $laporanData->where('status', 'approved') : collect();
-                                    @endphp
-                                    @forelse($approvedItems as $appItem)
-                                        <tr class="border-b border-slate-700/40 hover:bg-slate-800/30">
-                                            <td class="py-3 px-3 text-slate-300">
-                                                {{ $appItem->tanggal_dibuat ? \Carbon\Carbon::parse($appItem->tanggal_dibuat)->format('d/m/Y H:i') : '-' }}
-                                            </td>
-                                            <td class="py-3 px-3 font-semibold text-white">
-                                                {{ $appItem->jenis_kegiatan }}
-                                            </td>
-                                            <td class="py-3 px-3 text-teal-300">
-                                                {{ $appItem->unit ?? '-' }}
-                                            </td>
-                                            <td class="py-3 px-3 text-slate-300">
-                                                {{ $appItem->nama_pelaksana ?? '-' }}
-                                            </td>
-                                            <td class="py-3 px-3 text-cyan-300">
-                                                {{ $appItem->nama_pj ?? '-' }}
-                                            </td>
-                                            <td class="py-3 px-3 text-center">
-                                                <button type="button" 
-                                                        class="btn-action btn-action-view" 
-                                                        onclick="viewDetail({{ $appItem->id }})" 
-                                                        title="Lihat Detail">
-                                                    <i class="fas fa-eye text-xs"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="6" class="text-center py-6 text-slate-500 italic">
-                                                Belum ada laporan dengan status Approved.
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
                         @php
                             $approvedItems = $laporanData ? $laporanData->where('status', 'approved') : collect();
                         @endphp
@@ -1319,21 +1047,15 @@
     <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header border-b border-slate-700/80 px-5 py-4 flex items-center justify-between">
                 <div class="modal-header border-b border-slate-700/80 px-4 py-3 flex items-center justify-between">
                     <div class="flex items-center gap-2">
-                        <i class="fas fa-image text-emerald-400"></i>
-                        <h5 class="modal-title font-semibold text-white text-base" id="imageModalLabel">Preview Dokumen</h5>
                         <i class="fas fa-image text-emerald-400 text-sm"></i>
                         <h5 class="modal-title font-semibold text-white text-sm" id="imageModalLabel">Preview Dokumen</h5>
                     </div>
-                    <button type="button" class="text-slate-400 hover:text-white transition-colors text-lg" data-bs-dismiss="modal" aria-label="Close">
                     <button type="button" class="text-slate-400 hover:text-white transition-colors text-base" data-bs-dismiss="modal" aria-label="Close">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="modal-body text-center p-6 bg-slate-950/90">
-                    <img id="modalImage" src="" alt="Preview" class="img-fluid rounded-xl mx-auto shadow-2xl" style="max-height: 72vh; object-fit: contain;">
                 <div class="modal-body text-center p-4 bg-slate-950/90">
                     <img id="modalImage" src="" alt="Preview" class="img-fluid rounded-xl mx-auto shadow-xl" style="max-height: 70vh; object-fit: contain;">
                 </div>
@@ -1341,60 +1063,40 @@
         </div>
     </div>
 
-    <!-- Executive Detail Modal -->
     <!-- Executive Detail Modal (Full Info Drill-down) -->
     <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
-                <div class="modal-header border-b border-slate-700/80 px-6 py-4 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
                 <div class="modal-header border-b border-slate-700/80 px-5 py-3.5 flex items-center justify-between">
                     <div class="flex items-center gap-2.5">
                         <div class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-sm">
                             <i class="fas fa-clipboard-check"></i>
                         </div>
                         <div>
-                            <h5 class="modal-title font-bold text-white text-base" id="detailModalTitle">Detail Kegiatan Kinerja</h5>
-                            <span class="text-xs text-slate-400" id="detailModalSubtitle">Informasi lengkap kegiatan</span>
                             <h5 class="modal-title font-bold text-white text-sm sm:text-base" id="detailModalTitle">Detail Kegiatan</h5>
                             <span class="text-[11px] text-slate-400" id="detailModalSubtitle">Informasi lengkap kegiatan</span>
                         </div>
                     </div>
-                    <button type="button" class="text-slate-400 hover:text-white transition-colors text-lg" data-bs-dismiss="modal" aria-label="Close">
                     <button type="button" class="text-slate-400 hover:text-white transition-colors text-base" data-bs-dismiss="modal" aria-label="Close">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="modal-body p-6 space-y-6 bg-slate-900/90 text-sm">
                 <div class="modal-body p-4 sm:p-5 space-y-4 bg-slate-900/90 text-xs sm:text-sm">
                     
                     <!-- Metadata Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                            <span class="text-xs text-slate-400 block mb-1">Jenis Kegiatan</span>
-                            <span class="text-white font-semibold text-sm" id="modalDetailJenisKegiatan">-</span>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
                             <span class="text-[11px] text-slate-400 block mb-0.5">Jenis Kegiatan</span>
                             <span class="text-white font-semibold" id="modalDetailJenisKegiatan">-</span>
                         </div>
-                        <div class="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                            <span class="text-xs text-slate-400 block mb-1">Status Verifikasi</span>
                         <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
                             <span class="text-[11px] text-slate-400 block mb-0.5">Status Verifikasi</span>
                             <span id="modalDetailStatus" class="status-badge status-draft">Draft</span>
                         </div>
-                        <div class="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                            <span class="text-xs text-slate-400 block mb-1">Pegawai & NIP</span>
-                            <span class="text-white font-semibold text-sm" id="modalDetailPegawai">-</span>
                         <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
                             <span class="text-[11px] text-slate-400 block mb-0.5">Pegawai & NIP</span>
                             <span class="text-white font-semibold" id="modalDetailPegawai">-</span>
                         </div>
-                        <div class="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                            <span class="text-xs text-slate-400 block mb-1">Unit / Ruangan & Waktu</span>
-                            <span class="text-white font-semibold text-sm" id="modalDetailUnitWaktu">-</span>
                         <div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
                             <span class="text-[11px] text-slate-400 block mb-0.5">Unit / Ruangan & Waktu</span>
                             <span class="text-white font-semibold" id="modalDetailUnitWaktu">-</span>
@@ -1402,36 +1104,26 @@
                     </div>
 
                     <!-- Hasil Temuan -->
-                    <div class="p-4 rounded-xl bg-slate-800/60 border border-slate-700/50 space-y-1.5">
-                        <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider block">
                     <div class="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/50 space-y-1">
                         <span class="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider block">
                             <i class="fas fa-note-sticky mr-1"></i> Hasil Temuan & Uraian Kegiatan
                         </span>
-                        <div class="text-slate-200 whitespace-pre-line leading-relaxed" id="modalDetailTemuan">-</div>
                         <div class="text-slate-200 whitespace-pre-line leading-relaxed text-xs sm:text-sm" id="modalDetailTemuan">-</div>
                     </div>
 
                     <!-- Signature Cards -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-center space-y-2">
-                            <span class="text-xs font-semibold text-slate-300 block">Tanda Tangan Pelaksana</span>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div class="p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-center space-y-1.5">
                             <span class="text-[11px] font-semibold text-slate-300 block">Tanda Tangan Pelaksana</span>
                             <div id="modalDetailSigPelaksanaContainer" class="p-2 bg-white rounded-lg inline-block shadow">
-                                <img id="modalDetailSigPelaksana" src="" alt="TTD Pelaksana" style="max-height: 60px;">
                                 <img id="modalDetailSigPelaksana" src="" alt="TTD Pelaksana" style="max-height: 52px;">
                             </div>
                             <div class="text-xs font-semibold text-emerald-400" id="modalDetailNamaPelaksana">-</div>
                         </div>
 
-                        <div class="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 text-center space-y-2">
-                            <span class="text-xs font-semibold text-slate-300 block">Tanda Tangan Penanggung Jawab</span>
                         <div class="p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-center space-y-1.5">
                             <span class="text-[11px] font-semibold text-slate-300 block">Tanda Tangan Penanggung Jawab</span>
                             <div id="modalDetailSigPJContainer" class="p-2 bg-white rounded-lg inline-block shadow">
-                                <img id="modalDetailSigPJ" src="" alt="TTD PJ" style="max-height: 60px;">
                                 <img id="modalDetailSigPJ" src="" alt="TTD PJ" style="max-height: 52px;">
                             </div>
                             <div class="text-xs font-semibold text-cyan-400" id="modalDetailNamaPJ">-</div>
@@ -1440,20 +1132,16 @@
 
                     <!-- Dokumentasi Grid -->
                     <div class="space-y-2">
-                        <span class="text-xs font-semibold text-slate-300 block flex items-center justify-between">
                         <span class="text-[11px] font-semibold text-slate-300 block flex items-center justify-between">
                             <span><i class="fas fa-camera mr-1 text-emerald-400"></i> Dokumentasi Kegiatan</span>
-                            <span class="text-xs text-slate-400" id="modalDetailDocCount">0 Foto</span>
                             <span class="text-slate-400" id="modalDetailDocCount">0 Foto</span>
                         </span>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3" id="modalDetailDocGrid">
                         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5" id="modalDetailDocGrid">
                             <!-- Populated dynamically -->
                         </div>
                     </div>
 
                 </div>
-                <div class="modal-footer border-t border-slate-700/80 px-6 py-3.5 flex justify-end">
                 <div class="modal-footer border-t border-slate-700/80 px-5 py-3 flex justify-end">
                     <button type="button" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors" data-bs-dismiss="modal">
                         Tutup
@@ -1468,7 +1156,6 @@
 
     <!-- App Interactive Script -->
     <script>
-        // Store raw items data for instant access in modals and edit redirects
         const rawItemsData = @json($laporanData ? $laporanData->keyBy('id') : []);
         let currentView = 'laporan'; // 'laporan' or 'rekap'
         let currentPage = 1;
@@ -1510,7 +1197,6 @@
             
             document.getElementById('laporanKegiatanTable').style.display = 'block';
             document.getElementById('rekapLaporanTable').style.display = 'none';
-            document.querySelector('.table-controls').style.display = 'flex';
             document.querySelector('.table-controls').style.display = 'block';
             
             applyFilters();
@@ -1574,7 +1260,6 @@
                 const textContent = row.textContent.toLowerCase();
                 const rowStatus = (row.getAttribute('data-status') || '').toLowerCase();
                 
-                // Parse date from cell 5
                 let rowMatchesDate = true;
                 const dateCell = row.cells[5];
                 if (dateCell && (startDate || endDate)) {
@@ -1605,7 +1290,6 @@
                 visibleIndicator.textContent = filteredRowIndices.length;
             }
 
-            // Handle empty state row
             // Handle empty message
             hideNoDataMessage();
             if (rows.length > 0 && filteredRowIndices.length === 0) {
@@ -1662,7 +1346,6 @@
             // Prev Button
             const prevBtn = document.createElement('button');
             prevBtn.className = 'page-btn';
-            prevBtn.innerHTML = '<i class="fas fa-chevron-left text-xs"></i>';
             prevBtn.innerHTML = '<i class="fas fa-chevron-left text-[11px]"></i>';
             prevBtn.disabled = (currentPage === 1);
             prevBtn.onclick = () => {
@@ -1686,7 +1369,6 @@
                     container.appendChild(pBtn);
                 } else if (p === currentPage - 2 || p === currentPage + 2) {
                     const dots = document.createElement('span');
-                    dots.className = 'px-1 text-slate-500';
                     dots.className = 'px-1 text-slate-500 text-xs';
                     dots.textContent = '...';
                     container.appendChild(dots);
@@ -1696,7 +1378,6 @@
             // Next Button
             const nextBtn = document.createElement('button');
             nextBtn.className = 'page-btn';
-            nextBtn.innerHTML = '<i class="fas fa-chevron-right text-xs"></i>';
             nextBtn.innerHTML = '<i class="fas fa-chevron-right text-[11px]"></i>';
             nextBtn.disabled = (currentPage === totalPages);
             nextBtn.onclick = () => {
@@ -1706,10 +1387,6 @@
                 }
             };
             container.appendChild(nextBtn);
-        }
-
-        function filterTableByDate(startDate, endDate) {
-            applyFilters();
         }
 
         function resetTable() {
@@ -1731,12 +1408,6 @@
             
             // For Desktop
             const tbody = document.getElementById('tableBody');
-            if (!tbody) return;
-            const noDataRow = document.createElement('tr');
-            noDataRow.id = 'noDataRow';
-            noDataRow.innerHTML = `
-                <td colspan="11" class="text-center py-10">
-                    <div class="w-12 h-12 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center mx-auto mb-2 text-xl">
             if (tbody) {
                 const noDataRow = document.createElement('tr');
                 noDataRow.id = 'noDataRow';
@@ -1762,11 +1433,6 @@
                     <div class="w-10 h-10 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center mx-auto text-base">
                         <i class="fas fa-search"></i>
                     </div>
-                    <div class="text-slate-300 font-semibold text-sm">${message}</div>
-                    <div class="text-slate-500 text-xs mt-1">Coba ubah kata kunci atau bersihkan filter tanggal.</div>
-                </td>
-            `;
-            tbody.appendChild(noDataRow);
                     <div class="text-slate-300 font-semibold text-xs">${message}</div>
                     <button type="button" onclick="resetTable()" class="px-3 py-1.5 rounded-lg bg-emerald-600/20 text-emerald-400 text-xs font-medium">Reset Filter</button>
                 `;
@@ -1776,9 +1442,6 @@
 
         function hideNoDataMessage() {
             const noDataRow = document.getElementById('noDataRow');
-            if (noDataRow) {
-                noDataRow.remove();
-            }
             if (noDataRow) noDataRow.remove();
 
             const noDataMobile = document.getElementById('noDataMobileCard');
@@ -1859,8 +1522,6 @@
                     const thumbWrap = document.createElement('div');
                     thumbWrap.className = 'relative group cursor-pointer overflow-hidden rounded-xl border border-slate-700';
                     thumbWrap.innerHTML = `
-                        <img src="${docUrl}" class="w-full h-24 object-cover transition-transform group-hover:scale-105" alt="Dokumentasi ${idx + 1}">
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-semibold">
                         <img src="${docUrl}" class="w-full h-20 object-cover transition-transform group-hover:scale-105" alt="Dokumentasi ${idx + 1}">
                         <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-[11px] font-semibold">
                             <i class="fas fa-magnifying-glass-plus mr-1"></i> Perbesar
@@ -2098,7 +1759,6 @@
                     tableWidth: 'wrap',
                     theme: 'grid',
                     didDrawCell: function(data) {
-                        // Embed images in body cells
                         if (data.section === 'body' && (data.column.index === 5 || data.column.index === 6 || data.column.index === 7)) {
                             const rowIndex = data.row.index;
                             if (rowIndex < processedRows.length) {
@@ -2133,7 +1793,6 @@
                     }
                 });
                 
-                // Add extra pages for multiple documentation photos
                 // Extra pages for documentation photos
                 let hasExtraDocs = false;
                 processedRows.forEach((row, idx) => {
@@ -2231,4 +1890,3 @@
     </script>
 </body>
 </html>
-
