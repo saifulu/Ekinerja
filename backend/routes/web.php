@@ -40,3 +40,12 @@ Route::get('/laporan', [DetailJenisKegiatanController::class, 'showLaporan'])->n
 Route::get('/jenis-kegiatan/detail', function () {
     return view('jenis-kegiatan-detail');
 })->name('jenis-kegiatan-detail');
+
+// Fallback Route untuk melayani file gambar dokumentasi dari storage/app/public
+Route::get('/storage/{path}', function ($path) {
+    $disk = \Illuminate\Support\Facades\Storage::disk('public');
+    if ($disk->exists($path)) {
+        return $disk->response($path);
+    }
+    abort(404);
+})->where('path', '.*');
