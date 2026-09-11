@@ -20,6 +20,8 @@ class DetailJenisKegiatan extends Model
         'hasil_temuan',
         'signature_pelaksana',
         'signature_pj',
+        'nama_pelaksana',
+        'nama_pj',
         'dokumentasi',
         'status',
         'created_by'

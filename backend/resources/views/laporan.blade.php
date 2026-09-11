@@ -477,6 +477,9 @@
                                                  class="img-thumbnail" 
                                                  style="max-width: 80px; max-height: 60px; cursor: pointer;"
                                                  onclick="showImageModal('{{ $signaturePelaksana }}', 'Signature Pelaksana')">
+                                            @if(!empty($item->nama_pelaksana))
+                                                <div class="small fw-semibold mt-1">{{ $item->nama_pelaksana }}</div>
+                                            @endif
                                         @else
                                             <span class="text-muted">Tidak ada</span>
                                         @endif
@@ -494,6 +497,9 @@
                                                  class="img-thumbnail" 
                                                  style="max-width: 80px; max-height: 60px; cursor: pointer;"
                                                  onclick="showImageModal('{{ $signaturePj }}', 'Signature PJ')">
+                                            @if(!empty($item->nama_pj))
+                                                <div class="small fw-semibold mt-1">{{ $item->nama_pj }}</div>
+                                            @endif
                                         @else
                                             <span class="text-muted">Tidak ada</span>
                                         @endif

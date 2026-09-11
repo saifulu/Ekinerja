@@ -60,6 +60,10 @@ class DetailJenisKegiatanController extends Controller
             'hasil_temuan' => 'nullable|string',
             'signature_pelaksana' => 'nullable|string',
             'signature_pj' => 'nullable|string',
+            'nama_pelaksana' => 'nullable|string|max:255',
+            'nama_pj' => 'nullable|string|max:255',
+            'nama_petugas' => 'nullable|string|max:255',
+            'nama_ka_unit' => 'nullable|string|max:255',
             'captured_photos.*' => 'nullable|string',
             'uploaded_files.*' => 'nullable|file|mimes:jpeg,png,jpg,pdf,doc,docx|max:10240',
             'status' => 'nullable|in:draft,submitted,approved,rejected'
@@ -180,7 +184,7 @@ class DetailJenisKegiatanController extends Controller
                 }
             }
             
-            $detailKegiatan = DetailJenisKegiatan::create([
+            $dataToCreate = [
                 'jenis_kegiatan' => $request->jenis_kegiatan,
                 'nip' => $request->nip,
                 'unit' => $request->unit,
@@ -191,7 +195,16 @@ class DetailJenisKegiatanController extends Controller
                 'dokumentasi' => $dokumentasiPaths,
                 'status' => $request->status ?? 'draft',
                 'created_by' => $user->id
-            ]);
+            ];
+
+            if (\Illuminate\Support\Facades\Schema::hasColumn('detail_jenis_kegiatan', 'nama_pelaksana')) {
+                $dataToCreate['nama_pelaksana'] = $request->nama_pelaksana ?? $request->nama_petugas;
+            }
+            if (\Illuminate\Support\Facades\Schema::hasColumn('detail_jenis_kegiatan', 'nama_pj')) {
+                $dataToCreate['nama_pj'] = $request->nama_pj ?? $request->nama_ka_unit;
+            }
+
+            $detailKegiatan = DetailJenisKegiatan::create($dataToCreate);
             
             \Log::info('Data created successfully', ['id' => $detailKegiatan->id]);
         
@@ -249,6 +262,10 @@ class DetailJenisKegiatanController extends Controller
             'hasil_temuan' => 'nullable|string',
             'signature_pelaksana' => 'nullable|string',
             'signature_pj' => 'nullable|string',
+            'nama_pelaksana' => 'nullable|string|max:255',
+            'nama_pj' => 'nullable|string|max:255',
+            'nama_petugas' => 'nullable|string|max:255',
+            'nama_ka_unit' => 'nullable|string|max:255',
             'dokumentasi' => 'nullable|array',
             'status' => 'nullable|in:draft,submitted,approved,rejected'
         ]);
@@ -270,11 +287,27 @@ class DetailJenisKegiatanController extends Controller
         }
 
         $detailKegiatan = $query->findOrFail($id);
-        $detailKegiatan->update($request->only([
+        
+        $updateFields = [
             'jenis_kegiatan', 'nip', 'unit', 'tanggal_dibuat',
             'hasil_temuan', 'signature_pelaksana', 'signature_pj',
             'dokumentasi', 'status'
-        ]));
+        ];
+        if (\Illuminate\Support\Facades\Schema::hasColumn('detail_jenis_kegiatan', 'nama_pelaksana')) {
+            $updateFields[] = 'nama_pelaksana';
+        }
+        if (\Illuminate\Support\Facades\Schema::hasColumn('detail_jenis_kegiatan', 'nama_pj')) {
+            $updateFields[] = 'nama_pj';
+        }
+        $updateData = $request->only($updateFields);
+        if ($request->has('nama_petugas') && !isset($updateData['nama_pelaksana']) && \Illuminate\Support\Facades\Schema::hasColumn('detail_jenis_kegiatan', 'nama_pelaksana')) {
+            $updateData['nama_pelaksana'] = $request->nama_petugas;
+        }
+        if ($request->has('nama_ka_unit') && !isset($updateData['nama_pj']) && \Illuminate\Support\Facades\Schema::hasColumn('detail_jenis_kegiatan', 'nama_pj')) {
+            $updateData['nama_pj'] = $request->nama_ka_unit;
+        }
+
+        $detailKegiatan->update($updateData);
 
         return response()->json([
             'success' => true,

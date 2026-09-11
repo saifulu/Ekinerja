@@ -68,11 +68,10 @@
             right: max(0.75rem, env(safe-area-inset-right)) !important;
             bottom: max(0.75rem, env(safe-area-inset-bottom)) !important;
         }
-        .camera-container, .media-section, #cameraVideo { min-height: 13rem; height: auto; }
-        .camera-controls, .signature-actions, form > .d-flex.justify-content-end {
+        .signature-actions, form > .d-flex.justify-content-end {
             display: grid !important; grid-template-columns: 1fr; gap: 0.75rem !important;
         }
-        .camera-controls .btn, .signature-actions .btn, form > .d-flex.justify-content-end .btn {
+        .signature-actions .btn, form > .d-flex.justify-content-end .btn {
             width: 100%; margin: 0 !important;
         }
         .glass-card > .d-flex.align-items-center.justify-content-between {

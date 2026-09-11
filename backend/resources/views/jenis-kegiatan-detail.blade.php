@@ -87,10 +87,6 @@
             color: #ffffff !important;
         }
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            border-radius: 10px;
             background: rgba(255, 255, 255, 0.08) !important;
             border: 1px solid rgba(255, 255, 255, 0.18) !important;
             color: #f1f5f9 !important;
@@ -110,242 +106,770 @@
             font-size: 0.875rem;
             font-weight: 600;
         }
-        .status-draft { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
-        .status-submitted { background: rgba(13, 202, 240, 0.2); color: #0dcaf0; }
-        .status-approved { background: rgba(25, 135, 84, 0.2); color: #198754; }
-        .status-rejected { background: rgba(220, 53, 69, 0.2); color: #dc3545; }
         .status-draft { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); }
         .status-submitted { background: rgba(6, 182, 212, 0.2); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.35); }
         .status-approved { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); }
         .status-rejected { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.35); }
         
-        /* Documentation Styles */
+        /* ====================================================
+           PROFESSIONAL MOBILE CAMERA & DOKUMENTASI SYSTEM
+           ==================================================== */
         .documentation-section {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: 16px;
+            background: rgba(15, 23, 42, 0.65);
+            border-radius: 20px;
             padding: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
         }
+
+        /* Viewfinder Viewport */
         .camera-container {
             position: relative;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            background: rgba(15, 23, 42, 0.85);
-            border-radius: 14px;
-            overflow: hidden;
-            margin-bottom: 15px;
-            min-height: 300px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .media-section {
-            position: relative;
             width: 100%;
-            height: 300px;
+            aspect-ratio: 4 / 3;
+            min-height: 320px;
+            max-height: 480px;
+            background: #020617;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        
-        .photo-preview {
+
+        @media (max-width: 640px) {
+            .camera-container {
+                aspect-ratio: 3 / 4;
+                min-height: 380px;
+                max-height: 460px;
+            }
+        }
+
+        .media-section {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: #000000;
+        }
+
+        #cameraVideo {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 8px;
+            transform: scaleX(1);
+            transition: transform 0.3s ease;
         }
-        .camera-placeholder {
-            text-align: center;
-            padding: 40px 20px;
+
+        #cameraVideo.mirror-mode {
+            transform: scaleX(-1);
         }
-        .camera-placeholder i {
-            margin-bottom: 15px;
-            opacity: 0.6;
-        }
-        .camera-placeholder p {
-            font-size: 14px;
-            margin: 0;
-        }
-        #cameraVideo {
+
+        .photo-preview-full {
             width: 100%;
-            height: 300px;
+            height: 100%;
             object-fit: cover;
         }
-        .camera-controls {
+
+        /* White tactile flash on capture */
+        .shutter-flash {
             position: absolute;
-            bottom: 20px;
+            inset: 0;
+            background: #ffffff;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 60;
+            transition: opacity 0.18s ease-out;
+        }
+        .shutter-flash.active {
+            opacity: 0.92;
+            transition: none;
+        }
+
+        /* Pro Camera Viewfinder Reticles Overlay */
+        .viewfinder-overlay {
+            position: absolute;
+            inset: 16px;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        .vf-corner {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            border-color: rgba(255, 255, 255, 0.85);
+            border-style: solid;
+        }
+        .vf-top-left { top: 0; left: 0; border-width: 2.5px 0 0 2.5px; border-top-left-radius: 4px; }
+        .vf-top-right { top: 0; right: 0; border-width: 2.5px 2.5px 0 0; border-top-right-radius: 4px; }
+        .vf-bottom-left { bottom: 0; left: 0; border-width: 0 0 2.5px 2.5px; border-bottom-left-radius: 4px; }
+        .vf-bottom-right { bottom: 0; right: 0; border-width: 0 2.5px 2.5px 0; border-bottom-right-radius: 4px; }
+
+        .vf-center-target {
+            position: absolute;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 1.5px dashed rgba(16, 185, 129, 0.6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            animation: vfTargetPulse 2.5s infinite ease-in-out;
+        }
+        .vf-center-target::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #10b981;
+        }
+        @keyframes vfTargetPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+            50% { transform: translate(-50%, -50%) scale(1.12); opacity: 0.35; }
+        }
+
+        /* Top HUD Bar */
+        .camera-top-hud {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            right: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 25;
+            pointer-events: auto;
+        }
+
+        .cam-status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 5px 12px;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 9999px;
+            color: #f1f5f9;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .cam-pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: dotPulse 1.6s infinite;
+        }
+        @keyframes dotPulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 7px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .cam-hud-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cam-hud-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .cam-hud-btn:hover, .cam-hud-btn:active {
+            background: rgba(30, 41, 59, 0.95);
+            color: #ffffff;
+            transform: scale(1.08);
+        }
+        .cam-hud-btn-danger:hover {
+            background: rgba(239, 68, 68, 0.8) !important;
+            border-color: #ef4444 !important;
+        }
+
+        /* Camera Standby Placeholder (Pro Card) */
+        .camera-placeholder-pro {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            align-items: center;
-            z-index: 10;
-        }
-        
-        .primary-controls {
-            display: flex;
-            gap: 15px;
             align-items: center;
             justify-content: center;
+            text-align: center;
+            padding: 24px 16px;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
         }
-        
-        .secondary-controls {
+
+        .cam-lens-graphic {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 78, 59, 0.4));
+            border: 2px dashed rgba(16, 185, 129, 0.45);
             display: flex;
-            gap: 8px;
             align-items: center;
             justify-content: center;
-            flex-wrap: wrap;
+            margin-bottom: 14px;
+            box-shadow: 0 0 24px rgba(16, 185, 129, 0.25);
+            animation: floatLens 4s ease-in-out infinite;
         }
-        .capture-btn {
+        @keyframes floatLens {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .cam-lens-inner {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(15, 23, 42, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .btn-emerald-pro {
+            background: linear-gradient(135deg, #10b981 0%, #0d9488 100%) !important;
+            color: #ffffff !important;
+            border: none !important;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 10px 18px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+            transition: all 0.2s ease;
+        }
+        .btn-emerald-pro:hover, .btn-emerald-pro:active {
+            background: linear-gradient(135deg, #059669 0%, #0f766e 100%) !important;
+            transform: translateY(-1px);
+        }
+
+        .btn-galeri-pro {
+            background: rgba(255, 255, 255, 0.08) !important;
+            color: #f1f5f9 !important;
+            border: 1px solid rgba(255, 255, 255, 0.18) !important;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 10px 18px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+        .btn-galeri-pro:hover, .btn-galeri-pro:active {
+            background: rgba(255, 255, 255, 0.16) !important;
+            color: #ffffff !important;
+            border-color: rgba(255, 255, 255, 0.35) !important;
+        }
+
+        .cam-guide-pill {
+            display: inline-flex;
+            align-items: center;
+            font-size: 11px;
+            color: #94a3b8;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 4px 10px;
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        /* Floating Bottom Camera Deck (Shutter Bar) */
+        .camera-bottom-deck {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px 24px 20px;
+            background: linear-gradient(to top, rgba(2, 6, 23, 0.94) 0%, rgba(2, 6, 23, 0.55) 65%, transparent 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            z-index: 30;
+            pointer-events: auto;
+        }
+
+        .cam-deck-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .cam-deck-btn:hover {
+            background: rgba(51, 65, 85, 0.9);
+            transform: scale(1.08);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        .cam-deck-btn:active {
+            transform: scale(0.94);
+        }
+
+        /* Pro Shutter Trigger */
+        .shutter-trigger {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            border: 3.5px solid #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+            padding: 0;
+        }
+        .shutter-trigger:hover {
+            transform: scale(1.06);
+            border-color: #6ee7b7;
+        }
+        .shutter-trigger:active {
+            transform: scale(0.92);
+        }
+        .shutter-core {
             width: 56px;
             height: 56px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.95);
-            border: 3px solid rgba(255, 255, 255, 0.8);
-            background: linear-gradient(135deg, #10b981 0%, #0d9488 100%);
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3), 0 2px 8px rgba(16, 185, 129, 0.4);
+            transition: transform 0.15s ease, background 0.15s ease;
         }
-        .capture-btn:hover {
-            transform: scale(1.1);
-            background: rgba(255, 255, 255, 1);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(135deg, #059669 0%, #0f766e 100%);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+        .shutter-trigger:active .shutter-core {
+            transform: scale(0.88);
+            background: #059669;
         }
-        .capture-btn i {
-            font-size: 18px;
-            color: #333;
-            color: #ffffff;
-        }
-        .btn-sm {
-            padding: 8px 12px;
-            font-size: 12px;
-            border-radius: 20px;
-            min-width: 40px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .camera-status {
+
+        /* Post-Capture Review Deck */
+        .camera-review-deck {
             position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.6);
-            padding: 8px 16px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            z-index: 10;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px 20px 20px;
+            background: linear-gradient(to top, rgba(2, 6, 23, 0.95) 0%, rgba(2, 6, 23, 0.65) 75%, transparent 100%);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 35;
         }
-        #cameraStatus small {
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        /* Signature Styles */
-        .signature-section {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .signature-box {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 10px;
-            padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(30, 41, 59, 0.6);
+
+        .btn-review-retake {
+            flex: 1;
+            padding: 12px;
             border-radius: 12px;
-            padding: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-        }
-        .signature-label {
-            color: white;
-            color: #f8fafc;
+            background: rgba(255, 255, 255, 0.12) !important;
+            border: 1px solid rgba(255, 255, 255, 0.22) !important;
+            color: #f1f5f9 !important;
             font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 10px;
-            display: block;
-        }
-        .signature-area {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-            background: rgba(15, 23, 42, 0.7);
-            border-radius: 10px;
-            height: 120px;
+            font-size: 13px;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px dashed rgba(0, 0, 0, 0.2);
-            border: 2px dashed rgba(255, 255, 255, 0.2);
+            transition: all 0.2s ease;
         }
-        .signature-area:hover {
-            background: rgba(255, 255, 255, 0.95);
-            border-color: rgba(0, 0, 0, 0.3);
-            background: rgba(15, 23, 42, 0.85);
+        .btn-review-retake:hover {
+            background: rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .btn-review-accept {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #10b981 0%, #0d9488 100%) !important;
+            border: none !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+            transition: all 0.2s ease;
+        }
+        .btn-review-accept:hover {
+            background: linear-gradient(135deg, #059669 0%, #0f766e 100%) !important;
+            transform: translateY(-1px);
+        }
+
+        /* Gallery / Attached Photo Grid */
+        .attached-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+        }
+        @media (max-width: 480px) {
+            .attached-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+        }
+
+        .photo-card-pro {
+            position: relative;
+            border-radius: 14px;
+            overflow: hidden;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            aspect-ratio: 1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .photo-card-pro:hover {
+            transform: translateY(-2px);
             border-color: #10b981;
         }
-        .signature-placeholder {
-            text-align: center;
-            color: #666;
-            color: #94a3b8;
-        }
-        .signature-placeholder i {
-            opacity: 0.6;
-            opacity: 0.8;
-            color: #10b981;
-        }
-        .signature-placeholder p {
-            font-size: 12px;
-            margin: 0;
-            color: #cbd5e1;
-        }
-        .signature-info {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 6px;
-            background: rgba(15, 23, 42, 0.5);
-            border-radius: 8px;
-            padding: 8px 12px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .signature-actions {
-            display: flex;
-            gap: 8px;
-        }
-        .signature-canvas {
+        .photo-card-pro img {
             width: 100%;
             height: 100%;
-            border-radius: 6px;
-            border-radius: 8px;
-            background: #ffffff;
-            object-fit: contain;
-            padding: 4px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
         }
-        .signature-signed {
-            background: rgba(76, 175, 80, 0.1);
-            border-color: rgba(76, 175, 80, 0.3);
-            background: rgba(16, 185, 129, 0.12);
-            border-color: rgba(16, 185, 129, 0.45);
+        .photo-card-pro:hover img {
+            transform: scale(1.05);
+        }
+
+        .photo-card-source {
+            position: absolute;
+            top: 7px;
+            left: 7px;
+            padding: 2px 7px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            z-index: 5;
+            backdrop-filter: blur(8px);
+        }
+        .photo-card-source.source-camera {
+            background: rgba(16, 185, 129, 0.85);
+            color: #ffffff;
+        }
+        .photo-card-source.source-upload {
+            background: rgba(59, 130, 246, 0.85);
+            color: #ffffff;
+        }
+
+        .photo-card-delete {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: rgba(220, 38, 38, 0.9);
+            color: #ffffff;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+        .photo-card-delete:hover {
+            background: #ef4444;
+            transform: scale(1.15);
+        }
+
+        .photo-card-time {
+            position: absolute;
+            bottom: 6px;
+            left: 6px;
+            right: 6px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(2, 6, 23, 0.7);
+            backdrop-filter: blur(6px);
+            font-size: 9px;
+            color: #cbd5e1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Lightbox Fullscreen Preview */
+        .photo-lightbox-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.92);
+            backdrop-filter: blur(14px);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            box-sizing: border-box;
+            animation: lbFadeIn 0.25s ease-out;
+        }
+        @keyframes lbFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .photo-lightbox-content {
+            position: relative;
+            max-width: 92vw;
+            max-height: 82vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .photo-lightbox-content img {
+            max-width: 100%;
+            max-height: 75vh;
+            border-radius: 14px;
+            object-fit: contain;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .photo-lightbox-close {
+            position: absolute;
+            top: -48px;
+            right: 0;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .photo-lightbox-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Single Date Picker Dark Styling */
+        input[type="datetime-local"] {
+            color-scheme: dark;
+        }
+
+        /* Professional Signature Styles */
+        .signature-section,
+        .signature-section-pro {
+            background: rgba(15, 23, 42, 0.7);
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(12px);
+        }
+        .signature-box,
+        .signature-box-pro {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.75) 0%, rgba(15, 23, 42, 0.85) 100%);
+            border-radius: 14px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .signature-box-pro:hover {
+            border-color: rgba(16, 185, 129, 0.35);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+        .signature-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            gap: 8px;
+        }
+        .sign-avatar-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .signature-role-title {
+            color: #f8fafc;
+            font-weight: 600;
+            font-size: 13.5px;
+            margin: 0;
+            line-height: 1.2;
+        }
+        .signature-pad-surface {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 10px;
+            min-height: 90px;
+            max-height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: 1.5px dashed rgba(255, 255, 255, 0.18);
+            position: relative;
+            overflow: hidden;
+        }
+        .signature-pad-surface:hover {
+            background: rgba(15, 23, 42, 0.95);
+            border-color: #10b981;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
+        }
+        .signature-placeholder-pro {
+            text-align: center;
+            color: #94a3b8;
+            padding: 8px;
+            pointer-events: none;
+        }
+        .pen-icon-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+            color: #34d399;
+            font-size: 16px;
+            transition: transform 0.2s ease;
+        }
+        .signature-pad-surface:hover .pen-icon-circle {
+            transform: scale(1.1);
+        }
+        .signature-freetyping-box {
+            margin-top: 12px;
+        }
+        .signature-freetyping-box label {
+            font-size: 11.5px;
+            color: #cbd5e1;
+            font-weight: 500;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .freetyping-tag {
+            background: rgba(51, 65, 85, 0.6);
+            border: 1px solid rgba(100, 116, 139, 0.4);
+            color: #94a3b8;
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-family: ui-monospace, monospace;
+        }
+        .freetyping-input {
+            background: rgba(15, 23, 42, 0.92) !important;
+            border: 1px solid rgba(255, 255, 255, 0.18) !important;
+            color: #ffffff !important;
+            border-radius: 8px !important;
+            font-size: 12.5px !important;
+            padding: 7px 11px !important;
+            transition: all 0.2s ease !important;
+        }
+        .freetyping-input:focus {
+            border-color: #10b981 !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+            background: rgba(15, 23, 42, 1) !important;
+        }
+        .signature-badge-signed {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .signature-badge-pending {
+            background: rgba(100, 116, 139, 0.2);
+            color: #94a3b8;
+            border: 1px solid rgba(100, 116, 139, 0.3);
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-emerald-outline {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            color: #6ee7b7;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .btn-emerald-outline:hover {
+            background: #10b981;
+            border-color: #10b981;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        .signature-signed-canvas-wrap {
+            width: 100%;
+            height: 100%;
+            min-height: 90px;
+            max-height: 110px;
+            background: #ffffff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            position: relative;
+        }
+        .signature-signed-canvas-wrap img {
+            max-height: 85px;
+            max-width: 100%;
+            object-fit: contain;
+            user-select: none;
         }
         
         /* Signature Modal */
@@ -355,7 +879,6 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
             background: rgba(0, 0, 0, 0.75);
             backdrop-filter: blur(8px);
             display: flex;
@@ -366,8 +889,6 @@
             box-sizing: border-box;
         }
         .signature-modal-content {
-            background: white;
-            border-radius: 15px;
             background: #1e293b;
             border-radius: 18px;
             padding: 24px;
@@ -375,7 +896,6 @@
             max-width: 600px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.15);
             box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6);
             animation: modalSlideIn 0.3s ease-out;
@@ -396,9 +916,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 2px solid #f0f0f0;
             margin-bottom: 20px;
             padding-bottom: 14px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -407,7 +924,6 @@
         }
         .signature-modal-header h5 {
             margin: 0;
-            color: #333;
             color: #f8fafc;
             font-size: 18px;
             font-weight: 600;
@@ -415,13 +931,10 @@
             min-width: 200px;
         }
         .btn-close {
-            background: none;
             background: rgba(255, 255, 255, 0.08);
             border: none;
-            font-size: 24px;
             font-size: 16px;
             cursor: pointer;
-            color: #666;
             color: #94a3b8;
             padding: 8px;
             border-radius: 50%;
@@ -429,14 +942,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
             width: 36px;
             height: 36px;
         }
         .btn-close:hover {
-            background: #f5f5f5;
-            color: #333;
             background: rgba(255, 255, 255, 0.18);
             color: #ffffff;
         }
@@ -452,10 +961,8 @@
             height: auto;
             min-height: 200px;
             max-height: 300px;
-            border: 2px solid #e0e0e0;
             border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
-            background: white;
             background: #ffffff;
             cursor: crosshair;
             touch-action: none;
@@ -470,36 +977,27 @@
         }
         
         .signature-modal-actions .btn {
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 500;
             padding: 10px 22px;
             border-radius: 10px;
             font-weight: 600;
             transition: all 0.2s ease;
-            border: none;
             cursor: pointer;
             min-width: 100px;
         }
         
         .signature-modal-actions .btn-secondary {
-            background: #6c757d;
-            color: white;
             background: rgba(255, 255, 255, 0.1) !important;
             border: 1px solid rgba(255, 255, 255, 0.2) !important;
             color: #e2e8f0 !important;
         }
         
         .signature-modal-actions .btn-secondary:hover {
-            background: #5a6268;
             background: rgba(255, 255, 255, 0.2) !important;
             color: #ffffff !important;
             transform: translateY(-1px);
         }
         
         .signature-modal-actions .btn-primary {
-            background: #007bff;
-            color: white;
             background: linear-gradient(135deg, #10b981 0%, #0d9488 100%) !important;
             border: none !important;
             color: #ffffff !important;
@@ -507,24 +1005,18 @@
         }
         
         .signature-modal-actions .btn-primary:hover {
-            background: #0056b3;
             background: linear-gradient(135deg, #059669 0%, #0f766e 100%) !important;
             box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
             transform: translateY(-1px);
         }
         
         .signature-modal-actions .btn-outline-secondary {
-            background: transparent;
-            color: #6c757d;
-            border: 2px solid #6c757d;
             background: transparent !important;
             color: #cbd5e1 !important;
             border: 1px solid rgba(255, 255, 255, 0.25) !important;
         }
         
         .signature-modal-actions .btn-outline-secondary:hover {
-            background: #6c757d;
-            color: white;
             background: rgba(255, 255, 255, 0.1) !important;
             color: #ffffff !important;
             transform: translateY(-1px);
@@ -610,52 +1102,6 @@
                 min-height: 44px;
             }
         }
-        
-        #allImagesPreview {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .image-item {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-        .image-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .image-item .image-type {
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 10px;
-        }
-        .remove-image {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(220, 53, 69, 0.8);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 12px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
     </style>
     @include('partials.mobile-ux')
 </head>
@@ -715,12 +1161,23 @@
                                 </div>
                             </div>
 
-                            <!-- Tanggal Dibuat -->
+                            <!-- Tanggal Kegiatan (Satu Tanggal Utama Untuk Seluruh Laporan) -->
                             <div class="col-md-6 mb-3">
-                                <label for="tanggalDibuat" class="form-label">
-                                    <i class="fas fa-calendar me-2"></i>Tanggal Dibuat
+                                <label for="tanggalDibuat" class="form-label d-flex align-items-center justify-content-between mb-1.5">
+                                    <span class="text-white"><i class="fas fa-calendar-day text-emerald-400 me-2"></i>Tanggal Kegiatan</span>
+                                    <span class="badge bg-emerald-500/15 text-emerald-300 border border-emerald-500/25 px-2 py-0.5" style="font-size: 10.5px; font-weight: 500;">
+                                        <i class="fas fa-circle-check text-emerald-400 me-1"></i>Tanggal Utama
+                                    </span>
                                 </label>
-                                <input type="datetime-local" class="form-control" id="tanggalDibuat" name="tanggal_dibuat" required>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-slate-900/90 border-slate-700/80 text-emerald-400">
+                                        <i class="fas fa-clock"></i>
+                                    </span>
+                                    <input type="datetime-local" class="form-control" id="tanggalDibuat" name="tanggal_dibuat" required style="color-scheme: dark;">
+                                </div>
+                                <small class="text-slate-400 mt-1 d-block" style="font-size: 11px;">
+                                    <i class="fas fa-info-circle text-emerald-400/80 me-1"></i>Satu tanggal berlaku untuk seluruh laporan kegiatan dan lembar tanda tangan.
+                                </small>
                             </div>
 
                             <!-- Hasil Temuan -->
@@ -732,130 +1189,213 @@
                             </div>
 
                             <!-- Dokumentasi Section -->
-                            <div class="col-12 mb-3">
+                            <div class="col-12 mb-4">
                                 <div class="documentation-section">
-                                    <h5 class="text-white mb-3">
-                                        <i class="fas fa-camera me-2"></i>Dokumentasi
-                                    </h5>
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="d-inline-flex align-items-center justify-content-center w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" style="width: 32px; height: 32px; border-radius: 8px;">
+                                                <i class="fas fa-camera text-sm"></i>
+                                            </span>
+                                            <div>
+                                                <h6 class="text-white mb-0 font-semibold">Dokumentasi & Bukti</h6>
+                                                <small class="text-white-50" style="font-size: 11px;">Foto langsung atau unggah dari memori</small>
+                                            </div>
+                                        </div>
+                                        <span id="photoCountBadge" class="badge rounded-pill bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1" style="font-size: 11px;">
+                                            0 Lampiran
+                                        </span>
+                                    </div>
                                     
-                                    <!-- Unified Camera and Upload Section -->
-                                    <div class="camera-container">
-                                        <!-- Media Elements -->
+                                    <!-- Professional Camera Viewfinder -->
+                                    <div class="camera-container" id="cameraContainer">
+                                        <!-- Shutter White Flash Feedback -->
+                                        <div id="shutterFlash" class="shutter-flash"></div>
+
+                                        <!-- Media Viewport -->
                                         <div class="media-section">
-                                            <video id="cameraVideo" autoplay playsinline style="display: none;"></video>
+                                            <video id="cameraVideo" autoplay playsinline muted style="display: none;"></video>
                                             <canvas id="photoCanvas" style="display: none;"></canvas>
-                                            <img id="photoPreview" class="photo-preview" alt="Photo Preview" style="display: none;">
+                                            <img id="photoPreview" class="photo-preview-full" alt="Pratinjau Foto" style="display: none;">
                                             
-                                            <!-- Camera Placeholder -->
-                                            <div id="cameraPlaceholder" class="camera-placeholder">
-                                                <i class="fas fa-camera fa-3x text-white-50 mb-3"></i>
-                                                <p class="text-white-50 mb-0">Klik tombol kamera untuk mengambil foto</p>
+                                            <!-- Standby / Idle Screen -->
+                                            <div id="cameraPlaceholder" class="camera-placeholder-pro">
+                                                <div class="cam-lens-graphic">
+                                                    <div class="cam-lens-inner">
+                                                        <i class="fas fa-camera text-emerald-400"></i>
+                                                    </div>
+                                                </div>
+                                                <h6 class="text-white font-semibold mb-1" style="font-size: 15px;">Ambil Foto Dokumentasi</h6>
+                                                <p class="text-slate-400 text-xs mb-3 px-3 text-center" style="max-width: 320px;">Gunakan kamera ponsel untuk mengambil foto bukti atau pilih gambar dari galeri perangkat.</p>
+                                                
+                                                <div class="d-flex flex-wrap justify-content-center gap-2 w-100 px-3" style="max-width: 380px;">
+                                                    <button type="button" id="startCameraBtn" class="btn btn-emerald-pro d-flex align-items-center justify-content-center gap-2 flex-grow-1">
+                                                        <i class="fas fa-camera"></i> <span>Buka Kamera</span>
+                                                    </button>
+                                                    <button type="button" class="btn btn-galeri-pro d-flex align-items-center justify-content-center gap-2 flex-grow-1" onclick="document.getElementById('fileInput').click()">
+                                                        <i class="fas fa-images"></i> <span>Pilih Galeri</span>
+                                                    </button>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <span class="cam-guide-pill"><i class="fas fa-circle-check text-emerald-400 me-1"></i> Mendukung Depan/Belakang • Maks 5MB</span>
+                                                </div>
                                             </div>
                                         </div>
                                         
-                                        <!-- Status Information -->
-                                        <div id="cameraStatus" class="camera-status">
-                                            <small class="text-white-50">Siap mengambil foto</small>
+                                        <!-- Viewfinder Overlay (Corner reticles & Focus target) -->
+                                        <div id="viewfinderOverlay" class="viewfinder-overlay" style="display: none;">
+                                            <div class="vf-corner vf-top-left"></div>
+                                            <div class="vf-corner vf-top-right"></div>
+                                            <div class="vf-corner vf-bottom-left"></div>
+                                            <div class="vf-corner vf-bottom-right"></div>
+                                            <div class="vf-center-target"></div>
+                                        </div>
+
+                                        <!-- Top HUD Bar -->
+                                        <div id="cameraTopBar" class="camera-top-hud" style="display: none;">
+                                            <div class="cam-status-pill">
+                                                <span class="cam-pulse-dot"></span>
+                                                <span id="camStatusText">Kamera Aktif</span>
+                                            </div>
+                                            <div class="cam-hud-actions">
+                                                <button type="button" id="topSwitchCameraBtn" class="cam-hud-btn" title="Ganti Kamera Depan/Belakang">
+                                                    <i class="fas fa-camera-rotate"></i>
+                                                </button>
+                                                <button type="button" id="closeCameraBtn" class="cam-hud-btn cam-hud-btn-danger" title="Tutup Kamera">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                         
-                                        <!-- Control Buttons -->
-                                        <div class="camera-controls">
-                                            <!-- Primary Actions -->
-                                            <div class="primary-controls">
-                                                <button type="button" id="startCameraBtn" class="capture-btn" title="Mulai Kamera">
-                                                    <i class="fas fa-camera text-dark"></i>
-                                                    <i class="fas fa-camera text-white"></i>
-                                                </button>
-                                                <button type="button" id="capturePhoto" class="capture-btn" style="display: none;" title="Ambil Foto">
-                                                    <i class="fas fa-circle text-dark"></i>
-                                                    <i class="fas fa-circle text-white"></i>
-                                                </button>
-                                                <button type="button" id="uploadPhoto" class="capture-btn" onclick="document.getElementById('fileInput').click()" title="Upload Foto">
-                                                    <i class="fas fa-upload text-dark"></i>
-                                                    <i class="fas fa-upload text-white"></i>
-                                                </button>
-                                            </div>
+                                        <!-- Bottom Control Deck (While live camera is active) -->
+                                        <div id="cameraBottomDeck" class="camera-bottom-deck" style="display: none;">
+                                            <!-- Switch Camera (Left) -->
+                                            <button type="button" id="switchCamera" class="cam-deck-btn" title="Balik Kamera">
+                                                <i class="fas fa-camera-rotate"></i>
+                                            </button>
                                             
-                                            <!-- Secondary Actions -->
-                                            <div class="secondary-controls">
-                                                <button type="button" id="retakePhoto" class="btn btn-secondary btn-sm" style="display: none;" title="Ambil Ulang">
-                                                    <i class="fas fa-redo"></i>
-                                                </button>
-                                                <button type="button" id="switchCamera" class="btn btn-primary btn-sm" style="display: none;" title="Ganti Kamera">
-                                                    <i class="fas fa-sync-alt"></i>
-                                                </button>
-                                                <button type="button" id="stopCamera" class="btn btn-danger btn-sm" style="display: none;" title="Stop Kamera">
-                                                    <i class="fas fa-stop"></i>
-                                                </button>
-                                            </div>
+                                            <!-- Shutter Button (Center) -->
+                                            <button type="button" id="capturePhoto" class="shutter-trigger" title="Ambil Foto">
+                                                <div class="shutter-core"></div>
+                                            </button>
+                                            
+                                            <!-- Pick from Gallery (Right) -->
+                                            <button type="button" class="cam-deck-btn" onclick="document.getElementById('fileInput').click()" title="Pilih dari Galeri">
+                                                <i class="fas fa-images"></i>
+                                            </button>
+                                        </div>
+
+                                        <!-- Post-Capture Review Deck (After photo snapped) -->
+                                        <div id="photoReviewDeck" class="camera-review-deck" style="display: none;">
+                                            <button type="button" id="retakePhoto" class="btn btn-review-retake">
+                                                <i class="fas fa-rotate-left me-1"></i> Ambil Ulang
+                                            </button>
+                                            <button type="button" id="acceptPhoto" class="btn btn-review-accept">
+                                                <i class="fas fa-check me-1"></i> Gunakan Foto
+                                            </button>
                                         </div>
                                     </div>
                                     
-                                    <!-- Hidden file input -->
+                                    <!-- Hidden file input for gallery upload -->
                                     <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
                                     
-                                    <!-- All Images Preview -->
-                                    <div id="allImagesPreview" class="uploaded-images mt-3"></div>
+                                    <!-- Attached Photos Gallery List -->
+                                    <div class="mt-4">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <span class="text-white text-xs font-semibold text-uppercase tracking-wider">
+                                                <i class="fas fa-images me-1 text-emerald-400"></i>Foto Terlampir
+                                            </span>
+                                            <button type="button" class="btn btn-sm btn-galeri-pro py-1 px-2.5" style="font-size: 11px;" onclick="document.getElementById('fileInput').click()">
+                                                <i class="fas fa-plus me-1"></i>Tambah Galeri
+                                            </button>
+                                        </div>
+                                        <div id="allImagesPreview" class="attached-grid"></div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Signature Section -->
+                            <!-- Signature Section (Minimalist & Clean) -->
                             <div class="col-12 mb-4">
-                                <div class="signature-section">
-                                    <h5 class="text-white mb-4">
-                                        <i class="fas fa-signature me-2"></i>Tanda Tangan
-                                    </h5>
+                                <div class="signature-section-pro">
+                                    <div class="d-flex align-items-center justify-content-between mb-3">
+                                        <h6 class="text-white font-semibold mb-0 d-flex align-items-center gap-2" style="font-size: 14px;">
+                                            <i class="fas fa-signature text-emerald-400"></i>
+                                            <span>Tanda Tangan</span>
+                                        </h6>
+                                        <span id="signatureStatusSummaryBadge" class="badge bg-slate-800 text-slate-400 border border-slate-700/60 font-normal px-2 py-0.5" style="font-size: 11px;">0/2</span>
+                                    </div>
                                     
-                                    <div class="row">
-                                        <!-- Petugas Signature -->
-                                        <div class="col-md-6 mb-3">
-                                            <div class="signature-box">
-                                                <label class="signature-label">
-                                                    <i class="fas fa-user me-2"></i>Petugas
-                                                </label>
-                                                <div class="signature-area" id="petugasSignature">
-                                                    <div class="signature-placeholder">
-                                                        <i class="fas fa-pen-nib fa-2x text-white-50 mb-2"></i>
-                                                        <p class="text-white-50 mb-0">Klik untuk tanda tangan</p>
+                                    <div class="row g-3">
+                                        <!-- Petugas Card -->
+                                        <div class="col-md-6">
+                                            <div class="signature-box-pro">
+                                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                                    <span class="text-white font-medium text-sm">Petugas</span>
+                                                    <span id="petugasStatusBadge" class="text-xs text-slate-400">Belum ditandatangani</span>
+                                                </div>
+
+                                                <!-- Signature Canvas Surface -->
+                                                <div class="signature-pad-surface" id="petugasSignature" onclick="openSignaturePad('petugas')" role="button" title="Klik untuk tanda tangan">
+                                                    <div class="signature-placeholder-pro">
+                                                        <i class="fas fa-pen text-slate-500 text-xs mb-1"></i>
+                                                        <div class="text-slate-400 text-xs">Klik untuk tanda tangan</div>
                                                     </div>
                                                 </div>
-                                                <div class="signature-info mt-2">
-                                                    <small class="text-white-50">Nama: <span id="petugasName">-</span></small><br>
-                                                    <small class="text-white-50">Tanggal: <span id="petugasDate">-</span></small>
+
+                                                <!-- Nama Petugas Input (Freetyping) -->
+                                                <div class="mt-2.5">
+                                                    <input type="text" 
+                                                           class="form-control freetyping-input" 
+                                                           id="petugasNameInput" 
+                                                           name="nama_petugas" 
+                                                           placeholder="Nama Petugas" 
+                                                           autocomplete="name">
                                                 </div>
-                                                <div class="signature-actions mt-2">
-                                                    <button type="button" class="btn btn-sm btn-outline-light me-2" onclick="openSignaturePad('petugas')">
-                                                        <i class="fas fa-pen"></i> Tanda Tangan
+
+                                                <!-- Action Buttons -->
+                                                <div class="d-flex gap-2 mt-2">
+                                                    <button type="button" class="btn btn-sm btn-outline-light flex-grow-1 py-1" id="openPetugasPadBtn" onclick="openSignaturePad('petugas')">
+                                                        <i class="fas fa-pen text-xs me-1"></i><span id="petugasActionText">Tanda Tangan</span>
                                                     </button>
-                                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearSignature('petugas')" style="display: none;" id="clearPetugasBtn">
-                                                        <i class="fas fa-trash"></i> Hapus
+                                                    <button type="button" class="btn btn-sm btn-outline-danger px-2.5 py-1" onclick="clearSignature('petugas')" style="display: none;" id="clearPetugasBtn" title="Hapus tanda tangan">
+                                                        <i class="fas fa-trash-can text-xs"></i>
                                                     </button>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <!-- Ka. Unit/Ka. Ruangan Signature -->
-                                        <div class="col-md-6 mb-3">
-                                            <div class="signature-box">
-                                                <label class="signature-label">
-                                                    <i class="fas fa-user-tie me-2"></i>Ka. Unit/Ka. Ruangan
-                                                </label>
-                                                <div class="signature-area" id="kaUnitSignature">
-                                                    <div class="signature-placeholder">
-                                                        <i class="fas fa-pen-nib fa-2x text-white-50 mb-2"></i>
-                                                        <p class="text-white-50 mb-0">Klik untuk tanda tangan</p>
+                                        <!-- Ka. Unit Card -->
+                                        <div class="col-md-6">
+                                            <div class="signature-box-pro">
+                                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                                    <span class="text-white font-medium text-sm">Ka. Unit / Ka. Ruangan</span>
+                                                    <span id="kaUnitStatusBadge" class="text-xs text-slate-400">Belum ditandatangani</span>
+                                                </div>
+
+                                                <!-- Signature Canvas Surface -->
+                                                <div class="signature-pad-surface" id="kaUnitSignature" onclick="openSignaturePad('kaUnit')" role="button" title="Klik untuk tanda tangan">
+                                                    <div class="signature-placeholder-pro">
+                                                        <i class="fas fa-pen text-slate-500 text-xs mb-1"></i>
+                                                        <div class="text-slate-400 text-xs">Klik untuk tanda tangan</div>
                                                     </div>
                                                 </div>
-                                                <div class="signature-info mt-2">
-                                                    <small class="text-white-50">Nama: <span id="kaUnitName">-</span></small><br>
-                                                    <small class="text-white-50">Tanggal: <span id="kaUnitDate">-</span></small>
+
+                                                <!-- Nama Ka. Unit Input (Freetyping) -->
+                                                <div class="mt-2.5">
+                                                    <input type="text" 
+                                                           class="form-control freetyping-input" 
+                                                           id="kaUnitNameInput" 
+                                                           name="nama_ka_unit" 
+                                                           placeholder="Nama Ka. Unit / Ka. Ruangan" 
+                                                           autocomplete="off">
                                                 </div>
-                                                <div class="signature-actions mt-2">
-                                                    <button type="button" class="btn btn-sm btn-outline-light me-2" onclick="openSignaturePad('kaUnit')">
-                                                        <i class="fas fa-pen"></i> Tanda Tangan
+
+                                                <!-- Action Buttons -->
+                                                <div class="d-flex gap-2 mt-2">
+                                                    <button type="button" class="btn btn-sm btn-outline-light flex-grow-1 py-1" id="openKaUnitPadBtn" onclick="openSignaturePad('kaUnit')">
+                                                        <i class="fas fa-pen text-xs me-1"></i><span id="kaUnitActionText">Tanda Tangan</span>
                                                     </button>
-                                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearSignature('kaUnit')" style="display: none;" id="clearKaUnitBtn">
-                                                        <i class="fas fa-trash"></i> Hapus
+                                                    <button type="button" class="btn btn-sm btn-outline-danger px-2.5 py-1" onclick="clearSignature('kaUnit')" style="display: none;" id="clearKaUnitBtn" title="Hapus tanda tangan">
+                                                        <i class="fas fa-trash-can text-xs"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -894,23 +1434,54 @@
             kaUnit: null
         };
 
-        // Signature functions
+        // Signature State & Management
+        function updateSignatureBadges() {
+            const count = (signatures.petugas ? 1 : 0) + (signatures.kaUnit ? 1 : 0);
+            const summaryBadge = document.getElementById('signatureStatusSummaryBadge');
+            if (summaryBadge) {
+                if (count === 2) {
+                    summaryBadge.className = 'badge bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 text-xs';
+                    summaryBadge.innerHTML = '<i class="fas fa-check text-emerald-400 me-1"></i>2/2';
+                } else {
+                    summaryBadge.className = 'badge bg-slate-800 text-slate-400 border border-slate-700/60 font-normal px-2 py-0.5 text-xs';
+                    summaryBadge.textContent = `${count}/2`;
+                }
+            }
+        }
+
+        // Open Signature Pad Modal
         function openSignaturePad(type) {
-            // Create modal for signature pad
+            closeSignatureModal();
+
+            const title = type === 'petugas' ? 'Petugas' : 'Ka. Unit / Ka. Ruangan';
             const modal = document.createElement('div');
             modal.className = 'signature-modal';
+            modal.id = 'activeSignatureModal';
             modal.innerHTML = `
-                <div class="signature-modal-content">
-                    <div class="signature-modal-header">
-                        <h5>Tanda Tangan ${type === 'petugas' ? 'Petugas' : 'Ka. Unit/Ka. Ruangan'}</h5>
-                        <button type="button" class="btn-close" onclick="closeSignatureModal()"></button>
+                <div class="signature-modal-content" style="max-width: 480px;">
+                    <div class="signature-modal-header py-2 mb-3">
+                        <h6 class="text-white mb-0 font-semibold" style="font-size: 15px;">
+                            <i class="fas fa-signature text-emerald-400 me-2"></i>Tanda Tangan ${title}
+                        </h6>
+                        <button type="button" class="btn-close" onclick="closeSignatureModal()" title="Tutup"></button>
                     </div>
                     <div class="signature-modal-body">
-                        <canvas id="signatureCanvas" width="400" height="200"></canvas>
-                        <div class="signature-modal-actions mt-3">
-                            <button type="button" class="btn btn-secondary me-2" onclick="clearCanvas()">Hapus</button>
-                            <button type="button" class="btn btn-primary me-2" onclick="saveSignature('${type}')">Simpan</button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="closeSignatureModal()">Batal</button>
+                        <div class="position-relative" style="background: #ffffff; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.2); overflow: hidden;">
+                            <canvas id="signatureCanvas" style="display: block; width: 100%; cursor: crosshair; touch-action: none;"></canvas>
+                            <div style="position: absolute; bottom: 25px; left: 16px; right: 16px; border-bottom: 1px dashed rgba(15, 23, 42, 0.2); pointer-events: none;">
+                                <span style="font-size: 10px; color: rgba(15, 23, 42, 0.35);">✕ Tanda tangan di sini</span>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top border-white/10">
+                            <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2.5 text-xs" onclick="clearCanvas()">
+                                <i class="fas fa-rotate-left me-1"></i>Hapus
+                            </button>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-sm btn-secondary py-1 px-3 text-xs" onclick="closeSignatureModal()">Batal</button>
+                                <button type="button" class="btn btn-sm btn-emerald-pro py-1 px-3 text-xs" onclick="saveSignature('${type}')">
+                                    <i class="fas fa-check me-1"></i>Simpan
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -922,119 +1493,144 @@
 
         function initializeSignatureCanvas() {
             const canvas = document.getElementById('signatureCanvas');
+            if (!canvas) return;
             const ctx = canvas.getContext('2d');
             let isDrawing = false;
             
-            // Set canvas responsive size
             function resizeCanvas() {
                 const container = canvas.parentElement;
-                const containerWidth = container.clientWidth;
-                const aspectRatio = 2; // width:height ratio
+                const rect = container.getBoundingClientRect();
+                const dpr = window.devicePixelRatio || 1;
+                const width = rect.width || 460;
+                const height = Math.min(Math.max(width * 0.46, 170), 220);
                 
-                canvas.width = Math.min(containerWidth - 40, 500);
-                canvas.height = canvas.width / aspectRatio;
+                canvas.width = width * dpr;
+                canvas.height = height * dpr;
+                canvas.style.width = width + 'px';
+                canvas.style.height = height + 'px';
                 
-                // Ensure minimum height
-                if (canvas.height < 160) {
-                    canvas.height = 160;
-                    canvas.width = canvas.height * aspectRatio;
-                }
-                
-                canvas.style.width = canvas.width + 'px';
-                canvas.style.height = canvas.height + 'px';
+                ctx.scale(dpr, dpr);
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.strokeStyle = '#090d16'; // sleek deep dark ink
+                ctx.lineWidth = 2.6;
             }
             
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
             
-            canvas.style.border = '2px solid #e0e0e0';
-            canvas.style.border = '2px solid rgba(255, 255, 255, 0.2)';
-            canvas.style.borderRadius = '12px';
-            canvas.style.background = 'white';
-            canvas.style.cursor = 'crosshair';
-            canvas.style.touchAction = 'none';
-            
-            // Mouse events
-            canvas.addEventListener('mousedown', startDrawing);
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('mouseup', stopDrawing);
-            canvas.addEventListener('mouseout', stopDrawing);
-            
-            // Touch events for mobile
-            canvas.addEventListener('touchstart', handleTouch);
-            canvas.addEventListener('touchmove', handleTouch);
-            canvas.addEventListener('touchend', stopDrawing);
-            
-            function handleTouch(e) {
-                e.preventDefault();
-                const touch = e.touches[0];
+            function getPos(e) {
                 const rect = canvas.getBoundingClientRect();
-                const x = touch.clientX - rect.left;
-                const y = touch.clientY - rect.top;
-                
-                if (e.type === 'touchstart') {
-                    isDrawing = true;
-                    ctx.beginPath();
-                    ctx.moveTo(x, y);
-                } else if (e.type === 'touchmove' && isDrawing) {
-                    ctx.lineTo(x, y);
-                    ctx.stroke();
+                if (e.touches && e.touches[0]) {
+                    return {
+                        x: e.touches[0].clientX - rect.left,
+                        y: e.touches[0].clientY - rect.top
+                    };
                 }
+                return {
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                };
             }
             
             function startDrawing(e) {
+                e.preventDefault();
                 isDrawing = true;
-                const rect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
+                const pos = getPos(e);
                 ctx.beginPath();
-                ctx.moveTo(x, y);
+                ctx.moveTo(pos.x, pos.y);
             }
             
             function draw(e) {
                 if (!isDrawing) return;
-                const rect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                ctx.lineTo(x, y);
+                e.preventDefault();
+                const pos = getPos(e);
+                ctx.lineTo(pos.x, pos.y);
                 ctx.stroke();
             }
             
             function stopDrawing() {
-                isDrawing = false;
+                if (isDrawing) {
+                    isDrawing = false;
+                    ctx.closePath();
+                }
             }
             
-            // Set drawing style
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 2;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
+            // Mouse events
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            window.addEventListener('mouseup', stopDrawing);
+            
+            // Touch events for mobile devices
+            canvas.addEventListener('touchstart', startDrawing, { passive: false });
+            canvas.addEventListener('touchmove', draw, { passive: false });
+            canvas.addEventListener('touchend', stopDrawing);
+            canvas.addEventListener('touchcancel', stopDrawing);
         }
 
         function clearCanvas() {
             const canvas = document.getElementById('signatureCanvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.save();
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.restore();
+            }
+        }
+
+        function isCanvasBlank(canvas) {
             const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const pixelBuffer = new Uint32Array(
+                ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer
+            );
+            return !pixelBuffer.some(color => color !== 0);
         }
 
         function saveSignature(type) {
             const canvas = document.getElementById('signatureCanvas');
-            const dataURL = canvas.toDataURL();
-            
+            if (!canvas) return;
+
+            if (isCanvasBlank(canvas)) {
+                alert('Silakan bubuhkan tanda tangan di kanvas terlebih dahulu.');
+                return;
+            }
+
+            const dataURL = canvas.toDataURL('image/png');
             signatures[type] = dataURL;
             
             // Update UI
             const signatureArea = document.getElementById(type + 'Signature');
-            signatureArea.innerHTML = `<img src="${dataURL}" class="signature-canvas" alt="Signature">`;
-            signatureArea.classList.add('signature-signed');
+            if (signatureArea) {
+                signatureArea.innerHTML = `
+                    <div class="signature-signed-canvas-wrap">
+                        <img src="${dataURL}" class="signature-canvas" alt="Tanda Tangan">
+                    </div>
+                `;
+                signatureArea.classList.add('signature-signed');
+            }
             
-            // Update info
-            const now = new Date();
-            document.getElementById(type + 'Name').textContent = type === 'petugas' ? 'Petugas' : 'Ka. Unit/Ka. Ruangan';
-            document.getElementById(type + 'Date').textContent = now.toLocaleDateString('id-ID');
+            // Update status badge
+            const statusBadge = document.getElementById(type + 'StatusBadge');
+            if (statusBadge) {
+                statusBadge.className = 'text-xs text-emerald-400 font-medium';
+                statusBadge.innerHTML = '<i class="fas fa-check me-1"></i>Sudah ditandatangani';
+            }
+
+            // Update action button label
+            const actionText = document.getElementById(type + 'ActionText');
+            if (actionText) {
+                actionText.textContent = 'Ubah';
+            }
             
             // Show clear button
-            document.getElementById('clear' + (type === 'petugas' ? 'Petugas' : 'KaUnit') + 'Btn').style.display = 'inline-block';
+            const clearBtn = document.getElementById('clear' + (type === 'petugas' ? 'Petugas' : 'KaUnit') + 'Btn');
+            if (clearBtn) {
+                clearBtn.style.display = 'inline-block';
+            }
+
+            // Update section summary counter
+            updateSignatureBadges();
             
             closeSignatureModal();
         }
@@ -1043,17 +1639,37 @@
             signatures[type] = null;
             
             const signatureArea = document.getElementById(type + 'Signature');
-            signatureArea.innerHTML = `
-                <div class="signature-placeholder">
-                    <i class="fas fa-pen-nib fa-2x text-white-50 mb-2"></i>
-                    <p class="text-white-50 mb-0">Klik untuk tanda tangan</p>
-                </div>
-            `;
-            signatureArea.classList.remove('signature-signed');
+            if (signatureArea) {
+                signatureArea.innerHTML = `
+                    <div class="signature-placeholder-pro">
+                        <i class="fas fa-pen text-slate-500 text-xs mb-1"></i>
+                        <div class="text-slate-400 text-xs">Klik untuk tanda tangan</div>
+                    </div>
+                `;
+                signatureArea.classList.remove('signature-signed');
+            }
             
-            document.getElementById(type + 'Name').textContent = '-';
-            document.getElementById(type + 'Date').textContent = '-';
-            document.getElementById('clear' + (type === 'petugas' ? 'Petugas' : 'KaUnit') + 'Btn').style.display = 'none';
+            // Update status badge
+            const statusBadge = document.getElementById(type + 'StatusBadge');
+            if (statusBadge) {
+                statusBadge.className = 'text-xs text-slate-400';
+                statusBadge.textContent = 'Belum ditandatangani';
+            }
+
+            // Update action button label
+            const actionText = document.getElementById(type + 'ActionText');
+            if (actionText) {
+                actionText.textContent = 'Tanda Tangan';
+            }
+
+            // Hide clear button
+            const clearBtn = document.getElementById('clear' + (type === 'petugas' ? 'Petugas' : 'KaUnit') + 'Btn');
+            if (clearBtn) {
+                clearBtn.style.display = 'none';
+            }
+
+            // Update section summary counter
+            updateSignatureBadges();
         }
 
         function closeSignatureModal() {
@@ -1154,7 +1770,6 @@
             await initializePageData();
             initializeCamera();
             initializeFileUpload();
-            loadUserUnits();
             
             // Setup form submission handler
             const form = document.getElementById('detailKegiatanForm');
@@ -1165,7 +1780,6 @@
                 form.removeAttribute('action');
                 form.removeAttribute('method');
                 form.onsubmit = null;
-                console.log('🧹 Removed form action and method attributes');
                 
                 form.addEventListener('submit', async function(event) {
                     event.preventDefault();
@@ -1175,26 +1789,29 @@
                     console.log('📝 Form submission started...');
                     
                     const submitButton = form.querySelector('button[type="submit"]');
-                    const originalText = submitButton.innerHTML;
+                    const originalText = submitButton ? submitButton.innerHTML : '<i class="fas fa-paper-plane me-2"></i>Submit';
+                    let isSubmittedSuccessfully = false;
                     
                     try {
-                        // Disable button and show loading
-                        submitButton.disabled = true;
-                        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
+                        // Disable button and show loading spinner
+                        if (submitButton) {
+                            submitButton.disabled = true;
+                            submitButton.innerHTML = '<i class="fas fa-circle-notch fa-spin me-2"></i>Menyimpan...';
+                        }
                         
                         // Validate required fields before sending
-                        const jenisKegiatan = document.getElementById('jenisKegiatan').value;
-                        const nip = document.getElementById('nip').value;
-                        const unit = document.getElementById('unit').value;
-                        const tanggalDibuat = document.getElementById('tanggalDibuat').value;
+                        const jenisKegiatan = document.getElementById('jenisKegiatan')?.value?.trim();
+                        const nip = document.getElementById('nip')?.value?.trim();
+                        const unit = document.getElementById('unit')?.value?.trim();
+                        const tanggalDibuat = document.getElementById('tanggalDibuat')?.value?.trim();
                         
                         if (!jenisKegiatan || !nip || !unit || !tanggalDibuat) {
-                            throw new Error('Semua field wajib harus diisi');
+                            throw new Error('Semua field wajib (Jenis Kegiatan, NIP, Unit, Tanggal) harus diisi');
                         }
                         
                         const formData = new FormData();
                         
-                        // Add basic fields with proper validation
+                        // Add basic fields
                         formData.append('jenis_kegiatan', jenisKegiatan);
                         formData.append('nip', nip);
                         formData.append('unit', unit);
@@ -1213,7 +1830,6 @@
                                 String(date.getMinutes()).padStart(2, '0') + ':' +
                                 String(date.getSeconds()).padStart(2, '0');
                         } else {
-                            // Use current datetime if not provided
                             const now = new Date();
                             formattedDate = now.getFullYear() + '-' + 
                                 String(now.getMonth() + 1).padStart(2, '0') + '-' + 
@@ -1237,8 +1853,20 @@
                         if (signatures.kaUnit) {
                             formData.append('signature_pj', signatures.kaUnit);
                         }
+
+                        // Add signee names (free-typing)
+                        const namaPetugas = document.getElementById('petugasNameInput')?.value?.trim() || '';
+                        if (namaPetugas) {
+                            formData.append('nama_petugas', namaPetugas);
+                            formData.append('nama_pelaksana', namaPetugas);
+                        }
+                        const namaKaUnit = document.getElementById('kaUnitNameInput')?.value?.trim() || '';
+                        if (namaKaUnit) {
+                            formData.append('nama_ka_unit', namaKaUnit);
+                            formData.append('nama_pj', namaKaUnit);
+                        }
                         
-                        // Add captured photos
+                        // Add captured photos (optimized lightweight base64)
                         if (capturedPhotos && capturedPhotos.length > 0) {
                             capturedPhotos.forEach((photo, index) => {
                                 if (photo.data) {
@@ -1247,7 +1875,7 @@
                             });
                         }
                         
-                        // Add uploaded files
+                        // Add uploaded files (compressed lightweight blobs)
                         if (uploadedFiles && uploadedFiles.length > 0) {
                             uploadedFiles.forEach((fileData, index) => {
                                 if (fileData.file) {
@@ -1259,15 +1887,9 @@
                         // Set status
                         formData.append('status', 'submitted');
                         
-                        console.log('📤 Sending data to API...');
-                        console.log('📋 Form data entries:');
-                        for (let [key, value] of formData.entries()) {
-                            console.log(`  ${key}:`, typeof value === 'string' ? value.substring(0, 100) : value);
-                        }
-                        
                         // Check token
                         if (!token) {
-                            throw new Error('Token tidak ditemukan. Silakan login ulang.');
+                            throw new Error('Token otentikasi tidak ditemukan. Silakan login kembali.');
                         }
                         
                         const response = await fetch('/api/detail-jenis-kegiatan', {
@@ -1280,21 +1902,21 @@
                             body: formData
                         });
                         
-                        console.log('📥 Response status:', response.status);
-                        
                         const result = await response.json();
-                        console.log('📥 Response data:', result);
                         
                         if (response.ok && result.success) {
-                            showNotification('Data berhasil disimpan!', 'success');
+                            isSubmittedSuccessfully = true;
+                            if (submitButton) {
+                                submitButton.innerHTML = '<i class="fas fa-check-circle me-2"></i>Berhasil Disimpan!';
+                                submitButton.classList.remove('btn-primary');
+                                submitButton.classList.add('btn-success');
+                            }
+                            showNotification('Data kegiatan berhasil disimpan! Mengalihkan ke dashboard...', 'success');
                             updateStatusBadge('submitted');
                             
-                            // Optional: redirect after success
                             setTimeout(() => {
-                                if (confirm('Data berhasil disimpan! Kembali ke dashboard?')) {
-                                    window.location.href = '/user-dashboard';
-                                }
-                            }, 2000);
+                                window.location.href = '/user-dashboard';
+                            }, 700);
                         } else {
                             console.error('❌ API Error:', result);
                             
@@ -1303,7 +1925,6 @@
                                 errorMessage = result.message;
                             }
                             if (result.errors) {
-                                console.error('Validation errors:', result.errors);
                                 const errorDetails = Object.entries(result.errors)
                                     .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
                                     .join('\n');
@@ -1315,17 +1936,18 @@
                         
                     } catch (error) {
                         console.error('❌ Submit Error:', error);
-                        showNotification('Error: ' + error.message, 'error');
+                        showNotification(error.message || 'Terjadi kesalahan saat menyimpan', 'error');
                     } finally {
-                        // Reset button
-                        submitButton.disabled = false;
-                        submitButton.innerHTML = originalText;
+                        if (!isSubmittedSuccessfully && submitButton) {
+                            submitButton.disabled = false;
+                            submitButton.innerHTML = originalText;
+                        }
                     }
                     
                     return false;
                 }, true);
                 
-                console.log('✅ Event listener successfully attached with stronger prevention');
+                console.log('✅ Event listener successfully attached');
             } else {
                 console.error('❌ Form with ID "detailKegiatanForm" not found!');
             }
@@ -1374,12 +1996,21 @@
                     }
                 }
 
-                // Set default datetime to now
+                // Set default datetime to now (Single Date System)
                 if (!idParam) {
                     const now = new Date();
                     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
                     document.getElementById('tanggalDibuat').value = now.toISOString().slice(0, 16);
                 }
+
+                // Pre-fill Petugas signee name with logged-in user name if empty
+                const petugasNameInput = document.getElementById('petugasNameInput');
+                if (petugasNameInput && !petugasNameInput.value) {
+                    petugasNameInput.value = user.nama || user.name || '';
+                }
+
+                // Initialize signature counter badge
+                updateSignatureBadges();
 
             } catch (error) {
                 console.error('Error initializing page data:', error);
@@ -1389,219 +2020,304 @@
             }
         }
 
-        // Camera functionality
+        // Camera functionality - Professional Mobile Camera System
+        let tempCapturedDataUrl = null;
+
         function initializeCamera() {
             const startCameraBtn = document.getElementById('startCameraBtn');
             const captureBtn = document.getElementById('capturePhoto');
             const retakeBtn = document.getElementById('retakePhoto');
+            const acceptBtn = document.getElementById('acceptPhoto');
             const switchBtn = document.getElementById('switchCamera');
-            const stopBtn = document.getElementById('stopCamera');
+            const topSwitchBtn = document.getElementById('topSwitchCameraBtn');
+            const closeBtn = document.getElementById('closeCameraBtn');
+            
             const video = document.getElementById('cameraVideo');
             const canvas = document.getElementById('photoCanvas');
             const preview = document.getElementById('photoPreview');
-            const status = document.getElementById('cameraStatus');
             const placeholder = document.getElementById('cameraPlaceholder');
-            
-            let currentFacingMode = 'environment'; // Start with back camera
+            const viewfinderOverlay = document.getElementById('viewfinderOverlay');
+            const cameraTopBar = document.getElementById('cameraTopBar');
+            const cameraBottomDeck = document.getElementById('cameraBottomDeck');
+            const photoReviewDeck = document.getElementById('photoReviewDeck');
+            const camStatusText = document.getElementById('camStatusText');
+            const shutterFlash = document.getElementById('shutterFlash');
+
+            let currentFacingMode = 'environment';
             let cameraStarted = false;
 
-            // Start camera when button is clicked
-            startCameraBtn.addEventListener('click', async () => {
-                await startCamera();
-            });
+            if (startCameraBtn) {
+                startCameraBtn.addEventListener('click', async () => {
+                    await startCamera();
+                });
+            }
 
             async function startCamera() {
                 try {
-                    status.innerHTML = '<small class="text-white-50">Memuat kamera...</small>';
+                    if (camStatusText) camStatusText.textContent = 'Menyiapkan kamera...';
                     
-                    // Stop existing stream if any
                     if (stream) {
                         stream.getTracks().forEach(track => track.stop());
                     }
-                    
-                    stream = await navigator.mediaDevices.getUserMedia({ 
-                        video: { 
-                            facingMode: currentFacingMode,
-                            width: { ideal: 1280 },
-                            height: { ideal: 720 }
-                        } 
-                    });
-                    
+
+                    const constraints = {
+                        video: {
+                            facingMode: { ideal: currentFacingMode },
+                            width: { ideal: 1920 },
+                            height: { ideal: 1080 }
+                        }
+                    };
+
+                    stream = await navigator.mediaDevices.getUserMedia(constraints);
                     video.srcObject = stream;
+                    
+                    // Mirroring for front camera
+                    if (currentFacingMode === 'user') {
+                        video.classList.add('mirror-mode');
+                    } else {
+                        video.classList.remove('mirror-mode');
+                    }
+
                     video.style.display = 'block';
-                    placeholder.style.display = 'none';
-                    preview.style.display = 'none';
-                    
-                    // Update button visibility
-                    startCameraBtn.style.display = 'none';
-                    captureBtn.style.display = 'block';
-                    switchBtn.style.display = 'block';
-                    stopBtn.style.display = 'block';
-                    retakeBtn.style.display = 'none';
-                    
+                    if (placeholder) placeholder.style.display = 'none';
+                    if (preview) preview.style.display = 'none';
+                    if (photoReviewDeck) photoReviewDeck.style.display = 'none';
+
+                    if (viewfinderOverlay) viewfinderOverlay.style.display = 'block';
+                    if (cameraTopBar) cameraTopBar.style.display = 'flex';
+                    if (cameraBottomDeck) cameraBottomDeck.style.display = 'flex';
+
                     cameraStarted = true;
-                    
-                    status.innerHTML = '<small class="text-success"><i class="fas fa-circle"></i> Kamera aktif - Tekan lingkaran untuk foto</small>';
-                    
+                    if (camStatusText) camStatusText.textContent = 'Kamera Aktif • Siap Membidik';
+
                 } catch (error) {
                     console.error('Error accessing camera:', error);
-                    status.innerHTML = '<small class="text-danger">Kamera tidak dapat diakses</small>';
-                    
-                    // Reset button visibility
-                    startCameraBtn.style.display = 'block';
-                    captureBtn.style.display = 'none';
-                    switchBtn.style.display = 'none';
-                    stopBtn.style.display = 'none';
+                    showNotification('Tidak dapat mengakses kamera: ' + (error.message || 'Periksa izin akses kamera Anda'), 'error');
+                    stopCamera();
                 }
             }
-            
+
             function stopCamera() {
                 if (stream) {
                     stream.getTracks().forEach(track => track.stop());
                     stream = null;
                 }
-                
-                video.style.display = 'none';
-                placeholder.style.display = 'flex';
-                preview.style.display = 'none';
-                
-                // Reset button visibility
-                startCameraBtn.style.display = 'block';
-                captureBtn.style.display = 'none';
-                switchBtn.style.display = 'none';
-                stopBtn.style.display = 'none';
-                retakeBtn.style.display = 'none';
-                
+
+                if (video) {
+                    video.style.display = 'none';
+                    video.classList.remove('mirror-mode');
+                }
+                if (preview) preview.style.display = 'none';
+                if (viewfinderOverlay) viewfinderOverlay.style.display = 'none';
+                if (cameraTopBar) cameraTopBar.style.display = 'none';
+                if (cameraBottomDeck) cameraBottomDeck.style.display = 'none';
+                if (photoReviewDeck) photoReviewDeck.style.display = 'none';
+                if (placeholder) placeholder.style.display = 'flex';
+
                 cameraStarted = false;
-                status.innerHTML = '<small class="text-white-50">Siap mengambil foto</small>';
+                tempCapturedDataUrl = null;
             }
 
-            captureBtn.addEventListener('click', () => {
-                if (!cameraStarted) return;
-                
-                const context = canvas.getContext('2d');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                context.drawImage(video, 0, 0);
-                
-                const dataURL = canvas.toDataURL('image/jpeg', 0.9);
-                preview.src = dataURL;
-                preview.classList.add('show'); // Add this line
-                preview.style.display = 'block';
-                video.style.display = 'none';
-                placeholder.style.display = 'none';
-                
-                // Update button visibility
-                captureBtn.style.display = 'none';
-                retakeBtn.style.display = 'block';
-                switchBtn.style.display = 'none';
-                stopBtn.style.display = 'none';
-                
-                // Store captured photo with metadata
-                const photoData = {
-                    data: dataURL,
-                    timestamp: new Date().toISOString(),
-                    camera: currentFacingMode,
-                    size: dataURL.length,
-                    type: 'capture'
-                };
-                capturedPhotos.push(photoData);
-                
-                // Display in unified preview
-                displayImage(photoData, 'capture');
-                
-                status.innerHTML = '<small class="text-success">Foto berhasil diambil</small>';
-                
-                // Stop camera to save battery
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                    cameraStarted = false;
-                }
-            });
+            // Shutter Button Click with automatic dimension scaling & compression
+            if (captureBtn) {
+                captureBtn.addEventListener('click', () => {
+                    if (!cameraStarted || !video.videoWidth) return;
 
-            retakeBtn.addEventListener('click', () => {
-                // Remove last captured photo
-                capturedPhotos.pop();
-                refreshImageDisplay();
-                
-                // Restart camera
-                startCamera();
-            });
-            
-            switchBtn.addEventListener('click', () => {
+                    // Tactile white flash animation
+                    if (shutterFlash) {
+                        shutterFlash.classList.add('active');
+                        setTimeout(() => shutterFlash.classList.remove('active'), 160);
+                    }
+
+                    const context = canvas.getContext('2d');
+                    
+                    // Downscale to max dimension 1280px to keep payload ultra-lightweight (<150KB)
+                    let targetWidth = video.videoWidth;
+                    let targetHeight = video.videoHeight;
+                    const maxDim = 1280;
+                    if (targetWidth > maxDim || targetHeight > maxDim) {
+                        if (targetWidth > targetHeight) {
+                            targetHeight = Math.round((targetHeight * maxDim) / targetWidth);
+                            targetWidth = maxDim;
+                        } else {
+                            targetWidth = Math.round((targetWidth * maxDim) / targetHeight);
+                            targetHeight = maxDim;
+                        }
+                    }
+
+                    canvas.width = targetWidth;
+                    canvas.height = targetHeight;
+
+                    // Mirror front camera frame horizontally
+                    if (currentFacingMode === 'user') {
+                        context.translate(canvas.width, 0);
+                        context.scale(-1, 1);
+                    }
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                    // Quality 0.78 delivers crisp logbook photos while cutting size by ~90%
+                    tempCapturedDataUrl = canvas.toDataURL('image/jpeg', 0.78);
+
+                    preview.src = tempCapturedDataUrl;
+                    preview.style.display = 'block';
+                    video.style.display = 'none';
+                    if (viewfinderOverlay) viewfinderOverlay.style.display = 'none';
+                    if (cameraBottomDeck) cameraBottomDeck.style.display = 'none';
+                    if (photoReviewDeck) photoReviewDeck.style.display = 'flex';
+
+                    if (camStatusText) camStatusText.textContent = 'Tinjau Hasil Foto';
+                });
+            }
+
+            // Accept / Use Photo Click
+            if (acceptBtn) {
+                acceptBtn.addEventListener('click', () => {
+                    if (!tempCapturedDataUrl) return;
+
+                    const photoData = {
+                        data: tempCapturedDataUrl,
+                        timestamp: new Date().toISOString(),
+                        camera: currentFacingMode,
+                        size: tempCapturedDataUrl.length,
+                        type: 'capture'
+                    };
+
+                    capturedPhotos.push(photoData);
+                    tempCapturedDataUrl = null;
+                    refreshImageDisplay();
+                    showNotification('Foto kamera berhasil ditambahkan!', 'success');
+                    stopCamera();
+                });
+            }
+
+            // Retake Photo Click
+            if (retakeBtn) {
+                retakeBtn.addEventListener('click', () => {
+                    tempCapturedDataUrl = null;
+                    preview.style.display = 'none';
+                    video.style.display = 'block';
+                    if (viewfinderOverlay) viewfinderOverlay.style.display = 'block';
+                    if (photoReviewDeck) photoReviewDeck.style.display = 'none';
+                    if (cameraBottomDeck) cameraBottomDeck.style.display = 'flex';
+                    if (camStatusText) camStatusText.textContent = 'Kamera Aktif • Siap Membidik';
+                });
+            }
+
+            // Switch Camera (Front/Back)
+            async function flipCamera() {
                 currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+                const icons = document.querySelectorAll('#switchCamera i, #topSwitchCameraBtn i');
+                icons.forEach(ic => ic.classList.add('fa-spin'));
+                setTimeout(() => {
+                    icons.forEach(ic => ic.classList.remove('fa-spin'));
+                }, 600);
+
                 if (cameraStarted) {
-                    startCamera();
+                    await startCamera();
                 }
-            });
-            
-            stopBtn.addEventListener('click', () => {
-                stopCamera();
+            }
+
+            if (switchBtn) switchBtn.addEventListener('click', flipCamera);
+            if (topSwitchBtn) topSwitchBtn.addEventListener('click', flipCamera);
+            if (closeBtn) closeBtn.addEventListener('click', stopCamera);
+        }
+
+        // Lightweight image compression helper (max 1280px dimension, JPEG quality 0.78)
+        async function compressImageFile(file, maxDimension = 1280, quality = 0.78) {
+            return new Promise((resolve) => {
+                if (!file.type.startsWith('image/')) {
+                    resolve({ file: file, dataUrl: null });
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > maxDimension || height > maxDimension) {
+                            if (width > height) {
+                                height = Math.round((height * maxDimension) / width);
+                                width = maxDimension;
+                            } else {
+                                width = Math.round((width * maxDimension) / height);
+                                height = maxDimension;
+                            }
+                        }
+
+                        const offCanvas = document.createElement('canvas');
+                        offCanvas.width = width;
+                        offCanvas.height = height;
+                        const ctx = offCanvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        const compressedDataUrl = offCanvas.toDataURL('image/jpeg', quality);
+
+                        offCanvas.toBlob((blob) => {
+                            if (!blob) {
+                                resolve({ file: file, dataUrl: compressedDataUrl });
+                                return;
+                            }
+                            const cleanName = (file.name || 'foto').replace(/\.[^/.]+$/, "") + ".jpg";
+                            const compressedFile = new File([blob], cleanName, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+                            resolve({ file: compressedFile, dataUrl: compressedDataUrl });
+                        }, 'image/jpeg', quality);
+                    };
+                    img.onerror = () => resolve({ file: file, dataUrl: e.target.result });
+                    img.src = e.target.result;
+                };
+                reader.onerror = () => resolve({ file: file, dataUrl: null });
+                reader.readAsDataURL(file);
             });
         }
 
-        // File upload functionality
+        // Fast & lightweight file upload with client-side compression
         function initializeFileUpload() {
             const fileInput = document.getElementById('fileInput');
-            const allImagesContainer = document.getElementById('allImagesPreview');
 
-            fileInput.addEventListener('change', (event) => {
-                const files = Array.from(event.target.files);
-                
-                files.forEach(file => {
-                    if (file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024) {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
+            if (fileInput) {
+                fileInput.addEventListener('change', async (event) => {
+                    const files = Array.from(event.target.files || []);
+                    if (!files || files.length === 0) return;
+                    
+                    showNotification('Mengompresi & menyiapkan foto...', 'info');
+                    
+                    let addedCount = 0;
+                    for (const file of files) {
+                        try {
+                            if (!file.type.startsWith('image/')) {
+                                showNotification(`File ${file.name} bukan format gambar.`, 'error');
+                                continue;
+                            }
+                            
+                            const compressed = await compressImageFile(file, 1280, 0.78);
                             const imageData = {
-                                file: file,
-                                data: e.target.result,
-                                name: file.name,
+                                file: compressed.file,
+                                data: compressed.dataUrl,
+                                name: compressed.file.name,
                                 type: 'upload',
                                 timestamp: new Date().toISOString()
                             };
                             uploadedFiles.push(imageData);
-                            displayImage(imageData, 'upload');
-                        };
-                        reader.readAsDataURL(file);
-                    } else {
-                        alert(`File ${file.name} tidak valid. Pastikan ukuran file kurang dari 5MB dan format gambar.`);
+                            addedCount++;
+                        } catch (err) {
+                            console.error('Gagal mengompresi gambar:', err);
+                            showNotification(`Gagal memproses file ${file.name}`, 'error');
+                        }
                     }
+
+                    if (addedCount > 0) {
+                        refreshImageDisplay();
+                        showNotification(`${addedCount} foto berhasil dioptimasi & ditambahkan`, 'success');
+                    }
+                    fileInput.value = '';
                 });
-                
-                // Reset file input
-                fileInput.value = '';
-            });
-        }
-        
-        function displayImage(imageData, type) {
-            const allImagesContainer = document.getElementById('allImagesPreview');
-            const imageItem = document.createElement('div');
-            imageItem.className = 'image-item';
-            
-            const index = type === 'capture' ? capturedPhotos.length - 1 : uploadedFiles.length - 1;
-            
-            // Show compression info for uploaded files
-            const sizeInfo = imageData.originalSize && imageData.compressedSize ? 
-                `<small class="text-muted">Ukuran: ${formatFileSize(imageData.originalSize)} → ${formatFileSize(imageData.compressedSize)}</small>` : '';
-            
-            imageItem.innerHTML = `
-                <img src="${imageData.data}" alt="${imageData.name || 'Captured Photo'}">
-                <div class="image-type">${type === 'capture' ? 'Camera' : 'Upload'}</div>
-                ${sizeInfo}
-                <button type="button" class="remove-image" onclick="removeImage('${type}', ${index})">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            allImagesContainer.appendChild(imageItem);
-        }
-        
-        // Format file size helper function
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
         }
         
         function removeImage(type, index) {
@@ -1611,22 +2327,98 @@
                 uploadedFiles.splice(index, 1);
             }
             refreshImageDisplay();
+            showNotification('Foto berhasil dihapus dari lampiran', 'info');
         }
         
         function refreshImageDisplay() {
             const allImagesContainer = document.getElementById('allImagesPreview');
+            const badge = document.getElementById('photoCountBadge');
+            if (!allImagesContainer) return;
+
+            const totalCount = (capturedPhotos ? capturedPhotos.length : 0) + (uploadedFiles ? uploadedFiles.length : 0);
+            if (badge) {
+                badge.textContent = `${totalCount} Lampiran`;
+            }
+
             allImagesContainer.innerHTML = '';
-            
+
+            if (totalCount === 0) {
+                allImagesContainer.innerHTML = `
+                    <div class="p-3 text-center rounded-xl border border-dashed border-white/15 bg-slate-900/40 text-slate-400 text-xs w-100" style="grid-column: 1 / -1;">
+                        <i class="fas fa-images text-slate-500 mb-1 d-block" style="font-size: 20px;"></i>
+                        Belum ada foto dokumentasi terlampir. Buka kamera atau unggah dari galeri.
+                    </div>
+                `;
+                return;
+            }
+
             // Display captured photos
             capturedPhotos.forEach((photo, index) => {
-                displayImage(photo, 'capture');
+                const card = createPhotoCard(photo, 'capture', index);
+                allImagesContainer.appendChild(card);
             });
-            
+
             // Display uploaded files
             uploadedFiles.forEach((file, index) => {
-                displayImage(file, 'upload');
+                const card = createPhotoCard(file, 'upload', index);
+                allImagesContainer.appendChild(card);
             });
         }
+
+        function createPhotoCard(imageData, type, index) {
+            const card = document.createElement('div');
+            card.className = 'photo-card-pro';
+            
+            const timeStr = imageData.timestamp ? 
+                new Date(imageData.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '';
+            const title = type === 'capture' ? 'Foto Kamera' : (imageData.name || 'Foto Galeri');
+
+            card.innerHTML = `
+                <img src="${imageData.data}" alt="${title}" loading="lazy">
+                <span class="photo-card-source ${type === 'capture' ? 'source-camera' : 'source-upload'}">
+                    <i class="fas ${type === 'capture' ? 'fa-camera' : 'fa-image'} me-1"></i>${type === 'capture' ? 'Kamera' : 'Galeri'}
+                </span>
+                <button type="button" class="photo-card-delete" onclick="event.stopPropagation(); removeImage('${type}', ${index})" title="Hapus foto">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="photo-card-time">
+                    <i class="far fa-clock me-1"></i>${timeStr || 'Baru'}
+                </div>
+            `;
+
+            card.addEventListener('click', () => {
+                openLightbox(imageData.data, title);
+            });
+
+            return card;
+        }
+
+        // Lightbox modal functions
+        function openLightbox(imgSrc, caption) {
+            const modal = document.getElementById('photoLightboxModal');
+            const img = document.getElementById('lightboxImage');
+            const cap = document.getElementById('lightboxCaption');
+            if (modal && img) {
+                img.src = imgSrc;
+                if (cap) cap.textContent = caption || '';
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeLightbox() {
+            const modal = document.getElementById('photoLightboxModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
 
         function goBack() {
             // Stop camera if running
@@ -1634,68 +2426,11 @@
                 stream.getTracks().forEach(track => track.stop());
             }
             
-            // Redirect to main dashboard
-            window.location.href = '/dashboard';
-        }
-
-        async function saveDraft() {
-            const formData = new FormData(document.getElementById('detailKegiatanForm'));
-            formData.set('status', 'draft');
-            
-            // Add captured photos with validation
-            console.log('Captured photos count:', capturedPhotos.length);
-            capturedPhotos.forEach((photo, index) => {
-                console.log(`Adding captured photo ${index}:`, {
-                    hasData: !!photo.data,
-                    dataLength: photo.data ? photo.data.length : 0,
-                    timestamp: photo.timestamp
-                });
-                formData.append(`captured_photos[${index}]`, photo.data);
-            });
-            
-            // Add uploaded files with validation
-            console.log('Uploaded files count:', uploadedFiles.length);
-            uploadedFiles.forEach((fileData, index) => {
-                console.log(`Adding uploaded file ${index}:`, {
-                    hasFile: !!fileData.file,
-                    fileName: fileData.file ? fileData.file.name : 'unknown',
-                    fileSize: fileData.file ? fileData.file.size : 0
-                });
-                formData.append(`uploaded_files[${index}]`, fileData.file);
-            });
-            
-            try {
-                const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-                
-                if (!token) {
-                    alert('Session expired. Please login again.');
-                    window.location.href = '/login';
-                    return;
-                }
-                
-                console.log('Sending request to save draft...');
-                const response = await fetch('/api/detail-jenis-kegiatan', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json',
-                    },
-                    body: formData
-                });
-                
-                const result = await response.json();
-                console.log('Server response:', result);
-                
-                if (response.ok && result.success) {
-                    alert('Draft berhasil disimpan!');
-                    updateStatusBadge('draft');
-                } else {
-                    console.error('Save failed:', result);
-                    alert('Gagal menyimpan draft: ' + (result.message || 'Terjadi kesalahan'));
-                }
-            } catch (error) {
-                console.error('Network error:', error);
-                alert('Terjadi kesalahan jaringan: ' + error.message);
+            // Redirect to user dashboard
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = '/user-dashboard';
             }
         }
 
@@ -1703,25 +2438,50 @@
             const formData = new FormData(document.getElementById('detailKegiatanForm'));
             formData.set('status', 'draft');
             
-            // Add captured photos
+            // Add signatures if available
+            if (signatures.petugas) {
+                formData.append('signature_pelaksana', signatures.petugas);
+            }
+            if (signatures.kaUnit) {
+                formData.append('signature_pj', signatures.kaUnit);
+            }
+
+            // Add signee names (free-typing)
+            const namaPetugas = document.getElementById('petugasNameInput')?.value?.trim() || '';
+            if (namaPetugas) {
+                formData.append('nama_petugas', namaPetugas);
+                formData.append('nama_pelaksana', namaPetugas);
+            }
+            const namaKaUnit = document.getElementById('kaUnitNameInput')?.value?.trim() || '';
+            if (namaKaUnit) {
+                formData.append('nama_ka_unit', namaKaUnit);
+                formData.append('nama_pj', namaKaUnit);
+            }
+
+            // Add captured photos with validation
             capturedPhotos.forEach((photo, index) => {
-                formData.append(`captured_photos[${index}]`, photo.data);
+                if (photo.data) {
+                    formData.append(`captured_photos[${index}]`, photo.data);
+                }
             });
             
-            // Add uploaded files
+            // Add uploaded files with validation
             uploadedFiles.forEach((fileData, index) => {
-                formData.append(`uploaded_files[${index}]`, fileData.file);
+                if (fileData.file) {
+                    formData.append(`uploaded_files[${index}]`, fileData.file);
+                }
             });
             
             try {
                 const token = localStorage.getItem('token') || sessionStorage.getItem('token');
                 
                 if (!token) {
-                    alert('Session expired. Please login again.');
-                    window.location.href = '/login';
+                    showNotification('Sesi berakhir. Silakan login kembali.', 'error');
+                    setTimeout(() => window.location.href = '/login', 1200);
                     return;
                 }
                 
+                showNotification('Menyimpan draft kegiatan...', 'info');
                 const response = await fetch('/api/detail-jenis-kegiatan', {
                     method: 'POST',
                     headers: {
@@ -1734,14 +2494,15 @@
                 const result = await response.json();
                 
                 if (response.ok && result.success) {
-                    alert('Draft berhasil disimpan!');
+                    showNotification('Draft berhasil disimpan!', 'success');
                     updateStatusBadge('draft');
                 } else {
-                    alert('Gagal menyimpan draft: ' + (result.message || 'Terjadi kesalahan'));
+                    console.error('Save failed:', result);
+                    showNotification('Gagal menyimpan draft: ' + (result.message || 'Terjadi kesalahan'), 'error');
                 }
             } catch (error) {
-                console.error('Error saving draft:', error);
-                alert('Terjadi kesalahan saat menyimpan draft: ' + error.message);
+                console.error('Network error:', error);
+                showNotification('Terjadi kesalahan jaringan: ' + error.message, 'error');
             }
         }
 
@@ -1820,5 +2581,16 @@
             }
         });
     </script>
+
+    <!-- Photo Lightbox Modal -->
+    <div id="photoLightboxModal" class="photo-lightbox-modal" style="display: none;" onclick="closeLightbox()">
+        <div class="photo-lightbox-content" onclick="event.stopPropagation()">
+            <button type="button" class="photo-lightbox-close" onclick="closeLightbox()" title="Tutup">
+                <i class="fas fa-times"></i>
+            </button>
+            <img id="lightboxImage" src="" alt="Pratinjau Foto">
+            <div id="lightboxCaption" class="mt-2 text-center text-xs text-slate-300"></div>
+        </div>
+    </div>
 </body>
 </html>
