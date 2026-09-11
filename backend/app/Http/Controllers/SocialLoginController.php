@@ -44,21 +44,44 @@ class SocialLoginController extends Controller
             }
 
             $user = User::where('email', $googleUser->email)->first();
+            // Cari apakah user dengan email atau google_id tersebut sudah terdaftar
+            $user = User::where('email', $googleUser->email)
+                        ->orWhere('google_id', $googleUser->id)
+                        ->first();
 
             if ($user) {
                 // If user exists, update their google_id if it's empty
+                // KASUS 1: USER SUDAH TERDAFTAR SEBELUMNYA
+                // Hubungkan google_id jika belum terisi
                 if (empty($user->google_id)) {
                     $user->update(['google_id' => $googleUser->id]);
                 }
+
+                // Buat token autentikasi Sanctum
+                $token = $user->createToken('auth_token')->plainTextToken;
+
+                // Tampilkan halaman callback untuk menyimpan session ke localStorage dan redirect ke dashboard
+                return view('auth-callback', [
+                    'token' => $token,
+                    'user' => $user
+                ]);
             } else {
                 // Create a new user from Google
                 $user = User::create([
                     'name' => $googleUser->name ?? $googleUser->nickname ?? 'Pengguna Google',
+                // KASUS 2: USER BARU (BELUM ADA DI DATABASE)
+                // Arahkan ke form registrasi untuk melengkapi NIP, Golongan, Instansi, dll.
+                // Data Nama & Email otomatis terisi (pre-filled) dari akun Google
+                $queryParams = http_build_query([
+                    'from_google' => 1,
+                    'name' => $googleUser->name ?? $googleUser->nickname ?? '',
                     'email' => $googleUser->email,
                     'google_id' => $googleUser->id,
                     'password' => null,
                     'role' => 'user', // default role
                 ]);
+
+                return redirect('/register?' . $queryParams);
             }
 
             // Generate a Sanctum token for API authentication
@@ -73,6 +96,7 @@ class SocialLoginController extends Controller
         } catch (Exception $e) {
             \Log::error('Google Callback Error: ' . $e->getMessage());
             return redirect('/login')->with('error', 'Autentikasi Google dibatalkan atau gagal: ' . $e->getMessage());
+            return redirect('/login')->with('error', 'Autentikasi Google gagal atau dibatalkan: ' . $e->getMessage());
         }
     }
 }

@@ -16,6 +16,7 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
+            'name' => 'required|string|max:255|regex:/^[a-zA-Z\s.,\'\-]+$/u',
             'email' => 'required|string|email:rfc,dns|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/',
             'phone' => 'nullable|string|max:20|regex:/^[0-9+\-\s]+$/',
@@ -23,10 +24,12 @@ class AuthController extends Controller
             'golongan' => 'nullable|string|max:100|regex:/^[a-zA-Z0-9\/\s]+$/',
             'instansi' => 'nullable|string|max:255',
             'ruangan' => 'nullable|string|max:255',
+            'google_id' => 'nullable|string|max:255',
             'role' => 'sometimes|in:admin,user'
         ], [
             'password.regex' => 'Password harus mengandung minimal 1 huruf kecil, 1 huruf besar, 1 angka, dan 1 karakter khusus',
             'name.regex' => 'Nama hanya boleh mengandung huruf dan spasi',
+            'name.regex' => 'Nama hanya boleh mengandung huruf, spasi, titik, koma, tanda hubung, atau petik',
             'phone.regex' => 'Nomor telepon hanya boleh mengandung angka, +, -, dan spasi',
             'nip.regex' => 'NIP hanya boleh mengandung angka'
         ]);
@@ -49,6 +52,7 @@ class AuthController extends Controller
             'golongan' => $request->golongan ? strip_tags(trim($request->golongan)) : null,
             'instansi' => $request->instansi ? strip_tags(trim($request->instansi)) : null,
             'ruangan' => $request->ruangan ? strip_tags(trim($request->ruangan)) : null,
+            'google_id' => $request->google_id ? strip_tags(trim($request->google_id)) : null,
             'role' => $request->role ?? 'user'
         ];
     

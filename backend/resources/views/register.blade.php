@@ -214,8 +214,22 @@
                 <p class="text-slate-400 text-xs sm:text-sm">Lengkapi data pribadi dan kepegawaian Anda di bawah ini</p>
             </div>
 
+            <!-- Google Connected Alert -->
+            <div id="googleConnectedAlert" class="hidden mb-5 p-4 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-xs flex items-start gap-3 shadow-lg">
+                <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center flex-shrink-0 mt-0.5 border border-emerald-500/30">
+                    <i class="fab fa-google text-emerald-400 text-base"></i>
+                </div>
+                <div>
+                    <strong class="font-bold text-white text-sm block">Akun Google Terhubung!</strong>
+                    <p class="text-slate-300 text-xs mt-0.5 leading-relaxed">
+                        Nama dan Email Anda telah diambil dari akun Google. Silakan buat password dan lengkapi data kepegawaian Anda untuk menyelesaikan pendaftaran.
+                    </p>
+                </div>
+            </div>
+
             <!-- Form -->
             <form id="registerForm" class="space-y-4">
+                <input type="hidden" name="google_id" id="google_id">
                 
                 <!-- SECTION 1: DATA KEPEGAWAIAN -->
                 <div class="section-divider">
@@ -456,6 +470,35 @@
         setupToggle('togglePassword', 'password');
         setupToggle('togglePasswordConfirm', 'password_confirmation');
 
+        // Handle Google OAuth Redirect Auto-fill
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('from_google') === '1') {
+            const gName = urlParams.get('name');
+            const gEmail = urlParams.get('email');
+            const gId = urlParams.get('google_id');
+
+            if (gName) {
+                const nameEl = document.getElementById('name');
+                if (nameEl) nameEl.value = decodeURIComponent(gName);
+            }
+            if (gEmail) {
+                const emailEl = document.getElementById('email');
+                if (emailEl) {
+                    emailEl.value = decodeURIComponent(gEmail);
+                    emailEl.readOnly = true;
+                    emailEl.classList.add('opacity-75', 'cursor-not-allowed', 'bg-slate-900/60');
+                }
+            }
+            if (gId) {
+                const gIdEl = document.getElementById('google_id');
+                if (gIdEl) gIdEl.value = gId;
+            }
+            const alertBox = document.getElementById('googleConnectedAlert');
+            if (alertBox) {
+                alertBox.classList.remove('hidden');
+            }
+        }
+
         // Live Password Match & Validation Helper
         const passwordInput = document.getElementById('password');
         const confirmPasswordInput = document.getElementById('password_confirmation');
@@ -505,6 +548,8 @@
                 golongan: formData.get('golongan'),
                 instansi: formData.get('instansi')?.trim(),
                 ruangan: formData.get('ruangan')?.trim()
+                ruangan: formData.get('ruangan')?.trim(),
+                google_id: formData.get('google_id') || null
             };
             
             // Validate password match
