@@ -56,8 +56,8 @@
     <script>
         try {
             // Data passed from controller
-            const token = "{!! $token !!}";
-            const user = {!! json_encode($user) !!};
+            const token = @json($token);
+            const user = @json($user);
 
             // Save token and user into localStorage
             localStorage.setItem('token', token);

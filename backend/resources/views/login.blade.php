@@ -154,6 +154,15 @@
                 <p class="text-slate-400 text-xs sm:text-sm">Masuk ke akun Anda untuk melanjutkan</p>
             </div>
             
+            @if (session('error'))
+            @if (session('error') || request('error'))
+                <div class="mb-4 p-3.5 rounded-xl bg-rose-950/80 border border-rose-500/40 text-rose-300 text-xs sm:text-sm flex items-start gap-2" role="alert">
+                    <i class="fas fa-exclamation-circle text-rose-400 text-base flex-shrink-0 mt-0.5"></i>
+                    <span>{{ session('error') }}</span>
+                    <span>{{ session('error') ?? request('error') }}</span>
+                </div>
+            @endif
+
             <form class="space-y-4" id="loginForm">
                 <!-- Email Address -->
                 <div>

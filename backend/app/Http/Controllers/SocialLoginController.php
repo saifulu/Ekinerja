@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
-use Illuminate\Support\Facades\Auth;
-use Exception;
+use Laravel\Socialite\Two\InvalidStateException;
+use Throwable;
 
 class SocialLoginController extends Controller
 {
@@ -25,9 +25,13 @@ class SocialLoginController extends Controller
 
         try {
             return Socialite::driver('google')->redirect();
-        } catch (Exception $e) {
-            \Log::error('Google Redirect Error: ' . $e->getMessage());
-            return redirect('/login')->with('error', 'Gagal menghubungi server autentikasi Google: ' . $e->getMessage());
+            return Socialite::driver('google')->stateless()->redirect();
+        } catch (Throwable $exception) {
+            Log::error('Google redirect failed.', ['exception' => $exception]);
+
+            return redirect('/login')->with('error', 'Gagal menghubungi layanan Google. Silakan coba lagi.');
+            return redirect('/login?error=' . urlencode('Gagal menghubungi layanan Google. Silakan coba lagi.'))
+                ->with('error', 'Gagal menghubungi layanan Google. Silakan coba lagi.');
         }
     }
 
@@ -38,15 +42,22 @@ class SocialLoginController extends Controller
     {
         try {
             $googleUser = Socialite::driver('google')->user();
+            // Gunakan stateless() agar tidak terpengaruh cookie/session state drop di production (HTTPS/proxy/SameSite)
+            $googleUser = Socialite::driver('google')->stateless()->user();
 
-            if (!$googleUser || empty($googleUser->email)) {
+            if (! $googleUser || empty($googleUser->email)) {
                 return redirect('/login')->with('error', 'Gagal mengambil data akun Google Anda.');
+                return redirect('/login?error=' . urlencode('Gagal mengambil data akun Google Anda.'))
+                    ->with('error', 'Gagal mengambil data akun Google Anda.');
             }
 
             // Cari apakah user dengan email atau google_id tersebut sudah terdaftar
-            $user = User::where('email', $googleUser->email)
-                        ->orWhere('google_id', $googleUser->id)
-                        ->first();
+            $email = mb_strtolower(trim($googleUser->email));
+
+            $user = User::where('email', $email)
+            $user = User::whereRaw('LOWER(email) = ?', [$email])
+                ->orWhere('google_id', $googleUser->id)
+                ->first();
 
             if ($user) {
                 // KASUS 1: USER SUDAH TERDAFTAR SEBELUMNYA
@@ -57,11 +68,13 @@ class SocialLoginController extends Controller
 
                 // Buat token autentikasi Sanctum
                 $token = $user->createToken('auth_token')->plainTextToken;
+                // Buat token autentikasi Sanctum (24 jam)
+                $token = $user->createToken('auth_token', ['*'], now()->addHours(24))->plainTextToken;
 
                 // Tampilkan halaman callback untuk menyimpan session ke localStorage dan redirect ke dashboard
                 return view('auth-callback', [
                     'token' => $token,
-                    'user' => $user
+                    'user' => $user,
                 ]);
             } else {
                 // KASUS 2: USER BARU (BELUM ADA DI DATABASE)
@@ -70,16 +83,29 @@ class SocialLoginController extends Controller
                 $queryParams = http_build_query([
                     'from_google' => 1,
                     'name' => $googleUser->name ?? $googleUser->nickname ?? '',
-                    'email' => $googleUser->email,
+                    'email' => $email,
                     'google_id' => $googleUser->id,
                 ]);
 
-                return redirect('/register?' . $queryParams);
+                return redirect('/register?'.$queryParams);
             }
 
-        } catch (Exception $e) {
-            \Log::error('Google Callback Error: ' . $e->getMessage());
-            return redirect('/login')->with('error', 'Autentikasi Google gagal atau dibatalkan: ' . $e->getMessage());
+        } catch (InvalidStateException $exception) {
+            Log::warning('Google callback state did not match the login session.', [
+                'exception' => $exception,
+            ]);
+
+            return redirect('/login')->with(
+                'error',
+                'Sesi login Google kedaluwarsa atau cookie browser tidak terbaca. Silakan coba lagi.'
+            );
+        } catch (Throwable $exception) {
+            Log::error('Google callback failed.', ['exception' => $exception]);
+
+            return redirect('/login')->with('error', 'Login Google gagal diproses. Silakan coba lagi.');
+            $errorMsg = 'Login Google gagal: ' . $exception->getMessage();
+            return redirect('/login?error=' . urlencode($errorMsg))
+                ->with('error', $errorMsg);
         }
     }
 }
