@@ -1,12 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Register - e-Kinerja</title>
     <title>Daftar Akun Baru - e-Kinerja</title>
     
     <!-- PWA Meta Tags -->
@@ -27,37 +24,31 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         * {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
         }
         
         body {
-            font-family: 'Inter', sans-serif;
             background-color: #090e1a;
             color: #f8fafc;
+            min-height: 100vh;
         }
         
         .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             background: radial-gradient(circle at 85% 15%, rgba(16, 185, 129, 0.16), transparent 35%),
                         radial-gradient(circle at 15% 85%, rgba(13, 148, 136, 0.12), transparent 40%),
                         linear-gradient(150deg, #090e1a 0%, #0f172a 45%, #052e24 100%);
         }
         
         .glass-effect {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(16, 185, 129, 0.22);
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.55), 0 0 35px rgba(16, 185, 129, 0.08);
         }
-        .floating-animation {
-            animation: float 6s ease-in-out infinite;
         
         .form-control-pro {
             display: block;
@@ -69,10 +60,8 @@
             border-radius: 12px;
             color: #ffffff;
             font-size: 14px;
-            box-sizing: border-box;
             transition: all 0.2s ease;
         }
-        @keyframes float {
         
         .form-control-pro:focus {
             outline: none;
@@ -96,7 +85,6 @@
             bottom: 0;
             width: 48px;
             height: 48px;
-            min-height: 48px !important;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -117,7 +105,6 @@
             justify-content: center;
             width: 100%;
             height: 50px;
-            min-height: 50px !important;
             border-radius: 12px;
             font-size: 15px;
             font-weight: 600;
@@ -147,7 +134,6 @@
             align-items: center;
             gap: 12px;
             margin: 20px 0 14px 0;
-            margin: 18px 0 12px 0;
         }
         .section-divider::before,
         .section-divider::after {
@@ -163,9 +149,9 @@
             letter-spacing: 0.08em;
             color: #10b981;
             background: rgba(16, 185, 129, 0.1);
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 20px;
-            border: 1px solid rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.25);
         }
         
         .custom-select {
@@ -183,31 +169,20 @@
         }
         @keyframes floating {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
             50% { transform: translateY(-8px); }
         }
         
         .fade-in {
-            animation: fadeIn 0.8s ease-in;
             animation: fadeIn 0.5s ease-out;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
             from { opacity: 0; transform: translateY(16px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     @include('partials.mobile-ux')
 </head>
-<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
-    <!-- Background Elements -->
-    <div class="absolute inset-0 overflow-hidden">
-        <div class="absolute -top-40 -right-40 w-80 h-80 bg-white opacity-10 rounded-full floating-animation"></div>
-        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-white opacity-5 rounded-full floating-animation" style="animation-delay: -3s;"></div>
-        <div class="absolute top-1/2 left-1/4 w-32 h-32 bg-white opacity-10 rounded-full floating-animation" style="animation-delay: -1s;"></div>
 <body class="gradient-bg min-h-screen flex flex-col justify-between py-6 px-4 sm:px-6 selection:bg-emerald-500 selection:text-white">
-    <!-- Subtle Background Glow Elements -->
 
     <!-- Background Subtle Glows -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
@@ -216,11 +191,6 @@
         <div class="absolute top-1/3 left-12 w-28 h-28 bg-emerald-400/5 rounded-full blur-xl floating"></div>
     </div>
 
-    <div class="relative z-10 w-full max-w-md">
-        <!-- Logo/Brand -->
-        <div class="text-center mb-8 fade-in">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-white bg-opacity-20 rounded-full mb-4">
-                <i class="fas fa-chart-line text-2xl text-white"></i>
     <!-- Main Container -->
     <div class="w-full max-w-2xl mx-auto my-auto py-2">
         
@@ -229,8 +199,6 @@
             <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white shadow-lg shadow-emerald-500/30 mb-3 transition-transform hover:scale-105 duration-300">
                 <i class="fas fa-user-plus text-2xl"></i>
             </div>
-            <h1 class="text-3xl font-bold text-white mb-2">e-Kinerja</h1>
-            <p class="text-white text-opacity-80">Sistem Manajemen Kinerja</p>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                 Pendaftaran e-Kinerja
             </h1>
@@ -239,28 +207,13 @@
             </p>
         </div>
 
-        <!-- Registration Form -->
-        <div class="glass-effect rounded-2xl p-8 shadow-2xl fade-in">
         <!-- Registration Card -->
-        <div class="glass-effect rounded-2xl p-6 sm:p-8 fade-in">
-            <div class="text-center mb-6">
-                <h2 class="text-2xl font-bold text-white mb-2">Daftar Akun Baru</h2>
-                <p class="text-white text-opacity-70">Buat akun Anda untuk melanjutkan</p>
         <div class="glass-effect rounded-2xl p-5 sm:p-8 fade-in">
             <div class="text-center mb-5">
                 <h2 class="text-lg sm:text-xl font-bold text-white mb-1">Buat Akun Baru</h2>
                 <p class="text-slate-400 text-xs sm:text-sm">Lengkapi data pribadi dan kepegawaian Anda di bawah ini</p>
             </div>
 
-            <form id="registerForm" class="space-y-6">
-                <!-- Name Field -->
-                <div class="space-y-2">
-                    <label for="name" class="block text-sm font-medium text-white text-opacity-90">
-                        <i class="fas fa-user mr-2"></i>Nama Lengkap
-                    </label>
-                    <input type="text" id="name" name="name" required 
-                           class="w-full px-4 py-3 bg-white bg-opacity-90 border border-white border-opacity-30 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                           placeholder="Masukkan nama lengkap Anda">
             <!-- Form -->
             <form id="registerForm" class="space-y-4">
                 
@@ -269,15 +222,6 @@
                     <span><i class="fas fa-id-badge me-1"></i> Data Kepegawaian</span>
                 </div>
 
-                <!-- Email Field -->
-                <div class="space-y-2">
-                    <label for="email" class="block text-sm font-medium text-white text-opacity-90">
-                        <i class="fas fa-envelope mr-2"></i>Email Address
-                    </label>
-                    <input type="email" id="email" name="email" required 
-                           class="w-full px-4 py-3 bg-white bg-opacity-90 border border-white border-opacity-30 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                           placeholder="Masukkan email Anda">
-                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Nama Lengkap -->
                     <div>
@@ -290,18 +234,6 @@
                                autocomplete="name">
                     </div>
 
-                <!-- Password Field -->
-                <div class="space-y-2">
-                    <label for="password" class="block text-sm font-medium text-white text-opacity-90">
-                        <i class="fas fa-lock mr-2"></i>Password
-                    </label>
-                    <div class="relative">
-                        <input type="password" id="password" name="password" required 
-                               class="w-full px-4 py-3 pr-12 bg-white bg-opacity-90 border border-white border-opacity-30 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                               placeholder="Masukkan password Anda">
-                        <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                            <i class="fas fa-eye text-white text-opacity-60 hover:text-opacity-100 transition-all duration-200"></i>
-                        </button>
                     <!-- NIP -->
                     <div>
                         <label for="nip" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
@@ -314,20 +246,7 @@
                                inputmode="numeric"
                                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
-                </div>
 
-                <!-- Confirm Password Field -->
-                <div class="space-y-2">
-                    <label for="password_confirmation" class="block text-sm font-medium text-white text-opacity-90">
-                        <i class="fas fa-lock mr-2"></i>Konfirmasi Password
-                    </label>
-                    <div class="relative">
-                        <input type="password" id="password_confirmation" name="password_confirmation" required 
-                               class="w-full px-4 py-3 pr-12 bg-white bg-opacity-90 border border-white border-opacity-30 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                               placeholder="Konfirmasi password Anda">
-                        <button type="button" id="togglePasswordConfirm" class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                            <i class="fas fa-eye text-gray-600 hover:text-gray-800 transition-all duration-200"></i>
-                        </button>
                     <!-- No. Telepon / WhatsApp -->
                     <div>
                         <label for="phone" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
@@ -340,20 +259,7 @@
                                inputmode="numeric"
                                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
-                </div>
 
-                <!-- Phone Field -->
-                <div class="space-y-2">
-                    <label for="phone" class="block text-sm font-medium text-white text-opacity-90">
-                        <i class="fas fa-phone mr-2"></i>No. Telepon
-                    </label>
-                    <input type="tel" id="phone" name="phone" required
-                           class="w-full px-4 py-3 bg-white bg-opacity-90 border border-white border-opacity-30 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                           placeholder="Masukkan nomor telepon"
-                           pattern="[0-9]*"
-                           inputmode="numeric"
-                           oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                </div>
                     <!-- Golongan -->
                     <div>
                         <label for="golongan" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
@@ -389,14 +295,6 @@
                         </select>
                     </div>
 
-                <!-- NIP Field -->
-                <div class="space-y-2">
-                    <label for="nip" class="block text-sm font-medium text-white text-opacity-90">
-                        <i class="fas fa-id-card mr-2"></i>NIP
-                    </label>
-                    <input type="text" id="nip" name="nip" required
-                           class="w-full px-4 py-3 bg-white bg-opacity-90 border border-white border-opacity-30 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
-                           placeholder="Masukkan NIP">
                     <!-- Instansi -->
                     <div>
                         <label for="instansi" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
@@ -420,55 +318,11 @@
                     </div>
                 </div>
 
-                <!-- Golongan Field -->
-                <div class="space-y-2">
-                    <label for="golongan" class="block text-sm font-medium text-white text-opacity-90">
-                        <i class="fas fa-star mr-2"></i>Golongan
-                    </label>
-                    <select id="golongan" name="golongan" required
-                            class="w-full px-4 py-3 bg-white bg-opacity-90 border border-white border-opacity-30 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
-                        <option value="" class="text-gray-800">Pilih Golongan</option>
-                        <optgroup label="Golongan I (Juru)" class="text-gray-800">
-                            <option value="Ia" class="text-gray-800">Ia - Juru Muda</option>
-                            <option value="Ib" class="text-gray-800">Ib - Juru Muda Tingkat I</option>
-                            <option value="Ic" class="text-gray-800">Ic - Juru</option>
-                            <option value="Id" class="text-gray-800">Id - Juru Tingkat I</option>
-                        </optgroup>
-                        <optgroup label="Golongan II (Pengatur)" class="text-gray-800">
-                            <option value="IIa" class="text-gray-800">IIa - Pengatur Muda</option>
-                            <option value="IIb" class="text-gray-800">IIb - Pengatur Muda Tingkat I</option>
-                            <option value="IIc" class="text-gray-800">IIc - Pengatur</option>
-                            <option value="IId" class="text-gray-800">IId - Pengatur Tingkat I</option>
-                        </optgroup>
-                        <optgroup label="Golongan III (Penata)" class="text-gray-800">
-                            <option value="IIIa" class="text-gray-800">IIIa - Penata Muda</option>
-                            <option value="IIIb" class="text-gray-800">IIIb - Penata Muda Tingkat I</option>
-                            <option value="IIIc" class="text-gray-800">IIIc - Penata</option>
-                            <option value="IIId" class="text-gray-800">IIId - Penata Tingkat I</option>
-                        </optgroup>
-                        <optgroup label="Golongan IV (Pembina)" class="text-gray-800">
-                            <option value="IVa" class="text-gray-800">IVa - Pembina</option>
-                            <option value="IVb" class="text-gray-800">IVb - Pembina Tingkat I</option>
-                            <option value="IVc" class="text-gray-800">IVc - Pembina Utama Muda</option>
-                            <option value="IVd" class="text-gray-800">IVd - Pembina Utama Madya</option>
-                            <option value="IVe" class="text-gray-800">IVe - Pembina Utama</option>
-                        </optgroup>
-                    </select>
                 <!-- SECTION 2: INFORMASI AKUN & KEAMANAN -->
                 <div class="section-divider">
                     <span><i class="fas fa-shield-alt me-1"></i> Informasi Akun & Keamanan</span>
                 </div>
 
-                <!-- Instansi Field -->
-                <div class="space-y-2">
-                    <label for="instansi" class="block text-sm font-medium text-white text-opacity-90">
-                        <i class="fas fa-building mr-2"></i>Instansi
-                    </label>
-                    <input type="text" id="instansi" name="instansi" required
-                           class="w-full px-4 py-3 bg-white bg-opacity-90 border border-white border-opacity-30 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 uppercase"
-                           placeholder="Masukkan nama instansi"
-                           style="text-transform: uppercase;"
-                           oninput="this.value = this.value.toUpperCase()">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Email Address (Full Width on 2 columns) -->
                     <div class="md:col-span-2">
@@ -515,22 +369,9 @@
                     </div>
                 </div>
 
-                <!-- Ruangan Field -->
-                <div class="space-y-2">
-                    <label for="ruangan" class="block text-sm font-medium text-white text-opacity-90">
-                        <i class="fas fa-door-open mr-2"></i>Ruangan
-                    </label>
-                    <input type="text" id="ruangan" name="ruangan" required
-                           class="w-full px-4 py-3 bg-white bg-opacity-90 border border-white border-opacity-30 rounded-lg text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 uppercase"
-                           placeholder="Masukkan nama ruangan"
-                           style="text-transform: uppercase;"
-                           oninput="this.value = this.value.toUpperCase()">
-                <!-- Password Requirements Pill -->
-                <div class="p-3 bg-slate-900/80 border border-slate-700/60 rounded-xl mt-2 text-xs text-slate-400 space-y-1">
                 <!-- Password Requirements Checklist -->
                 <div class="p-3.5 bg-slate-900/80 border border-slate-700/60 rounded-xl mt-2 text-xs text-slate-400 space-y-1.5">
                     <div class="flex items-center gap-1.5 font-medium text-slate-300">
-                        <i class="fas fa-info-circle text-emerald-400"></i>
                         <i class="fas fa-shield-halved text-emerald-400"></i>
                         <span>Ketentuan Keamanan Password:</span>
                     </div>
@@ -542,12 +383,6 @@
                     </ul>
                 </div>
 
-                <!-- Terms and Conditions -->
-                <div class="flex items-center">
-                    <input type="checkbox" id="terms" name="terms" required 
-                           class="w-4 h-4 text-white bg-white bg-opacity-20 border-white border-opacity-30 rounded focus:ring-white focus:ring-opacity-50">
-                    <label for="terms" class="ml-2 text-sm text-white text-opacity-90">
-                        Saya setuju dengan <a href="#" class="text-white underline hover:text-opacity-80">Syarat dan Ketentuan</a>
                 <!-- Terms & Agreement -->
                 <div class="pt-2">
                     <label class="flex items-start gap-2.5 cursor-pointer select-none">
@@ -561,16 +396,6 @@
                 </div>
 
                 <!-- Submit Button -->
-                <button type="submit" id="registerBtn" 
-                        class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 shadow-lg">
-                    <span id="registerBtnText">
-                        <i class="fas fa-user-plus mr-2"></i>Daftar Sekarang
-                    </span>
-                    <span id="registerBtnLoading" class="hidden">
-                        <i class="fas fa-spinner fa-spin mr-2"></i>Mendaftar...
-                    </span>
-                </button>
-                <div class="pt-3">
                 <div class="pt-2">
                     <button type="submit" id="registerBtn" class="btn-register-pro">
                         <span id="registerBtnText" class="flex items-center justify-center gap-2">
@@ -589,11 +414,6 @@
             <div id="message" class="hidden mt-4 p-4 rounded-xl text-xs sm:text-sm transition-all duration-300"></div>
 
             <!-- Login Link -->
-            <div class="mt-6 text-center">
-                <p class="text-white text-opacity-70">
-                    Sudah punya akun? 
-                    <a href="/login" class="text-white font-semibold hover:text-opacity-80 transition-all duration-200">
-                        Masuk di sini
             <div class="mt-6 pt-5 border-t border-slate-800 text-center">
                 <p class="text-slate-400 text-xs sm:text-sm">
                     Sudah memiliki akun terdaftar? 
@@ -603,15 +423,9 @@
                     </a>
                 </p>
             </div>
-
-            <!-- Error/Success Messages -->
-            <div id="message" class="mt-4 p-3 rounded-lg hidden"></div>
         </div>
 
         <!-- Footer -->
-        <div class="text-center mt-8 fade-in">
-            <p class="text-white text-opacity-60 text-sm">
-                © 2025 e-Kinerja. Dikembangkan dengan <i class="fas fa-heart text-red-400"></i>
         <div class="text-center mt-5 mb-2">
             <p class="text-slate-500 text-xs">
                 © 2025 e-Kinerja. Dikembangkan dengan ❤️ untuk Tenaga Medis & Pegawai
@@ -620,36 +434,12 @@
     </div>
 
     <script>
-        // Password toggle functionality
-        document.getElementById('togglePassword').addEventListener('click', function() {
-            const password = document.getElementById('password');
-            const icon = this.querySelector('i');
-            
-            if (password.type === 'password') {
-                password.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                password.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        });
-        // Toggle password visibility helper
         // Setup Password Visibility Toggles
         function setupToggle(buttonId, inputId) {
             const btn = document.getElementById(buttonId);
             const input = document.getElementById(inputId);
             if (!btn || !input) return;
 
-        document.getElementById('togglePasswordConfirm').addEventListener('click', function() {
-            const password = document.getElementById('password_confirmation');
-            const icon = this.querySelector('i');
-            
-            if (password.type === 'password') {
-                password.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
                 const icon = this.querySelector('i');
@@ -666,7 +456,6 @@
         setupToggle('togglePassword', 'password');
         setupToggle('togglePasswordConfirm', 'password_confirmation');
 
-        // Live password match & validation helper
         // Live Password Match & Validation Helper
         const passwordInput = document.getElementById('password');
         const confirmPasswordInput = document.getElementById('password_confirmation');
@@ -694,43 +483,30 @@
                     confirmPasswordInput.style.borderColor = '#f43f5e';
                 }
             } else {
-                password.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
                 confirmPasswordInput.style.borderColor = '#334155';
             }
-        });
         }
 
-        // Form submission
         passwordInput.addEventListener('input', checkPasswordRules);
         confirmPasswordInput.addEventListener('input', checkPasswordRules);
 
-        // Form submission handler
         // Form Submission Handler
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const formData = new FormData(this);
             const data = {
-                name: formData.get('name'),
-                email: formData.get('email'),
                 name: formData.get('name')?.trim(),
                 email: formData.get('email')?.trim(),
                 password: formData.get('password'),
                 password_confirmation: formData.get('password_confirmation'),
-                phone: formData.get('phone'),
-                nip: formData.get('nip'),
                 phone: formData.get('phone')?.trim(),
                 nip: formData.get('nip')?.trim(),
                 golongan: formData.get('golongan'),
-                instansi: formData.get('instansi'),
-                ruangan: formData.get('ruangan')
                 instansi: formData.get('instansi')?.trim(),
                 ruangan: formData.get('ruangan')?.trim()
             };
             
-            // Validate password confirmation
             // Validate password match
             if (data.password !== data.password_confirmation) {
                 showMessage('Password dan konfirmasi password tidak cocok!', 'error');
@@ -740,7 +516,6 @@
             
             // Validate terms
             if (!document.getElementById('terms').checked) {
-                showMessage('Anda harus menyetujui syarat dan ketentuan!', 'error');
                 showMessage('Anda harus menyetujui syarat dan ketentuan untuk mendaftar.', 'error');
                 return;
             }
@@ -755,7 +530,6 @@
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                         'X-CSRF-TOKEN': csrfToken
                     },
                     body: JSON.stringify(data)
@@ -763,10 +537,7 @@
                 
                 const result = await response.json();
                 
-                if (response.ok) {
-                    showMessage('Registrasi berhasil! Silakan login dengan akun Anda.', 'success');
                 if (response.ok && result.success) {
-                    showMessage('Pendaftaran berhasil! Menyimpan data dan mengalihkan...', 'success');
                     showMessage('Pendaftaran berhasil! Mengalihkan ke dashboard...', 'success');
                     
                     if (result.data && result.data.token) {
@@ -775,24 +546,15 @@
                     }
                     
                     setTimeout(() => {
-                        window.location.href = '/login';
-                    }, 2000);
                         window.location.href = '/user-dashboard';
                     }, 1200);
                 } else {
-                    // Debug: tampilkan detail error validation
-                    console.log('Full error response:', result);
                     console.log('Registration error:', result);
                     
                     let errorMessage = result.message || 'Terjadi kesalahan saat registrasi';
                     
-                    // Jika ada detail errors, tampilkan
                     if (result.errors) {
                         const errorDetails = Object.entries(result.errors)
-                            .map(([field, messages]) => `${field}: ${messages.join(', ')}`)
-                            .join('\n');
-                        console.log('Validation errors:', result.errors);
-                        errorMessage = 'Validation errors:\n' + errorDetails;
                             .map(([field, messages]) => Array.isArray(messages) ? messages.join(', ') : messages)
                             .join('<br>• ');
                         errorMessage = '• ' + errorDetails;
@@ -802,7 +564,6 @@
                 }
             } catch (error) {
                 console.error('Network error:', error);
-                showMessage('Terjadi kesalahan koneksi. Silakan coba lagi.', 'error');
                 showMessage('Terjadi kesalahan koneksi jaringan. Periksa koneksi internet Anda.', 'error');
             } finally {
                 showLoading(false);
@@ -827,8 +588,6 @@
         
         function showMessage(message, type) {
             const messageDiv = document.getElementById('message');
-            messageDiv.className = `mt-4 p-3 rounded-lg ${type === 'success' ? 'bg-green-500 bg-opacity-20 border border-green-400 text-green-100' : 'bg-red-500 bg-opacity-20 border border-red-400 text-red-100'}`;
-            messageDiv.textContent = message;
             messageDiv.className = `mt-4 p-4 rounded-xl text-xs sm:text-sm transition-all duration-300 ${
                 type === 'success' 
                     ? 'bg-emerald-950/90 border border-emerald-500/40 text-emerald-300' 
@@ -847,25 +606,12 @@
             `;
             messageDiv.classList.remove('hidden');
             
-            // Auto hide after 5 seconds
             setTimeout(() => {
                 messageDiv.classList.add('hidden');
-            }, 5000);
             }, 7000);
             messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
-        
-        // Real-time password validation
-        document.getElementById('password_confirmation').addEventListener('input', function() {
-            const password = document.getElementById('password').value;
-            const confirmPassword = this.value;
-            
-            if (confirmPassword && password !== confirmPassword) {
-                this.style.borderColor = 'rgba(239, 68, 68, 0.5)';
-            } else {
-                this.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-            }
-        });
     </script>
 </body>
 </html>
+
