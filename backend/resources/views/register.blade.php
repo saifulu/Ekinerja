@@ -20,12 +20,18 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
     
+    <!-- Tailwind CSS & Vite -->
     <script src="https://cdn.tailwindcss.com"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
         
         body {
             font-family: 'Inter', sans-serif;
@@ -141,6 +147,7 @@
             align-items: center;
             gap: 12px;
             margin: 20px 0 14px 0;
+            margin: 18px 0 12px 0;
         }
         .section-divider::before,
         .section-divider::after {
@@ -201,6 +208,8 @@
         <div class="absolute top-1/2 left-1/4 w-32 h-32 bg-white opacity-10 rounded-full floating-animation" style="animation-delay: -1s;"></div>
 <body class="gradient-bg min-h-screen flex flex-col justify-between py-6 px-4 sm:px-6 selection:bg-emerald-500 selection:text-white">
     <!-- Subtle Background Glow Elements -->
+
+    <!-- Background Subtle Glows -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <div class="absolute -top-32 -right-32 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
         <div class="absolute -bottom-32 -left-32 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl"></div>
@@ -214,6 +223,7 @@
                 <i class="fas fa-chart-line text-2xl text-white"></i>
     <!-- Main Container -->
     <div class="w-full max-w-2xl mx-auto my-auto py-2">
+        
         <!-- Logo & Header -->
         <div class="text-center mb-6 fade-in">
             <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white shadow-lg shadow-emerald-500/30 mb-3 transition-transform hover:scale-105 duration-300">
@@ -236,6 +246,8 @@
             <div class="text-center mb-6">
                 <h2 class="text-2xl font-bold text-white mb-2">Daftar Akun Baru</h2>
                 <p class="text-white text-opacity-70">Buat akun Anda untuk melanjutkan</p>
+        <div class="glass-effect rounded-2xl p-5 sm:p-8 fade-in">
+            <div class="text-center mb-5">
                 <h2 class="text-lg sm:text-xl font-bold text-white mb-1">Buat Akun Baru</h2>
                 <p class="text-slate-400 text-xs sm:text-sm">Lengkapi data pribadi dan kepegawaian Anda di bawah ini</p>
             </div>
@@ -251,6 +263,7 @@
                            placeholder="Masukkan nama lengkap Anda">
             <!-- Form -->
             <form id="registerForm" class="space-y-4">
+                
                 <!-- SECTION 1: DATA KEPEGAWAIAN -->
                 <div class="section-divider">
                     <span><i class="fas fa-id-badge me-1"></i> Data Kepegawaian</span>
@@ -514,8 +527,11 @@
                            oninput="this.value = this.value.toUpperCase()">
                 <!-- Password Requirements Pill -->
                 <div class="p-3 bg-slate-900/80 border border-slate-700/60 rounded-xl mt-2 text-xs text-slate-400 space-y-1">
+                <!-- Password Requirements Checklist -->
+                <div class="p-3.5 bg-slate-900/80 border border-slate-700/60 rounded-xl mt-2 text-xs text-slate-400 space-y-1.5">
                     <div class="flex items-center gap-1.5 font-medium text-slate-300">
                         <i class="fas fa-info-circle text-emerald-400"></i>
+                        <i class="fas fa-shield-halved text-emerald-400"></i>
                         <span>Ketentuan Keamanan Password:</span>
                     </div>
                     <ul class="grid grid-cols-1 sm:grid-cols-2 gap-1 pl-5 list-disc text-slate-400">
@@ -532,6 +548,7 @@
                            class="w-4 h-4 text-white bg-white bg-opacity-20 border-white border-opacity-30 rounded focus:ring-white focus:ring-opacity-50">
                     <label for="terms" class="ml-2 text-sm text-white text-opacity-90">
                         Saya setuju dengan <a href="#" class="text-white underline hover:text-opacity-80">Syarat dan Ketentuan</a>
+                <!-- Terms & Agreement -->
                 <div class="pt-2">
                     <label class="flex items-start gap-2.5 cursor-pointer select-none">
                         <input type="checkbox" id="terms" name="terms" required 
@@ -554,6 +571,7 @@
                     </span>
                 </button>
                 <div class="pt-3">
+                <div class="pt-2">
                     <button type="submit" id="registerBtn" class="btn-register-pro">
                         <span id="registerBtnText" class="flex items-center justify-center gap-2">
                             <i class="fas fa-user-plus"></i>
@@ -618,6 +636,7 @@
             }
         });
         // Toggle password visibility helper
+        // Setup Password Visibility Toggles
         function setupToggle(buttonId, inputId) {
             const btn = document.getElementById(buttonId);
             const input = document.getElementById(inputId);
@@ -648,6 +667,7 @@
         setupToggle('togglePasswordConfirm', 'password_confirmation');
 
         // Live password match & validation helper
+        // Live Password Match & Validation Helper
         const passwordInput = document.getElementById('password');
         const confirmPasswordInput = document.getElementById('password_confirmation');
 
@@ -687,6 +707,7 @@
         confirmPasswordInput.addEventListener('input', checkPasswordRules);
 
         // Form submission handler
+        // Form Submission Handler
         document.getElementById('registerForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -746,6 +767,7 @@
                     showMessage('Registrasi berhasil! Silakan login dengan akun Anda.', 'success');
                 if (response.ok && result.success) {
                     showMessage('Pendaftaran berhasil! Menyimpan data dan mengalihkan...', 'success');
+                    showMessage('Pendaftaran berhasil! Mengalihkan ke dashboard...', 'success');
                     
                     if (result.data && result.data.token) {
                         localStorage.setItem('token', result.data.token);
@@ -760,6 +782,7 @@
                 } else {
                     // Debug: tampilkan detail error validation
                     console.log('Full error response:', result);
+                    console.log('Registration error:', result);
                     
                     let errorMessage = result.message || 'Terjadi kesalahan saat registrasi';
                     
@@ -828,6 +851,7 @@
             setTimeout(() => {
                 messageDiv.classList.add('hidden');
             }, 5000);
+            }, 7000);
             messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         
