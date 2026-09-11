@@ -584,6 +584,10 @@
             background: rgba(59, 130, 246, 0.85);
             color: #ffffff;
         }
+        .photo-card-source.source-existing {
+            background: rgba(168, 85, 247, 0.85);
+            color: #ffffff;
+        }
 
         .photo-card-delete {
             position: absolute;
@@ -1169,14 +1173,28 @@
                                 <i class="fas fa-arrow-left"></i>
                             </button>
                             <div>
-                                <h4 class="text-white mb-1">Detail Jenis Kegiatan</h4>
-                                <p class="text-white-50 mb-0">Kelola detail kegiatan Anda</p>
+                                <h4 class="text-white mb-1" id="pageTitle">Detail Jenis Kegiatan</h4>
+                                <p class="text-white-50 mb-0" id="pageSubtitle">Kelola detail kegiatan Anda</p>
                             </div>
                         </div>
                         <div id="statusBadge" class="status-badge status-draft">
                             Draft
                         </div>
                     </div>
+                </div>
+
+                <!-- Edit Mode Notice (Active when editing existing report) -->
+                <div id="editModeNotice" class="alert alert-warning bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs rounded-xl p-3 mb-4 d-none align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="d-inline-flex align-items-center justify-content-center w-7 h-7 rounded-circle bg-amber-500/20 text-amber-400 font-bold" style="width: 28px; height: 28px; border-radius: 50%;">
+                            <i class="fas fa-edit"></i>
+                        </span>
+                        <div>
+                            <strong class="d-block text-amber-200">Mode Edit Laporan</strong>
+                            <span class="text-amber-300/80">Anda sedang memperbarui rekaman kegiatan. Silakan periksa data, tanda tangan, foto, lalu simpan perubahan.</span>
+                        </div>
+                    </div>
+                    <span id="editIdBadge" class="badge bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-1">ID: -</span>
                 </div>
 
                 <!-- Form -->
@@ -1460,12 +1478,15 @@
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="d-flex justify-content-end gap-3 mt-4">
+                        <div class="d-flex flex-wrap justify-content-end gap-3 mt-4">
                             <button type="button" class="btn btn-secondary" onclick="goBack()">
                                 <i class="fas fa-times me-2"></i>Batal
                             </button>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-paper-plane me-2"></i>Submit
+                            <button type="button" class="btn btn-outline-warning" id="btnSaveDraft" onclick="saveDraft()">
+                                <i class="fas fa-floppy-disk me-2"></i>Simpan Draft
+                            </button>
+                            <button type="submit" class="btn btn-primary" id="btnSubmit">
+                                <i class="fas fa-paper-plane me-2"></i><span id="submitBtnText">Submit</span>
                             </button>
                         </div>
                     </form>
@@ -1478,13 +1499,50 @@
     <script>
         let currentUser = null;
         let detailId = null;
+        let isEditMode = false;
+        let editItemId = null;
         let stream = null;
         let capturedPhotos = [];
         let uploadedFiles = [];
+        let existingPhotos = [];
         let signatures = {
             petugas: null,
             kaUnit: null
         };
+
+        // Apply and render a signature to the surface UI
+        function applySignature(type, dataURL) {
+            if (!dataURL) return;
+            signatures[type] = dataURL;
+            
+            const signatureArea = document.getElementById(type + 'Signature');
+            if (signatureArea) {
+                signatureArea.innerHTML = `
+                    <div class="signature-signed-canvas-wrap">
+                        <img src="${dataURL}" class="signature-canvas" alt="Tanda Tangan">
+                    </div>
+                `;
+                signatureArea.classList.add('signature-signed');
+            }
+
+            const statusBadge = document.getElementById(type + 'StatusBadge');
+            if (statusBadge) {
+                statusBadge.className = 'text-xs text-emerald-400 font-medium';
+                statusBadge.innerHTML = '<i class="fas fa-check me-1"></i>Sudah ditandatangani';
+            }
+
+            const actionText = document.getElementById(type + 'ActionText');
+            if (actionText) {
+                actionText.textContent = 'Ubah';
+            }
+
+            const clearBtn = document.getElementById('clear' + (type === 'petugas' ? 'Petugas' : 'KaUnit') + 'Btn');
+            if (clearBtn) {
+                clearBtn.style.display = 'inline-block';
+            }
+
+            updateSignatureBadges();
+        }
 
         // Signature State & Management
         function updateSignatureBadges() {
@@ -1557,20 +1615,21 @@
             `;
             
             document.body.appendChild(modal);
-            initializeSignatureCanvas();
+            initializeSignatureCanvas(type);
         }
 
-        function initializeSignatureCanvas() {
+        function initializeSignatureCanvas(type) {
             const canvas = document.getElementById('signatureCanvas');
             if (!canvas) return;
 
             const ctx = canvas.getContext('2d');
             let isDrawing = false;
             hasSignatureDrawn = false;
+            let dpr = window.devicePixelRatio || 1;
 
             function resizeCanvas() {
                 const rect = canvas.getBoundingClientRect();
-                const dpr = window.devicePixelRatio || 1;
+                dpr = window.devicePixelRatio || 1;
                 const width = rect.width || 460;
                 const height = rect.height || 210;
 
@@ -1582,6 +1641,16 @@
                 ctx.lineJoin = 'round';
                 ctx.strokeStyle = '#090d16';
                 ctx.lineWidth = 2.6;
+
+                // If signature exists, restore it onto canvas
+                if (type && signatures[type]) {
+                    const img = new Image();
+                    img.onload = function() {
+                        ctx.drawImage(img, 0, 0, width, height);
+                        hasSignatureDrawn = true;
+                    };
+                    img.src = signatures[type];
+                }
             }
 
             requestAnimationFrame(resizeCanvas);
@@ -1652,40 +1721,7 @@
             }
 
             const dataURL = canvas.toDataURL('image/png');
-            signatures[type] = dataURL;
-            
-            // Update surface UI
-            const signatureArea = document.getElementById(type + 'Signature');
-            if (signatureArea) {
-                signatureArea.innerHTML = `
-                    <div class="signature-signed-canvas-wrap">
-                        <img src="${dataURL}" class="signature-canvas" alt="Tanda Tangan">
-                    </div>
-                `;
-                signatureArea.classList.add('signature-signed');
-            }
-
-            // Update status badge
-            const statusBadge = document.getElementById(type + 'StatusBadge');
-            if (statusBadge) {
-                statusBadge.className = 'text-xs text-emerald-400 font-medium';
-                statusBadge.innerHTML = '<i class="fas fa-check me-1"></i>Sudah ditandatangani';
-            }
-
-            // Update action button label
-            const actionText = document.getElementById(type + 'ActionText');
-            if (actionText) {
-                actionText.textContent = 'Ubah';
-            }
-
-            // Show clear button
-            const clearBtn = document.getElementById('clear' + (type === 'petugas' ? 'Petugas' : 'KaUnit') + 'Btn');
-            if (clearBtn) {
-                clearBtn.style.display = 'inline-block';
-            }
-
-            // Update section summary counter
-            updateSignatureBadges();
+            applySignature(type, dataURL);
             closeSignatureModal();
         }
 
@@ -1742,7 +1778,7 @@
         window.clearCanvas = clearCanvas;
 
         // Fungsi untuk memuat unit berdasarkan NIP user
-        async function loadUserUnits() {
+        async function loadUserUnits(selectedUnit = null) {
             try {
                 const token = localStorage.getItem('token') || sessionStorage.getItem('token');
                 const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
@@ -1752,7 +1788,7 @@
                     return;
                 }
 
-                console.log('Loading units for NIP:', user.nip);
+                console.log('Loading units for NIP:', user.nip, 'Selected unit:', selectedUnit);
 
                 const response = await fetch('/api/unit-ruangan', {
                     method: 'GET',
@@ -1771,38 +1807,52 @@
                 console.log('API Response:', result);
                 
                 const unitSelect = document.getElementById('unit');
+                if (!unitSelect) return;
                 
                 // Bersihkan options yang ada
                 unitSelect.innerHTML = '<option value="">Pilih Unit</option>';
                 
+                let foundSelected = false;
                 // Tambahkan options dari data API
                 if (result.success && result.data && result.data.length > 0) {
-                    // Gunakan Set untuk menghindari duplikasi nama_ruangan
-                    const uniqueUnits = [...new Set(result.data.map(item => item.nama_ruangan))];
+                    const uniqueUnits = [...new Set(result.data.map(item => item.nama_ruangan).filter(Boolean))];
                     
                     uniqueUnits.forEach(namaRuangan => {
                         const option = document.createElement('option');
                         option.value = namaRuangan;
                         option.textContent = namaRuangan;
+                        if (selectedUnit && (selectedUnit === namaRuangan || selectedUnit.trim().toLowerCase() === namaRuangan.trim().toLowerCase())) {
+                            option.selected = true;
+                            foundSelected = true;
+                        }
                         unitSelect.appendChild(option);
                     });
                     
                     console.log('Units loaded successfully:', uniqueUnits);
-                } else {
-                    // Jika tidak ada data unit untuk user ini
+                }
+                
+                // If selectedUnit specified but not in list, append it so it's not lost
+                if (selectedUnit && !foundSelected) {
                     const option = document.createElement('option');
-                    option.value = '';
-                    option.textContent = 'Tidak ada unit tersedia untuk NIP Anda';
-                    option.disabled = true;
+                    option.value = selectedUnit;
+                    option.textContent = selectedUnit;
+                    option.selected = true;
                     unitSelect.appendChild(option);
-                    
-                    console.log('No units found for user NIP:', user.nip);
                 }
                 
             } catch (error) {
                 console.error('Error loading units:', error);
                 const unitSelect = document.getElementById('unit');
-                unitSelect.innerHTML = '<option value="">Error memuat data unit</option>';
+                if (unitSelect) {
+                    unitSelect.innerHTML = '<option value="">Pilih Unit</option>';
+                    if (selectedUnit) {
+                        const option = document.createElement('option');
+                        option.value = selectedUnit;
+                        option.textContent = selectedUnit;
+                        option.selected = true;
+                        unitSelect.appendChild(option);
+                    }
+                }
                 
                 // Show notification to user
                 if (typeof showNotification === 'function') {
@@ -1832,7 +1882,6 @@
             await initializePageData();
             initializeCamera();
             initializeFileUpload();
-            loadUserUnits();
             
             // Setup form submission handler
             const form = document.getElementById('detailKegiatanForm');
@@ -1928,6 +1977,13 @@
                             formData.append('nama_pj', namaKaUnit);
                         }
                         
+                        // Add existing photos to retain
+                        if (existingPhotos && existingPhotos.length > 0) {
+                            existingPhotos.forEach((photo, index) => {
+                                formData.append(`existing_dokumentasi[${index}]`, photo.path);
+                            });
+                        }
+                        
                         // Add captured photos
                         if (capturedPhotos && capturedPhotos.length > 0) {
                             capturedPhotos.forEach((photo, index) => {
@@ -1948,19 +2004,21 @@
                         
                         // Set status
                         formData.append('status', 'submitted');
-                        
-                        console.log('📤 Sending data to API...');
-                        console.log('📋 Form data entries:');
-                        for (let [key, value] of formData.entries()) {
-                            console.log(`  ${key}:`, typeof value === 'string' ? value.substring(0, 100) : value);
+
+                        let apiUrl = '/api/detail-jenis-kegiatan';
+                        if (isEditMode && editItemId) {
+                            apiUrl = `/api/detail-jenis-kegiatan/${editItemId}`;
+                            formData.append('_method', 'PUT');
                         }
+                        
+                        console.log('📤 Sending data to API:', apiUrl);
                         
                         // Check token
                         if (!token) {
                             throw new Error('Token tidak ditemukan. Silakan login ulang.');
                         }
                         
-                        const response = await fetch('/api/detail-jenis-kegiatan', {
+                        const response = await fetch(apiUrl, {
                             method: 'POST',
                             headers: {
                                 'Authorization': `Bearer ${token}`,
@@ -1976,15 +2034,17 @@
                         console.log('📥 Response data:', result);
                         
                         if (response.ok && result.success) {
-                            showNotification('Data berhasil disimpan!', 'success');
+                            try {
+                                sessionStorage.removeItem('editDetailData');
+                            } catch(e) {}
+
+                            const successMsg = isEditMode ? 'Data kegiatan berhasil diperbarui!' : 'Data kegiatan berhasil disimpan!';
+                            showNotification(successMsg, 'success');
                             updateStatusBadge('submitted');
                             
-                            // Optional: redirect after success
                             setTimeout(() => {
-                                if (confirm('Data berhasil disimpan! Kembali ke dashboard?')) {
-                                    window.location.href = '/user-dashboard';
-                                }
-                            }, 2000);
+                                window.location.href = `/laporan?nip=${nip}`;
+                            }, 1200);
                         } else {
                             console.error('❌ API Error:', result);
                             
@@ -2027,58 +2087,212 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const dataParam = urlParams.get('data');
                 const idParam = urlParams.get('id');
+                const editParam = urlParams.get('edit');
 
-                console.log('URL params:', { dataParam, idParam });
+                console.log('URL params:', { dataParam, idParam, editParam });
 
                 // Ambil data user dari localStorage/sessionStorage
                 const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+                const token = localStorage.getItem('token') || sessionStorage.getItem('token');
                 
                 if (user.nip) {
-                    // Auto-fill NIP dengan NIP user yang login
                     document.getElementById('nip').value = user.nip;
                     console.log('Auto-filled NIP:', user.nip);
-                    
-                    // Muat unit berdasarkan NIP user
-                    await loadUserUnits();
                 } else {
                     console.error('NIP user tidak ditemukan dalam session');
-                    // Redirect ke login jika tidak ada data user
                     if (confirm('Session expired. Redirect to login?')) {
                         window.location.href = '/login';
                     }
                     return;
                 }
 
-                // Auto-fill Jenis Kegiatan from dashboard click
-                if (dataParam) {
+                let editData = null;
+
+                // Check if in Edit Mode
+                if (idParam || editParam === 'true') {
+                    isEditMode = true;
+                    editItemId = idParam;
+
+                    // 1. Try to read cached full record from sessionStorage
+                    const cachedEdit = sessionStorage.getItem('editDetailData');
+                    if (cachedEdit) {
+                        try {
+                            const parsed = JSON.parse(cachedEdit);
+                            if (!idParam || String(parsed.id) === String(idParam)) {
+                                editData = parsed;
+                                editItemId = parsed.id;
+                            }
+                        } catch(e) {
+                            console.error('Error parsing cached editDetailData:', e);
+                        }
+                    }
+
+                    // 2. If not found in cache, fetch from API
+                    if (!editData && editItemId) {
+                        try {
+                            const resp = await fetch(`/api/detail-jenis-kegiatan/${editItemId}`, {
+                                headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                    'Accept': 'application/json'
+                                }
+                            });
+                            if (resp.ok) {
+                                const respData = await resp.json();
+                                if (respData.success && respData.data) {
+                                    editData = respData.data;
+                                }
+                            }
+                        } catch(e) {
+                            console.error('Error fetching detail from API:', e);
+                        }
+                    }
+
+                    // 3. Fallback to URL dataParam if available
+                    if (!editData && dataParam) {
+                        try {
+                            editData = JSON.parse(decodeURIComponent(dataParam));
+                            if (editData.id) editItemId = editData.id;
+                        } catch (e) {
+                            console.error('Error parsing URL dataParam:', e);
+                        }
+                    }
+                } else if (dataParam) {
+                    // New entry with prefill from URL
                     try {
                         const data = JSON.parse(decodeURIComponent(dataParam));
-                        console.log('Parsed data from URL:', data);
-                        
                         if (data.jenis_kegiatan) {
                             document.getElementById('jenisKegiatan').value = data.jenis_kegiatan;
-                            console.log('Auto-filled Jenis Kegiatan:', data.jenis_kegiatan);
+                        }
+                        if (data.nip) {
+                            document.getElementById('nip').value = data.nip;
                         }
                     } catch (error) {
                         console.error('Error parsing URL data:', error);
                     }
                 }
 
-                // Set default datetime to now (Single Date System)
-                // Set default datetime to now
-                if (!idParam) {
+                // If Edit Mode with data, populate everything!
+                if (isEditMode && editData) {
+                    console.log('Populating edit form with data:', editData);
+
+                    // Update Title, Subtitle, Banner
+                    const pageTitle = document.getElementById('pageTitle');
+                    if (pageTitle) {
+                        pageTitle.innerHTML = `<i class="fas fa-edit text-amber-400 me-2"></i>Edit Kegiatan #${editItemId}`;
+                    }
+                    const pageSubtitle = document.getElementById('pageSubtitle');
+                    if (pageSubtitle) {
+                        pageSubtitle.textContent = 'Perbarui data laporan kegiatan, tanda tangan, dan foto dokumentasi';
+                    }
+                    const editNotice = document.getElementById('editModeNotice');
+                    if (editNotice) {
+                        editNotice.classList.remove('d-none');
+                        editNotice.classList.add('d-flex');
+                        const editIdBadge = document.getElementById('editIdBadge');
+                        if (editIdBadge) editIdBadge.textContent = `ID #${editItemId}`;
+                    }
+                    const submitBtnText = document.getElementById('submitBtnText');
+                    if (submitBtnText) {
+                        submitBtnText.textContent = 'Simpan Perubahan';
+                    }
+
+                    // Pre-fill Jenis Kegiatan
+                    if (editData.jenis_kegiatan) {
+                        document.getElementById('jenisKegiatan').value = editData.jenis_kegiatan;
+                    }
+
+                    // Pre-fill NIP
+                    if (editData.nip) {
+                        document.getElementById('nip').value = editData.nip;
+                    }
+
+                    // Pre-fill Unit
+                    await loadUserUnits(editData.unit);
+
+                    // Pre-fill Tanggal Dibuat
+                    if (editData.tanggal_dibuat) {
+                        try {
+                            const d = new Date(editData.tanggal_dibuat);
+                            if (!isNaN(d.getTime())) {
+                                const offsetMs = d.getTimezoneOffset() * 60000;
+                                const localISOTime = (new Date(d.getTime() - offsetMs)).toISOString().slice(0, 16);
+                                document.getElementById('tanggalDibuat').value = localISOTime;
+                            }
+                        } catch(e) {
+                            console.error('Error formatting date:', e);
+                        }
+                    }
+
+                    // Pre-fill Hasil Temuan
+                    if (editData.hasil_temuan) {
+                        const temuanEl = document.getElementById('hasilTemuan');
+                        if (temuanEl) temuanEl.value = editData.hasil_temuan;
+                    }
+
+                    // Pre-fill Signee Names
+                    const petugasNameInput = document.getElementById('petugasNameInput');
+                    if (petugasNameInput) {
+                        petugasNameInput.value = editData.nama_pelaksana || editData.nama_petugas || (user.nama || user.name || '');
+                    }
+                    const kaUnitNameInput = document.getElementById('kaUnitNameInput');
+                    if (kaUnitNameInput) {
+                        kaUnitNameInput.value = editData.nama_pj || editData.nama_ka_unit || '';
+                    }
+
+                    // Pre-fill Signatures
+                    if (editData.signature_pelaksana) {
+                        let sig = editData.signature_pelaksana;
+                        if (!sig.startsWith('data:image/')) sig = 'data:image/png;base64,' + sig;
+                        applySignature('petugas', sig);
+                    }
+                    if (editData.signature_pj) {
+                        let sig = editData.signature_pj;
+                        if (!sig.startsWith('data:image/')) sig = 'data:image/png;base64,' + sig;
+                        applySignature('kaUnit', sig);
+                    }
+
+                    // Pre-fill Documentation Photos
+                    existingPhotos = [];
+                    let docs = editData.dokumentasi || [];
+                    if (typeof docs === 'string') {
+                        try { docs = JSON.parse(docs); } catch(e) { docs = [docs]; }
+                    }
+                    if (Array.isArray(docs)) {
+                        docs.forEach((docPath) => {
+                            if (!docPath) return;
+                            let fullUrl = docPath;
+                            if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://') && !fullUrl.startsWith('data:')) {
+                                let clean = docPath.replace(/^\/+/, '');
+                                if (!clean.startsWith('storage/')) {
+                                    clean = 'storage/' + clean;
+                                }
+                                fullUrl = '/' + clean;
+                            }
+                            existingPhotos.push({
+                                path: docPath,
+                                url: fullUrl
+                            });
+                        });
+                    }
+                    refreshImageDisplay();
+
+                    // Status badge
+                    updateStatusBadge(editData.status || 'draft');
+
+                } else {
+                    // New item mode
+                    await loadUserUnits();
+
                     const now = new Date();
                     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
                     document.getElementById('tanggalDibuat').value = now.toISOString().slice(0, 16);
+
+                    const petugasNameInput = document.getElementById('petugasNameInput');
+                    if (petugasNameInput && !petugasNameInput.value) {
+                        petugasNameInput.value = user.nama || user.name || '';
+                    }
                 }
 
-                // Pre-fill Petugas signee name with logged-in user name if empty
-                const petugasNameInput = document.getElementById('petugasNameInput');
-                if (petugasNameInput && !petugasNameInput.value) {
-                    petugasNameInput.value = user.nama || user.name || '';
-                }
-
-                // Initialize signature counter badge
                 updateSignatureBadges();
 
             } catch (error) {
@@ -2315,7 +2529,9 @@
         }
         
         function removeImage(type, index) {
-            if (type === 'capture') {
+            if (type === 'existing') {
+                existingPhotos.splice(index, 1);
+            } else if (type === 'capture') {
                 capturedPhotos.splice(index, 1);
             } else {
                 uploadedFiles.splice(index, 1);
@@ -2329,7 +2545,9 @@
             const badge = document.getElementById('photoCountBadge');
             if (!allImagesContainer) return;
 
-            const totalCount = (capturedPhotos ? capturedPhotos.length : 0) + (uploadedFiles ? uploadedFiles.length : 0);
+            const totalCount = (existingPhotos ? existingPhotos.length : 0) + 
+                               (capturedPhotos ? capturedPhotos.length : 0) + 
+                               (uploadedFiles ? uploadedFiles.length : 0);
             if (badge) {
                 badge.textContent = `${totalCount} Lampiran`;
             }
@@ -2346,17 +2564,29 @@
                 return;
             }
 
+            // Display existing saved photos from server
+            if (existingPhotos && existingPhotos.length > 0) {
+                existingPhotos.forEach((photo, index) => {
+                    const card = createPhotoCard({ data: photo.url, name: `Foto Tersimpan ${index + 1}` }, 'existing', index);
+                    allImagesContainer.appendChild(card);
+                });
+            }
+
             // Display captured photos
-            capturedPhotos.forEach((photo, index) => {
-                const card = createPhotoCard(photo, 'capture', index);
-                allImagesContainer.appendChild(card);
-            });
+            if (capturedPhotos && capturedPhotos.length > 0) {
+                capturedPhotos.forEach((photo, index) => {
+                    const card = createPhotoCard(photo, 'capture', index);
+                    allImagesContainer.appendChild(card);
+                });
+            }
 
             // Display uploaded files
-            uploadedFiles.forEach((file, index) => {
-                const card = createPhotoCard(file, 'upload', index);
-                allImagesContainer.appendChild(card);
-            });
+            if (uploadedFiles && uploadedFiles.length > 0) {
+                uploadedFiles.forEach((file, index) => {
+                    const card = createPhotoCard(file, 'upload', index);
+                    allImagesContainer.appendChild(card);
+                });
+            }
         }
 
         function createPhotoCard(imageData, type, index) {
@@ -2365,18 +2595,33 @@
             
             const timeStr = imageData.timestamp ? 
                 new Date(imageData.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '';
-            const title = type === 'capture' ? 'Foto Kamera' : (imageData.name || 'Foto Galeri');
+            
+            let badgeClass = 'source-camera';
+            let badgeIcon = 'fa-camera';
+            let badgeLabel = 'Kamera';
+
+            if (type === 'upload') {
+                badgeClass = 'source-upload';
+                badgeIcon = 'fa-image';
+                badgeLabel = 'Galeri';
+            } else if (type === 'existing') {
+                badgeClass = 'source-existing';
+                badgeIcon = 'fa-cloud';
+                badgeLabel = 'Tersimpan';
+            }
+
+            const title = type === 'existing' ? (imageData.name || 'Foto Tersimpan') : (type === 'capture' ? 'Foto Kamera' : (imageData.name || 'Foto Galeri'));
 
             card.innerHTML = `
-                <img src="${imageData.data}" alt="${title}" loading="lazy">
-                <span class="photo-card-source ${type === 'capture' ? 'source-camera' : 'source-upload'}">
-                    <i class="fas ${type === 'capture' ? 'fa-camera' : 'fa-image'} me-1"></i>${type === 'capture' ? 'Kamera' : 'Galeri'}
+                <img src="${imageData.data}" alt="${title}" loading="lazy" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'40\\' height=\\'40\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'%2364748b\\' stroke-width=\\'1.5\\'><rect width=\\'18\\' height=\\'18\\' x=\\'3\\' y=\\'3\\' rx=\\'2\\'/><circle cx=\\'9\\' cy=\\'9\\' r=\\'2\\'/><path d=\\'m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\\'/></svg>';">
+                <span class="photo-card-source ${badgeClass}">
+                    <i class="fas ${badgeIcon} me-1"></i>${badgeLabel}
                 </span>
                 <button type="button" class="photo-card-delete" onclick="event.stopPropagation(); removeImage('${type}', ${index})" title="Hapus foto">
                     <i class="fas fa-times"></i>
                 </button>
                 <div class="photo-card-time">
-                    <i class="far fa-clock me-1"></i>${timeStr || 'Baru'}
+                    <i class="far fa-clock me-1"></i>${timeStr || (type === 'existing' ? 'Tersimpan' : 'Baru')}
                 </div>
             `;
 
@@ -2420,23 +2665,54 @@
                 stream.getTracks().forEach(track => track.stop());
             }
             
-            // Redirect to main dashboard
-            window.location.href = '/dashboard';
+            const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+            if (document.referrer && (document.referrer.includes('laporan') || document.referrer.includes('user-dashboard'))) {
+                window.history.back();
+            } else if (user.nip) {
+                window.location.href = `/laporan?nip=${user.nip}`;
+            } else {
+                window.location.href = '/dashboard';
+            }
         }
 
         async function saveDraft() {
-            const formData = new FormData(document.getElementById('detailKegiatanForm'));
-            formData.set('status', 'draft');
-            
-            // Add signatures if available
-            if (signatures.petugas) {
-                formData.append('signature_pelaksana', signatures.petugas);
-            }
-            if (signatures.kaUnit) {
-                formData.append('signature_pj', signatures.kaUnit);
+            const form = document.getElementById('detailKegiatanForm');
+            if (!form) return;
+
+            const jenisKegiatan = document.getElementById('jenisKegiatan')?.value;
+            const nip = document.getElementById('nip')?.value;
+            const unit = document.getElementById('unit')?.value;
+            const tanggalDibuat = document.getElementById('tanggalDibuat')?.value;
+
+            if (!jenisKegiatan || !nip) {
+                alert('Pilih Jenis Kegiatan dan pastikan NIP terisi.');
+                return;
             }
 
-            // Add signee names (free-typing)
+            const formData = new FormData();
+            formData.append('jenis_kegiatan', jenisKegiatan);
+            formData.append('nip', nip);
+            formData.append('unit', unit || '');
+            
+            if (tanggalDibuat) {
+                const date = new Date(tanggalDibuat);
+                if (!isNaN(date.getTime())) {
+                    const formattedDate = date.getFullYear() + '-' + 
+                        String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                        String(date.getDate()).padStart(2, '0') + ' ' +
+                        String(date.getHours()).padStart(2, '0') + ':' +
+                        String(date.getMinutes()).padStart(2, '0') + ':' +
+                        String(date.getSeconds()).padStart(2, '0');
+                    formData.append('tanggal_dibuat', formattedDate);
+                }
+            }
+
+            const hasilTemuan = document.getElementById('hasilTemuan')?.value || '';
+            if (hasilTemuan) formData.append('hasil_temuan', hasilTemuan);
+
+            if (signatures.petugas) formData.append('signature_pelaksana', signatures.petugas);
+            if (signatures.kaUnit) formData.append('signature_pj', signatures.kaUnit);
+
             const namaPetugas = document.getElementById('petugasNameInput')?.value?.trim() || '';
             if (namaPetugas) {
                 formData.append('nama_petugas', namaPetugas);
@@ -2448,112 +2724,61 @@
                 formData.append('nama_pj', namaKaUnit);
             }
 
-            // Add captured photos with validation
-            console.log('Captured photos count:', capturedPhotos.length);
-            capturedPhotos.forEach((photo, index) => {
-                if (photo.data) {
-                    formData.append(`captured_photos[${index}]`, photo.data);
-                }
-                console.log(`Adding captured photo ${index}:`, {
-                    hasData: !!photo.data,
-                    dataLength: photo.data ? photo.data.length : 0,
-                    timestamp: photo.timestamp
+            if (existingPhotos && existingPhotos.length > 0) {
+                existingPhotos.forEach((photo, index) => {
+                    formData.append(`existing_dokumentasi[${index}]`, photo.path);
                 });
-                formData.append(`captured_photos[${index}]`, photo.data);
-            });
-            
-            // Add uploaded files with validation
-            console.log('Uploaded files count:', uploadedFiles.length);
-            uploadedFiles.forEach((fileData, index) => {
-                if (fileData.file) {
-                    formData.append(`uploaded_files[${index}]`, fileData.file);
-                }
-                console.log(`Adding uploaded file ${index}:`, {
-                    hasFile: !!fileData.file,
-                    fileName: fileData.file ? fileData.file.name : 'unknown',
-                    fileSize: fileData.file ? fileData.file.size : 0
-                });
-                formData.append(`uploaded_files[${index}]`, fileData.file);
-            });
-            
-            try {
-                const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-                
-                if (!token) {
-                    alert('Session expired. Please login again.');
-                    window.location.href = '/login';
-                    return;
-                }
-                
-                console.log('Sending request to save draft...');
-                const response = await fetch('/api/detail-jenis-kegiatan', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json',
-                    },
-                    body: formData
-                });
-                
-                const result = await response.json();
-                console.log('Server response:', result);
-                
-                if (response.ok && result.success) {
-                    alert('Draft berhasil disimpan!');
-                    updateStatusBadge('draft');
-                } else {
-                    console.error('Save failed:', result);
-                    alert('Gagal menyimpan draft: ' + (result.message || 'Terjadi kesalahan'));
-                }
-            } catch (error) {
-                console.error('Network error:', error);
-                alert('Terjadi kesalahan jaringan: ' + error.message);
             }
-        }
 
-        async function saveDraft() {
-            const formData = new FormData(document.getElementById('detailKegiatanForm'));
-            formData.set('status', 'draft');
-            
-            // Add captured photos
-            capturedPhotos.forEach((photo, index) => {
-                formData.append(`captured_photos[${index}]`, photo.data);
-            });
-            
-            // Add uploaded files
-            uploadedFiles.forEach((fileData, index) => {
-                formData.append(`uploaded_files[${index}]`, fileData.file);
-            });
-            
+            if (capturedPhotos && capturedPhotos.length > 0) {
+                capturedPhotos.forEach((photo, index) => {
+                    if (photo.data) formData.append(`captured_photos[${index}]`, photo.data);
+                });
+            }
+
+            if (uploadedFiles && uploadedFiles.length > 0) {
+                uploadedFiles.forEach((fileData, index) => {
+                    if (fileData.file) formData.append(`uploaded_files[${index}]`, fileData.file);
+                });
+            }
+
+            formData.append('status', 'draft');
+
+            let apiUrl = '/api/detail-jenis-kegiatan';
+            if (isEditMode && editItemId) {
+                apiUrl = `/api/detail-jenis-kegiatan/${editItemId}`;
+                formData.append('_method', 'PUT');
+            }
+
             try {
                 const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-                
                 if (!token) {
                     alert('Session expired. Please login again.');
                     window.location.href = '/login';
                     return;
                 }
-                
-                const response = await fetch('/api/detail-jenis-kegiatan', {
+
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
                     body: formData
                 });
-                
+
                 const result = await response.json();
-                
                 if (response.ok && result.success) {
-                    alert('Draft berhasil disimpan!');
+                    try { sessionStorage.removeItem('editDetailData'); } catch(e) {}
+                    showNotification('Draft berhasil disimpan!', 'success');
                     updateStatusBadge('draft');
                 } else {
-                    alert('Gagal menyimpan draft: ' + (result.message || 'Terjadi kesalahan'));
+                    showNotification('Gagal menyimpan draft: ' + (result.message || 'Terjadi kesalahan'), 'error');
                 }
             } catch (error) {
                 console.error('Error saving draft:', error);
-                alert('Terjadi kesalahan saat menyimpan draft: ' + error.message);
+                showNotification('Terjadi kesalahan: ' + error.message, 'error');
             }
         }
 

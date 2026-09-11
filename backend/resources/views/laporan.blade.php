@@ -121,40 +121,66 @@
 
         /* Custom Desktop Table */
         .table-responsive {
-            border-radius: 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(11, 18, 33, 0.65);
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
             scrollbar-width: thin;
-            scrollbar-color: rgba(16, 185, 129, 0.3) rgba(15, 23, 42, 0.5);
+            scrollbar-color: rgba(16, 185, 129, 0.35) rgba(15, 23, 42, 0.6);
+        }
+
+        .table-responsive::-webkit-scrollbar {
+            height: 7px;
+        }
+
+        .table-responsive::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: rgba(16, 185, 129, 0.35);
+            border-radius: 8px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: rgba(16, 185, 129, 0.6);
         }
 
         #dataTable {
             width: 100%;
+            min-width: 1340px;
             border-collapse: separate;
             border-spacing: 0;
         }
 
         #dataTable th {
-            background: rgba(30, 41, 59, 0.85);
+            background: rgba(22, 32, 51, 0.95);
             color: #94a3b8;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
-            padding: 13px 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            letter-spacing: 0.05em;
+            padding: 13px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.09);
             white-space: nowrap;
         }
 
         #dataTable td {
-            padding: 15px;
+            padding: 13px 12px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             color: #e2e8f0;
-            font-size: 0.875rem;
+            font-size: 0.825rem;
             vertical-align: middle;
         }
 
-        #dataTable tr:hover td {
-            background: rgba(30, 41, 59, 0.45);
+        #dataTable tbody tr {
+            transition: background-color 0.15s ease;
+        }
+
+        #dataTable tbody tr:hover td {
+            background: rgba(30, 41, 59, 0.5);
         }
 
         /* Status Badges */
@@ -229,28 +255,38 @@
 
         /* Thumbnails */
         .signature-box {
-            background: rgba(255, 255, 255, 0.95);
+            background: #ffffff;
             border-radius: 8px;
-            padding: 3px 6px;
+            padding: 2px 5px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.25);
             transition: all 0.2s ease;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25);
             cursor: pointer;
+            width: 82px;
+            height: 38px;
+            overflow: hidden;
+        }
+
+        .signature-box img {
+            max-height: 32px;
+            max-width: 74px;
+            object-fit: contain;
         }
 
         .signature-box:hover {
-            transform: scale(1.04);
+            transform: scale(1.05);
             border-color: #10b981;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
         }
 
         .doc-thumb {
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             object-fit: cover;
-            border-radius: 7px;
+            border-radius: 8px;
             border: 1.5px solid rgba(255, 255, 255, 0.15);
             transition: all 0.2s ease;
             cursor: pointer;
@@ -706,17 +742,16 @@
                             <table id="dataTable">
                                 <thead>
                                     <tr>
-                                        <th style="width: 45px;" class="text-center">No</th>
-                                        <th>Jenis Kegiatan</th>
-                                        <th>NIP</th>
-                                        <th>Nama Pegawai</th>
-                                        <th>Unit</th>
-                                        <th>Tanggal Dibuat</th>
-                                        <th>Hasil Temuan</th>
-                                        <th class="text-center">Signature Pelaksana</th>
-                                        <th class="text-center">Signature PJ</th>
-                                        <th class="text-center">Dokumentasi</th>
-                                        <th class="text-center" style="width: 85px;">Aksi</th>
+                                        <th style="width: 50px;" class="text-center">No</th>
+                                        <th style="width: 190px;">Jenis Kegiatan</th>
+                                        <th style="width: 220px;">Pegawai &amp; NIP</th>
+                                        <th style="width: 130px;">Unit</th>
+                                        <th style="width: 135px;">Tanggal Dibuat</th>
+                                        <th style="width: 190px;">Hasil Temuan</th>
+                                        <th style="width: 130px;" class="text-center">Signature Pelaksana</th>
+                                        <th style="width: 130px;" class="text-center">Signature PJ</th>
+                                        <th style="width: 110px;" class="text-center">Dokumentasi</th>
+                                        <th style="width: 95px;" class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tableBody">
@@ -738,73 +773,77 @@
                                         @endphp
                                         <tr data-status="{{ $itemStatus }}" data-id="{{ $item->id }}">
                                             <!-- Col 0: No -->
-                                            <td class="text-center font-semibold text-slate-400">{{ $index + 1 }}</td>
+                                            <td class="text-center font-bold text-slate-400 text-xs">{{ $index + 1 }}</td>
 
                                             <!-- Col 1: Jenis Kegiatan -->
                                             <td>
-                                                <div class="font-semibold text-white mb-1.5">{{ $item->jenis_kegiatan ?? '-' }}</div>
-                                                <span class="status-badge status-{{ $itemStatus }}">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
-                                                    {{ $statusLabel }}
+                                                <div class="font-semibold text-white text-xs leading-snug">{{ $item->jenis_kegiatan ?? '-' }}</div>
+                                                <div class="mt-1.5">
+                                                    <span class="status-badge status-{{ $itemStatus }}">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                                                        {{ $statusLabel }}
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            <!-- Col 2: Pegawai & NIP (Digabung 1 Kolom) -->
+                                            <td>
+                                                <div class="font-semibold text-slate-100 text-xs leading-snug">{{ $creatorName }}</div>
+                                                <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded bg-slate-800/90 text-slate-300 border border-slate-700 font-mono text-[11px] font-semibold tracking-wider whitespace-nowrap">
+                                                        {{ $item->nip ?? '-' }}
+                                                    </span>
+                                                    <span class="text-[11px] text-slate-400 truncate flex items-center gap-1" title="{{ $currentUser->instansi ?? 'RSUD' }}">
+                                                        <i class="far fa-hospital text-[10px] text-emerald-400/80 shrink-0"></i>
+                                                        {{ $currentUser->instansi ?? 'RSUD' }}
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            <!-- Col 3: Unit -->
+                                            <td>
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-teal-500/10 text-teal-300 border border-teal-500/20 text-xs font-medium whitespace-nowrap">
+                                                    <i class="fas fa-door-open text-[10px]"></i>{{ $item->unit ?? '-' }}
                                                 </span>
                                             </td>
 
-                                            <!-- Col 2: NIP -->
+                                            <!-- Col 4: Tanggal Dibuat -->
                                             <td>
-                                                <span class="font-mono text-xs px-2 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">
-                                                    {{ $item->nip ?? '-' }}
-                                                </span>
-                                            </td>
-
-                                            <!-- Col 3: Nama -->
-                                            <td>
-                                                <div class="font-medium text-slate-200">{{ $creatorName }}</div>
-                                                <div class="text-xs text-slate-400">{{ $currentUser->instansi ?? 'RSUD' }}</div>
-                                            </td>
-
-                                            <!-- Col 4: Unit -->
-                                            <td>
-                                                <span class="px-2.5 py-1 rounded-lg bg-teal-500/10 text-teal-300 border border-teal-500/20 text-xs font-medium">
-                                                    <i class="fas fa-door-open mr-1 text-[10px]"></i>{{ $item->unit ?? '-' }}
-                                                </span>
-                                            </td>
-
-                                            <!-- Col 5: Tanggal Dibuat -->
-                                            <td>
-                                                <div class="text-xs text-slate-300 flex items-center gap-1.5">
-                                                    <i class="far fa-calendar-alt text-emerald-400"></i>
+                                                <div class="text-xs text-slate-200 font-medium flex items-center gap-1.5 whitespace-nowrap">
+                                                    <i class="far fa-calendar-alt text-emerald-400 text-[11px]"></i>
                                                     {{ $item->tanggal_dibuat ? \Carbon\Carbon::parse($item->tanggal_dibuat)->format('d/m/Y') : '-' }}
                                                 </div>
-                                                <div class="text-[11px] text-slate-500 mt-0.5 flex items-center gap-1.5">
-                                                    <i class="far fa-clock"></i>
+                                                <div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5 whitespace-nowrap">
+                                                    <i class="far fa-clock text-slate-500 text-[10px]"></i>
                                                     {{ $item->tanggal_dibuat ? \Carbon\Carbon::parse($item->tanggal_dibuat)->format('H:i') : '' }} WIB
                                                 </div>
                                             </td>
 
-                                            <!-- Col 6: Hasil Temuan -->
+                                            <!-- Col 5: Hasil Temuan -->
                                             <td>
                                                 @if($item->hasil_temuan)
-                                                    <div class="max-w-[180px] truncate text-slate-300 text-xs cursor-pointer hover:text-emerald-300 transition-colors" 
-                                                         title="{{ $item->hasil_temuan }}"
+                                                    <div class="text-xs text-slate-300 leading-relaxed max-w-[180px] break-words line-clamp-2 cursor-pointer hover:text-emerald-300 transition-colors" 
+                                                         title="{{ $item->hasil_temuan }}" 
                                                          onclick="viewDetail({{ $item->id }})">
-                                                        {{ Str::limit($item->hasil_temuan, 45) }}
+                                                        {{ $item->hasil_temuan }}
                                                     </div>
                                                 @else
                                                     <span class="text-slate-500 text-xs italic">Tidak ada catatan</span>
                                                 @endif
                                             </td>
 
-                                            <!-- Col 7: Signature Pelaksana -->
+                                            <!-- Col 6: Signature Pelaksana -->
                                             <td class="text-center">
                                                 @if($sigPelaksana)
-                                                    <div class="flex flex-col items-center gap-1">
+                                                    <div class="flex flex-col items-center justify-center gap-1.5">
                                                         <div class="signature-box" 
-                                                             onclick="showImageModal('{{ $sigPelaksana }}', 'Tanda Tangan Pelaksana - {{ $item->nama_pelaksana ?? $creatorName }}')">
-                                                            <img src="{{ $sigPelaksana }}" alt="Tanda Tangan Pelaksana" style="max-height: 42px; max-width: 80px;">
+                                                             onclick="showImageModal('{{ $sigPelaksana }}', 'Tanda Tangan Pelaksana - {{ $item->nama_pelaksana ?? $creatorName }}')"
+                                                             title="Klik untuk memperbesar">
+                                                            <img src="{{ $sigPelaksana }}" alt="Tanda Tangan Pelaksana">
                                                         </div>
-                                                        <span class="text-[11px] font-medium text-slate-300 flex items-center gap-1">
-                                                            <i class="fas fa-user-check text-emerald-400 text-[10px]"></i>
-                                                            {{ $item->nama_pelaksana ?? $creatorName }}
+                                                        <span class="text-[11px] font-medium text-slate-300 flex items-center justify-center gap-1 max-w-[120px] truncate" title="{{ $item->nama_pelaksana ?? $creatorName }}">
+                                                            <i class="fas fa-user-check text-emerald-400 text-[9px] shrink-0"></i>
+                                                            <span class="truncate">{{ $item->nama_pelaksana ?? $creatorName }}</span>
                                                         </span>
                                                     </div>
                                                 @else
@@ -812,17 +851,18 @@
                                                 @endif
                                             </td>
 
-                                            <!-- Col 8: Signature PJ -->
+                                            <!-- Col 7: Signature PJ -->
                                             <td class="text-center">
                                                 @if($sigPJ)
-                                                    <div class="flex flex-col items-center gap-1">
+                                                    <div class="flex flex-col items-center justify-center gap-1.5">
                                                         <div class="signature-box" 
-                                                             onclick="showImageModal('{{ $sigPJ }}', 'Tanda Tangan Penanggung Jawab - {{ $item->nama_pj ?? 'Penanggung Jawab' }}')">
-                                                            <img src="{{ $sigPJ }}" alt="Tanda Tangan PJ" style="max-height: 42px; max-width: 80px;">
+                                                             onclick="showImageModal('{{ $sigPJ }}', 'Tanda Tangan Penanggung Jawab - {{ $item->nama_pj ?? 'Penanggung Jawab' }}')"
+                                                             title="Klik untuk memperbesar">
+                                                            <img src="{{ $sigPJ }}" alt="Tanda Tangan PJ">
                                                         </div>
-                                                        <span class="text-[11px] font-medium text-slate-300 flex items-center gap-1">
-                                                            <i class="fas fa-user-shield text-cyan-400 text-[10px]"></i>
-                                                            {{ $item->nama_pj ?? 'PJ' }}
+                                                        <span class="text-[11px] font-medium text-slate-300 flex items-center justify-center gap-1 max-w-[120px] truncate" title="{{ $item->nama_pj ?? 'PJ' }}">
+                                                            <i class="fas fa-user-shield text-cyan-400 text-[9px] shrink-0"></i>
+                                                            <span class="truncate">{{ $item->nama_pj ?? 'PJ' }}</span>
                                                         </span>
                                                     </div>
                                                 @else
@@ -830,46 +870,48 @@
                                                 @endif
                                             </td>
 
-                                            <!-- Col 9: Dokumentasi -->
+                                            <!-- Col 8: Dokumentasi -->
                                             <td class="text-center">
                                                 @if($item->dokumentasi && is_array($item->dokumentasi) && count($item->dokumentasi) > 0)
-                                                    <div class="flex items-center justify-center gap-1.5 flex-wrap max-w-[120px] mx-auto">
-                                                        @foreach(array_slice($item->dokumentasi, 0, 2) as $docIdx => $doc)
-                                                            @php
-                                                                $imgSrc = $doc;
-                                                                if (!str_starts_with($imgSrc, 'http://') && !str_starts_with($imgSrc, 'https://') && !str_starts_with($imgSrc, 'data:')) {
-                                                                    $cleanDoc = ltrim($imgSrc, '/');
-                                                                    if (!str_starts_with($cleanDoc, 'storage/')) {
-                                                                        $cleanDoc = 'storage/' . $cleanDoc;
+                                                    <div class="flex flex-col items-center justify-center gap-1">
+                                                        <div class="flex items-center justify-center gap-1.5 flex-wrap">
+                                                            @foreach(array_slice($item->dokumentasi, 0, 2) as $docIdx => $doc)
+                                                                @php
+                                                                    $imgSrc = $doc;
+                                                                    if (!str_starts_with($imgSrc, 'http://') && !str_starts_with($imgSrc, 'https://') && !str_starts_with($imgSrc, 'data:')) {
+                                                                        $cleanDoc = ltrim($imgSrc, '/');
+                                                                        if (!str_starts_with($cleanDoc, 'storage/')) {
+                                                                            $cleanDoc = 'storage/' . $cleanDoc;
+                                                                        }
+                                                                        $imgSrc = asset($cleanDoc);
                                                                     }
-                                                                    $imgSrc = asset($cleanDoc);
-                                                                }
-                                                            @endphp
-                                                            <img src="{{ $imgSrc }}" 
-                                                                 alt="Dokumentasi {{ $docIdx + 1 }}" 
-                                                                 class="doc-thumb"
-                                                                 onclick="showImageModal('{{ $imgSrc }}', 'Dokumentasi {{ $docIdx + 1 }} - {{ $item->jenis_kegiatan }}')"
-                                                                 onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'40\' height=\'40\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'1.5\'><rect width=\'18\' height=\'18\' x=\'3\' y=\'3\' rx=\'2\'/><circle cx=\'9\' cy=\'9\' r=\'2\'/><path d=\'m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\'/></svg>';"
-                                                                 title="Klik untuk memperbesar">
-                                                        @endforeach
-                                                        @if(count($item->dokumentasi) > 2)
-                                                            <button type="button" 
-                                                                    onclick="viewDetail({{ $item->id }})" 
-                                                                    class="w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-emerald-400 text-xs font-bold transition-colors"
-                                                                    title="Lihat semua foto">
-                                                                +{{ count($item->dokumentasi) - 2 }}
-                                                            </button>
-                                                        @endif
+                                                                @endphp
+                                                                <img src="{{ $imgSrc }}" 
+                                                                     alt="Dokumentasi {{ $docIdx + 1 }}" 
+                                                                     class="doc-thumb"
+                                                                     onclick="showImageModal('{{ $imgSrc }}', 'Dokumentasi {{ $docIdx + 1 }} - {{ $item->jenis_kegiatan }}')"
+                                                                     onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'38\' height=\'38\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'1.5\'><rect width=\'18\' height=\'18\' x=\'3\' y=\'3\' rx=\'2\'/><circle cx=\'9\' cy=\'9\' r=\'2\'/><path d=\'m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21\'/></svg>';"
+                                                                     title="Klik untuk memperbesar">
+                                                            @endforeach
+                                                            @if(count($item->dokumentasi) > 2)
+                                                                <button type="button" 
+                                                                        onclick="viewDetail({{ $item->id }})" 
+                                                                        class="w-9 h-9 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-emerald-400 text-xs font-bold transition-colors"
+                                                                        title="Lihat semua foto">
+                                                                    +{{ count($item->dokumentasi) - 2 }}
+                                                                </button>
+                                                            @endif
+                                                        </div>
+                                                        <div class="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap font-medium">{{ count($item->dokumentasi) }} file(s)</div>
                                                     </div>
-                                                    <div class="text-[10px] text-slate-400 mt-1">{{ count($item->dokumentasi) }} file(s)</div>
                                                 @else
                                                     <span class="text-xs text-slate-500 italic">Tidak ada foto</span>
                                                 @endif
                                             </td>
 
-                                            <!-- Col 10: Aksi -->
+                                            <!-- Col 9: Aksi -->
                                             <td class="text-center">
-                                                <div class="flex items-center justify-center gap-1.5">
+                                                <div class="flex items-center justify-center gap-1.5 whitespace-nowrap">
                                                     <button type="button" 
                                                             class="btn-action btn-action-view" 
                                                             onclick="viewDetail({{ $item->id }})" 
@@ -887,7 +929,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="11" class="text-center py-12">
+                                            <td colspan="10" class="text-center py-12">
                                                 <div class="w-14 h-14 mx-auto rounded-2xl bg-slate-800/80 border border-slate-700 text-slate-500 flex items-center justify-center text-xl mb-3">
                                                     <i class="fas fa-inbox"></i>
                                                 </div>
@@ -1154,7 +1196,10 @@
                     </div>
 
                 </div>
-                <div class="modal-footer border-t border-slate-700/80 px-5 py-3 flex justify-end">
+                <div class="modal-footer border-t border-slate-700/80 px-5 py-3 flex justify-between items-center">
+                    <button type="button" id="btnEditFromModal" class="px-4 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 text-xs font-semibold transition-colors flex items-center gap-1.5" onclick="editCurrentModalItem()">
+                        <i class="fas fa-edit"></i> Edit Kegiatan
+                    </button>
                     <button type="button" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors" data-bs-dismiss="modal">
                         Tutup
                     </button>
@@ -1273,7 +1318,7 @@
                 const rowStatus = (row.getAttribute('data-status') || '').toLowerCase();
                 
                 let rowMatchesDate = true;
-                const dateCell = row.cells[5];
+                const dateCell = row.cells[4];
                 if (dateCell && (startDate || endDate)) {
                     const dateText = dateCell.textContent.trim();
                     try {
@@ -1424,7 +1469,7 @@
                 const noDataRow = document.createElement('tr');
                 noDataRow.id = 'noDataRow';
                 noDataRow.innerHTML = `
-                    <td colspan="11" class="text-center py-10">
+                    <td colspan="10" class="text-center py-10">
                         <div class="w-12 h-12 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center mx-auto mb-2 text-xl">
                             <i class="fas fa-search"></i>
                         </div>
@@ -1473,8 +1518,11 @@
             }
         }
 
+        let currentModalDetailId = null;
+
         // View Detail Drill-Down Modal
         function viewDetail(id) {
+            currentModalDetailId = id;
             const item = rawItemsData[id];
             if (!item) return;
 
@@ -1561,19 +1609,34 @@
             }
         }
 
+        // Edit Item from inside modal
+        function editCurrentModalItem() {
+            if (currentModalDetailId) {
+                editItem(currentModalDetailId);
+            }
+        }
+
         // Edit / Continue Item
         function editItem(id) {
             const item = rawItemsData[id];
             if (!item) return;
 
+            // Store full item in sessionStorage so all fields, signatures, photos, unit, etc are instantly pre-filled
+            try {
+                sessionStorage.setItem('editDetailData', JSON.stringify(item));
+            } catch (e) {
+                console.error('Failed to save editDetailData to sessionStorage', e);
+            }
+
             const payload = encodeURIComponent(JSON.stringify({
                 id: item.id,
                 jenis_kegiatan: item.jenis_kegiatan,
                 nip: item.nip,
+                unit: item.unit,
                 golongan: '{{ $currentUser->golongan ?? "III/a" }}'
             }));
 
-            window.location.href = `/jenis-kegiatan/detail?data=${payload}`;
+            window.location.href = `/jenis-kegiatan/detail?id=${item.id}&edit=true&data=${payload}`;
         }
 
         // Image Base64 Converter for PDF Export
@@ -1691,10 +1754,10 @@
                     }
                     
                     const cells = row.cells;
-                    if (cells.length >= 10) {
-                        const signaturePelaksanaImg = cells[7].querySelector('img');
-                        const signaturePJImg = cells[8].querySelector('img');
-                        const dokumentasiImgs = cells[9].querySelectorAll('img');
+                    if (cells.length >= 9) {
+                        const signaturePelaksanaImg = cells[6].querySelector('img');
+                        const signaturePJImg = cells[7].querySelector('img');
+                        const dokumentasiImgs = cells[8].querySelectorAll('img');
                         
                         const sigPelaksanaData = signaturePelaksanaImg ? await getImageAsBase64(signaturePelaksanaImg) : '';
                         const sigPJData = signaturePJImg ? await getImageAsBase64(signaturePJImg) : '';
@@ -1710,15 +1773,15 @@
 
                         processedRows.push({
                             no: no++,
-                            tanggalDibuat: cells[5].textContent.replace(/\s+/g, ' ').trim(),
+                            tanggalDibuat: cells[4].textContent.replace(/\s+/g, ' ').trim(),
                             jenisKegiatan: `${jenisKegiatanText} [${statusText}]`,
-                            unit: cells[4].textContent.replace(/\s+/g, ' ').trim(),
-                            hasilTemuan: cells[6].textContent.replace(/\s+/g, ' ').trim(),
+                            unit: cells[3].textContent.replace(/\s+/g, ' ').trim(),
+                            hasilTemuan: cells[5].textContent.replace(/\s+/g, ' ').trim(),
                             signaturePelaksanaData: sigPelaksanaData,
                             signaturePJData: sigPJData,
                             dokumentasiData: docImagesData,
-                            namaPelaksana: cells[7].querySelector('span') ? cells[7].querySelector('span').textContent.trim() : '',
-                            namaPJ: cells[8].querySelector('span') ? cells[8].querySelector('span').textContent.trim() : ''
+                            namaPelaksana: cells[6].querySelector('span') ? cells[6].querySelector('span').textContent.trim() : '',
+                            namaPJ: cells[7].querySelector('span') ? cells[7].querySelector('span').textContent.trim() : ''
                         });
                     }
                 }

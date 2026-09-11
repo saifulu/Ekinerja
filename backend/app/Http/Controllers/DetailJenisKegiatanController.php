@@ -82,7 +82,10 @@ class DetailJenisKegiatanController extends Controller
         }
     
         try {
-            $user = Auth::user();
+            $user = Auth::user() ?: $request->user() ?: Auth::guard('web')->user();
+            if (!$user && $request->nip) {
+                $user = \App\Models\User::where('nip', $request->nip)->first();
+            }
             if (!$user) {
                 return response()->json([
                     'success' => false,
@@ -231,13 +234,17 @@ class DetailJenisKegiatanController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id): JsonResponse
+    public function show(Request $request, string $id): JsonResponse
     {
-        $user = Auth::user();
+        $user = Auth::user() ?: $request->user() ?: Auth::guard('web')->user();
+        if (!$user && $request->nip) {
+            $user = \App\Models\User::where('nip', $request->nip)->first();
+        }
+
         $query = DetailJenisKegiatan::with(['creator', 'user']);
 
         // Jika bukan admin, hanya bisa melihat data milik sendiri
-        if ($user->role !== 'admin') {
+        if ($user && $user->role !== 'admin') {
             $query->where('nip', $user->nip);
         }
 
@@ -254,6 +261,12 @@ class DetailJenisKegiatanController extends Controller
      */
     public function update(Request $request, string $id): JsonResponse
     {
+        \Log::info('Update request received', [
+            'id' => $id,
+            'all_data' => $request->all(),
+            'files' => $request->allFiles()
+        ]);
+
         $validator = Validator::make($request->all(), [
             'jenis_kegiatan' => 'sometimes|required|string|max:255',
             'nip' => 'sometimes|required|string|max:255',
@@ -266,11 +279,18 @@ class DetailJenisKegiatanController extends Controller
             'nama_pj' => 'nullable|string|max:255',
             'nama_petugas' => 'nullable|string|max:255',
             'nama_ka_unit' => 'nullable|string|max:255',
-            'dokumentasi' => 'nullable|array',
+            'captured_photos.*' => 'nullable|string',
+            'uploaded_files.*' => 'nullable|file|mimes:jpeg,png,jpg,pdf,doc,docx|max:10240',
+            'existing_dokumentasi' => 'nullable|array',
+            'existing_dokumentasi.*' => 'nullable|string',
             'status' => 'nullable|in:draft,submitted,approved,rejected'
         ]);
 
         if ($validator->fails()) {
+            \Log::error('Update validation failed', [
+                'errors' => $validator->errors()->toArray(),
+                'input' => $request->all()
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
@@ -278,34 +298,129 @@ class DetailJenisKegiatanController extends Controller
             ], 422);
         }
 
-        $user = Auth::user();
-        $query = DetailJenisKegiatan::query();
+        $user = Auth::user() ?: $request->user() ?: Auth::guard('web')->user();
+        if (!$user && $request->nip) {
+            $user = \App\Models\User::where('nip', $request->nip)->first();
+        }
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not authenticated'
+            ], 401);
+        }
+
+        $detailKegiatan = DetailJenisKegiatan::findOrFail($id);
 
         // Jika bukan admin, hanya bisa update data milik sendiri
-        if ($user->role !== 'admin') {
-            $query->where('nip', $user->nip);
+        if ($user->role !== 'admin' && $detailKegiatan->nip !== $user->nip && $detailKegiatan->created_by !== $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak memiliki hak untuk mengubah data ini'
+            ], 403);
         }
 
-        $detailKegiatan = $query->findOrFail($id);
-        
         $updateFields = [
             'jenis_kegiatan', 'nip', 'unit', 'tanggal_dibuat',
-            'hasil_temuan', 'signature_pelaksana', 'signature_pj',
-            'dokumentasi', 'status'
+            'hasil_temuan', 'signature_pelaksana', 'signature_pj', 'status'
         ];
+        
+        $updateData = [];
+        foreach ($updateFields as $field) {
+            if ($request->has($field)) {
+                $updateData[$field] = $request->input($field);
+            }
+        }
+
         if (\Illuminate\Support\Facades\Schema::hasColumn('detail_jenis_kegiatan', 'nama_pelaksana')) {
-            $updateFields[] = 'nama_pelaksana';
+            if ($request->has('nama_pelaksana')) {
+                $updateData['nama_pelaksana'] = $request->input('nama_pelaksana');
+            } elseif ($request->has('nama_petugas')) {
+                $updateData['nama_pelaksana'] = $request->input('nama_petugas');
+            }
         }
+
         if (\Illuminate\Support\Facades\Schema::hasColumn('detail_jenis_kegiatan', 'nama_pj')) {
-            $updateFields[] = 'nama_pj';
+            if ($request->has('nama_pj')) {
+                $updateData['nama_pj'] = $request->input('nama_pj');
+            } elseif ($request->has('nama_ka_unit')) {
+                $updateData['nama_pj'] = $request->input('nama_ka_unit');
+            }
         }
-        $updateData = $request->only($updateFields);
-        if ($request->has('nama_petugas') && !isset($updateData['nama_pelaksana']) && \Illuminate\Support\Facades\Schema::hasColumn('detail_jenis_kegiatan', 'nama_pelaksana')) {
-            $updateData['nama_pelaksana'] = $request->nama_petugas;
+
+        // Handle Documentation (Existing + New Captured + New Uploaded)
+        $dokumentasiPaths = [];
+        if ($request->has('existing_dokumentasi')) {
+            $existing = $request->input('existing_dokumentasi');
+            if (is_array($existing)) {
+                $dokumentasiPaths = array_values(array_filter($existing));
+            }
+        } elseif (!$request->has('captured_photos') && !$request->hasFile('uploaded_files')) {
+            $dokumentasiPaths = $detailKegiatan->dokumentasi ?? [];
+        } else {
+            $dokumentasiPaths = $detailKegiatan->dokumentasi ?? [];
         }
-        if ($request->has('nama_ka_unit') && !isset($updateData['nama_pj']) && \Illuminate\Support\Facades\Schema::hasColumn('detail_jenis_kegiatan', 'nama_pj')) {
-            $updateData['nama_pj'] = $request->nama_ka_unit;
+
+        $nipFolder = $detailKegiatan->nip ?: ($user->nip ?? 'unknown');
+
+        // Process captured photos (base64)
+        if ($request->has('captured_photos')) {
+            foreach ($request->captured_photos as $index => $base64Image) {
+                if (!empty($base64Image)) {
+                    try {
+                        $imageData = preg_replace('/^data:image\/\w+;base64,/', '', $base64Image);
+                        $imageData = base64_decode($imageData);
+                        
+                        if ($imageData === false) {
+                            \Log::warning('Failed to decode base64 image on update', ['index' => $index]);
+                            continue;
+                        }
+                        
+                        $fileName = 'captured_' . time() . '_' . $index . '.jpg';
+                        $filePath = 'dokumentasi/' . $nipFolder . '/' . date('Y/m') . '/' . $fileName;
+                        
+                        $directory = dirname($filePath);
+                        if (!Storage::disk('public')->exists($directory)) {
+                            Storage::disk('public')->makeDirectory($directory, 0755, true);
+                        }
+                        
+                        $saved = Storage::disk('public')->put($filePath, $imageData);
+                        if ($saved) {
+                            $dokumentasiPaths[] = $filePath;
+                            \Log::info('Captured photo saved on update', ['path' => $filePath]);
+                        }
+                    } catch (\Exception $e) {
+                        \Log::error('Error processing captured photo on update', ['error' => $e->getMessage()]);
+                    }
+                }
+            }
         }
+
+        // Process uploaded files
+        if ($request->hasFile('uploaded_files')) {
+            foreach ($request->file('uploaded_files') as $file) {
+                try {
+                    if (!$file->isValid()) continue;
+                    
+                    $fileName = time() . '_' . $file->getClientOriginalName();
+                    $directory = 'dokumentasi/' . $nipFolder . '/' . date('Y/m');
+                    
+                    if (!Storage::disk('public')->exists($directory)) {
+                        Storage::disk('public')->makeDirectory($directory, 0755, true);
+                    }
+                    
+                    $filePath = $file->storeAs($directory, $fileName, 'public');
+                    if ($filePath) {
+                        $dokumentasiPaths[] = $filePath;
+                        \Log::info('Uploaded file saved on update', ['path' => $filePath]);
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Error processing uploaded file on update', ['error' => $e->getMessage()]);
+                }
+            }
+        }
+
+        $updateData['dokumentasi'] = $dokumentasiPaths;
 
         $detailKegiatan->update($updateData);
 
@@ -315,6 +430,7 @@ class DetailJenisKegiatanController extends Controller
             'data' => $detailKegiatan->load(['creator', 'user'])
         ]);
     }
+
 
     /**
      * Remove the specified resource from storage.

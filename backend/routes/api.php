@@ -46,7 +46,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Detail Jenis Kegiatan routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('detail-jenis-kegiatan', DetailJenisKegiatanController::class);
     Route::get('detail-jenis-kegiatan/units', [DetailJenisKegiatanController::class, 'getUnits']);
+    Route::post('detail-jenis-kegiatan/{id}', [DetailJenisKegiatanController::class, 'update']);
+    Route::apiResource('detail-jenis-kegiatan', DetailJenisKegiatanController::class);
 });
 
