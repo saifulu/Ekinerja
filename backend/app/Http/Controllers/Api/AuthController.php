@@ -15,7 +15,6 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
             'name' => 'required|string|max:255|regex:/^[a-zA-Z\s.,\'\-]+$/u',
             'email' => 'required|string|email:rfc,dns|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/',
@@ -28,7 +27,6 @@ class AuthController extends Controller
             'role' => 'sometimes|in:admin,user'
         ], [
             'password.regex' => 'Password harus mengandung minimal 1 huruf kecil, 1 huruf besar, 1 angka, dan 1 karakter khusus',
-            'name.regex' => 'Nama hanya boleh mengandung huruf dan spasi',
             'name.regex' => 'Nama hanya boleh mengandung huruf, spasi, titik, koma, tanda hubung, atau petik',
             'phone.regex' => 'Nomor telepon hanya boleh mengandung angka, +, -, dan spasi',
             'nip.regex' => 'NIP hanya boleh mengandung angka'

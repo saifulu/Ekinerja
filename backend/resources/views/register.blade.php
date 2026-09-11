@@ -547,7 +547,6 @@
                 nip: formData.get('nip')?.trim(),
                 golongan: formData.get('golongan'),
                 instansi: formData.get('instansi')?.trim(),
-                ruangan: formData.get('ruangan')?.trim()
                 ruangan: formData.get('ruangan')?.trim(),
                 google_id: formData.get('google_id') || null
             };
