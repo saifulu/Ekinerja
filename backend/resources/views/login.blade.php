@@ -5,18 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Login - e-Kinerja</title>
     
-    <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#064e3b">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="e-Kinerja">
+    <!-- PWA Meta Tags & Manifest -->
+    @include('partials.pwa-head')
     <meta name="description" content="Login ke aplikasi e-Kinerja - Sistem Manajemen Kinerja">
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json">
-    
-    <!-- Apple Touch Icons -->
-    <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -266,34 +257,6 @@
     <!-- Bottom Spacer -->
     <div class="hidden sm:block"></div>
 
-    <!-- PWA Install Button -->
-    <button id="pwaInstallBtn" class="pwa-install-btn">
-        <i class="fas fa-download"></i>
-        <span>Install App</span>
-    </button>
-
-    <!-- PWA Install Modal -->
-    <div id="pwaInstallModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="glass-effect rounded-2xl p-6 max-w-sm w-full border border-emerald-500/25 text-white shadow-2xl">
-            <div class="text-center">
-                <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto mb-3">
-                    <i class="fas fa-mobile-alt text-xl"></i>
-                </div>
-                <h3 class="text-base font-bold mb-1.5 text-white">Install e-Kinerja</h3>
-                <p class="text-slate-400 text-xs mb-5">Install aplikasi ini di perangkat Anda untuk akses yang lebih cepat dan mudah.</p>
-                <div class="flex space-x-3">
-                    <button id="installCancel" class="flex-1 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-xl text-slate-300 text-xs font-semibold transition-colors">
-                        Batal
-                    </button>
-                    <button id="installConfirm" class="flex-1 px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl text-xs font-semibold shadow-md shadow-emerald-500/20 transition-colors flex items-center justify-center gap-1.5">
-                        <i class="fas fa-download text-xs"></i>
-                        <span>Install</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         function togglePassword() {
             const passwordInput = document.getElementById('password');
@@ -382,74 +345,8 @@
                 loginSpinner.classList.add('hidden');
             }
         });
-        
-        // PWA Install Functionality
-        let deferredPrompt;
-        const pwaInstallBtn = document.getElementById('pwaInstallBtn');
-        const pwaInstallModal = document.getElementById('pwaInstallModal');
-        const installCancel = document.getElementById('installCancel');
-        const installConfirm = document.getElementById('installConfirm');
-        
-        // Register service worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => console.log('SW registered:', registration))
-                .catch(error => console.log('SW registration failed:', error));
-        }
-        
-        // Listen for beforeinstallprompt event
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            if (pwaInstallBtn) {
-                pwaInstallBtn.classList.add('show');
-                pwaInstallBtn.style.display = 'flex';
-            }
-        });
-        
-        // Check if app is already installed
-        window.addEventListener('appinstalled', () => {
-            if (pwaInstallBtn) {
-                pwaInstallBtn.classList.remove('show');
-                pwaInstallBtn.style.display = 'none';
-            }
-        });
-        
-        // Handle install button click
-        if (pwaInstallBtn) {
-            pwaInstallBtn.addEventListener('click', () => {
-                if (pwaInstallModal) pwaInstallModal.classList.remove('hidden');
-            });
-        }
-        
-        // Handle modal cancel
-        if (installCancel) {
-            installCancel.addEventListener('click', () => {
-                if (pwaInstallModal) pwaInstallModal.classList.add('hidden');
-            });
-        }
-        
-        // Handle modal confirm
-        if (installConfirm) {
-            installConfirm.addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    deferredPrompt = null;
-                    if (pwaInstallModal) pwaInstallModal.classList.add('hidden');
-                    
-                    if (outcome === 'accepted' && pwaInstallBtn) {
-                        pwaInstallBtn.classList.remove('show');
-                        pwaInstallBtn.style.display = 'none';
-                    }
-                }
-            });
-        }
-        
-        // Hide install button if app is in standalone mode
-        if (window.matchMedia('(display-mode: standalone)').matches && pwaInstallBtn) {
-            pwaInstallBtn.style.display = 'none';
-        }
     </script>
+
+    @include('partials.pwa-prompt')
 </body>
 </html>

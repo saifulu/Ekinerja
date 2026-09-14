@@ -5,17 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Daftar Akun Baru - e-Kinerja</title>
-    
-    <!-- PWA Meta Tags -->
-    <meta name="theme-color" content="#064e3b">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="e-Kinerja">
+    @include('partials.pwa-head')
     <meta name="description" content="Pendaftaran Akun Baru Pegawai - Sistem Manajemen Kinerja">
-    
-    <!-- PWA Manifest & Icons -->
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/icons/icon-152x152.png">
     
     <!-- Tailwind CSS & Vite -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -656,6 +647,7 @@
             messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
     </script>
+    @include('partials.pwa-prompt')
 </body>
 </html>
 
