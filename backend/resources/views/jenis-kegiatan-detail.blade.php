@@ -2230,17 +2230,41 @@
                     }
                 } else if (dataParam) {
                     // New entry with prefill from URL
+                    let urlData = null;
                     try {
                         const data = JSON.parse(decodeURIComponent(dataParam));
                         if (data.jenis_kegiatan) {
                             document.getElementById('jenisKegiatan').value = data.jenis_kegiatan;
+                        urlData = JSON.parse(dataParam);
+                    } catch (e1) {
+                        try {
+                            urlData = JSON.parse(decodeURIComponent(dataParam));
+                        } catch (e2) {
+                            console.error('Error parsing URL data:', e2);
                         }
                         if (data.nip) {
                             document.getElementById('nip').value = data.nip;
+                    }
+                    if (urlData) {
+                        if (urlData.jenis_kegiatan) {
+                            document.getElementById('jenisKegiatan').value = urlData.jenis_kegiatan;
                         }
                     } catch (error) {
                         console.error('Error parsing URL data:', error);
+                        if (urlData.nip) {
+                            document.getElementById('nip').value = urlData.nip;
+                        }
                     }
+                }
+
+                // Check direct query parameters as fallback
+                const directJenis = urlParams.get('jenis_kegiatan') || urlParams.get('jenisKegiatan');
+                if (directJenis && !document.getElementById('jenisKegiatan').value) {
+                    document.getElementById('jenisKegiatan').value = directJenis;
+                }
+                const directNip = urlParams.get('nip');
+                if (directNip && !document.getElementById('nip').value) {
+                    document.getElementById('nip').value = directNip;
                 }
 
                 // If Edit Mode with data, populate everything!
@@ -2363,6 +2387,26 @@
                     if (petugasNameInput && !petugasNameInput.value) {
                         petugasNameInput.value = user.nama || user.name || '';
                     }
+                }
+
+                // Pastikan Tanggal Kegiatan selalu terisi
+                const tglEl = document.getElementById('tanggalDibuat');
+                if (tglEl && !tglEl.value) {
+                    const now = new Date();
+                    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                    tglEl.value = now.toISOString().slice(0, 16);
+                }
+
+                // Pastikan Nama Petugas otomatis terisi dari profil user
+                const petugasInput = document.getElementById('petugasNameInput');
+                if (petugasInput && !petugasInput.value) {
+                    petugasInput.value = user.nama || user.name || '';
+                }
+
+                // Pastikan NIP terisi jika masih kosong
+                const nipEl = document.getElementById('nip');
+                if (nipEl && !nipEl.value && user.nip) {
+                    nipEl.value = user.nip;
                 }
 
                 updateSignatureBadges();
