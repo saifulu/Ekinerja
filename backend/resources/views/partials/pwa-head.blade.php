@@ -19,3 +19,4 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-72x72.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192x192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512x512.png">
+
