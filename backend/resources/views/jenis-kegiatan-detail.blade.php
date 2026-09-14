@@ -1779,132 +1779,88 @@
 
         // Fungsi untuk memuat unit berdasarkan NIP user
         async function loadUserUnits(selectedUnit = null) {
+            const unitSelect = document.getElementById('unit');
+            if (!unitSelect) return;
+
+            const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            const targetUnit = (selectedUnit || user?.ruangan || '').trim();
+
+            unitSelect.innerHTML = '<option value="">Memuat unit...</option>';
+
             try {
-                const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-                const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
-                
-                if (!token || !user.nip) {
-                    console.error('Token atau NIP user tidak ditemukan');
-                    return;
-                }
+                let availableUnits = [];
 
-                console.log('Loading units for NIP:', user.nip, 'Selected unit:', selectedUnit);
+                if (token) {
+                    try {
+                        const response = await fetch('/api/unit-ruangan', {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            }
+                        });
 
-                const response = await fetch('/api/unit-ruangan', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                let units = [];
-                try {
-                    const response = await fetch('/api/unit-ruangan', {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
+                        if (response.ok) {
+                            const result = await response.json();
+                            if (result.success && Array.isArray(result.data)) {
+                                availableUnits = result.data.map(item => item.nama_ruangan).filter(Boolean);
+                            }
                         }
-                    });
-
-                    if (response.ok) {
-                        const result = await response.json();
-                        if (result.success && Array.isArray(result.data)) {
-                            units = result.data.map(item => item.nama_ruangan).filter(Boolean);
-                        }
+                    } catch (fetchErr) {
+                        console.warn('Gagal memuat /api/unit-ruangan:', fetchErr);
                     }
-                });
-                } catch (fetchErr) {
-                    console.warn('Gagal memuat /api/unit-ruangan:', fetchErr);
                 }
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                // Fallback dengan ruangan dari profil user jika belum ada
-                if (user.ruangan && !units.includes(user.ruangan)) {
-                    units.unshift(user.ruangan);
+                // Tambahkan targetUnit dan user.ruangan jika belum terdaftar
+                if (targetUnit && !availableUnits.some(u => u.toLowerCase() === targetUnit.toLowerCase())) {
+                    availableUnits.push(targetUnit);
+                }
+                if (user?.ruangan && !availableUnits.some(u => u.toLowerCase() === user.ruangan.trim().toLowerCase())) {
+                    availableUnits.push(user.ruangan.trim());
                 }
 
-                const result = await response.json();
-                console.log('API Response:', result);
-                
-                // Jika ada selectedUnit, pastikan masuk ke opsi
-                if (selectedUnit && !units.includes(selectedUnit)) {
-                    units.unshift(selectedUnit);
-                }
+                const uniqueUnits = [...new Set(availableUnits.map(u => u.trim()).filter(Boolean))];
 
-                const uniqueUnits = [...new Set(units)];
-                const unitSelect = document.getElementById('unit');
-                if (!unitSelect) return;
-                
-                // Bersihkan options yang ada
                 unitSelect.innerHTML = '<option value="">Pilih Unit</option>';
-                
+                let hasSelected = false;
 
-                unitSelect.innerHTML = '<option value="">-- Pilih Unit / Ruangan --</option>';
-
-                let foundSelected = false;
-                // Tambahkan options dari data API
-                if (result.success && result.data && result.data.length > 0) {
-                    const uniqueUnits = [...new Set(result.data.map(item => item.nama_ruangan).filter(Boolean))];
-                    
-                    uniqueUnits.forEach(namaRuangan => {
-                        const option = document.createElement('option');
-                        option.value = namaRuangan;
-                        option.textContent = namaRuangan;
-                        if (selectedUnit && (selectedUnit === namaRuangan || selectedUnit.trim().toLowerCase() === namaRuangan.trim().toLowerCase())) {
-                            option.selected = true;
-                            foundSelected = true;
-                        }
-                        unitSelect.appendChild(option);
-                    });
-                    
-                    console.log('Units loaded successfully:', uniqueUnits);
-                }
-                
-                // If selectedUnit specified but not in list, append it so it's not lost
-                if (selectedUnit && !foundSelected) {
                 uniqueUnits.forEach(namaRuangan => {
                     const option = document.createElement('option');
-                    option.value = selectedUnit;
-                    option.textContent = selectedUnit;
-                    option.selected = true;
                     option.value = namaRuangan;
                     option.textContent = namaRuangan;
-                    if (selectedUnit && (selectedUnit === namaRuangan || selectedUnit.trim().toLowerCase() === namaRuangan.trim().toLowerCase())) {
+                    if (targetUnit && (targetUnit.toLowerCase() === namaRuangan.toLowerCase())) {
                         option.selected = true;
-                        foundSelected = true;
-                    } else if (!selectedUnit && user.ruangan && (user.ruangan === namaRuangan || user.ruangan.trim().toLowerCase() === namaRuangan.trim().toLowerCase())) {
-                        option.selected = true;
-                        foundSelected = true;
+                        hasSelected = true;
                     }
                     unitSelect.appendChild(option);
                 });
 
-                // Jika hanya ada 1 opsi dan belum ada yang dipilih, auto-pilih
-                if (!foundSelected && uniqueUnits.length === 1) {
+                // Jika targetUnit ada tapi belum terpilih
+                if (targetUnit && !hasSelected) {
+                    const option = document.createElement('option');
+                    option.value = targetUnit;
+                    option.textContent = targetUnit;
+                    option.selected = true;
+                    unitSelect.appendChild(option);
+                    hasSelected = true;
+                }
+
+                // Jika hanya ada satu unit dan belum terpilih, auto-pilih unit tersebut
+                if (!hasSelected && uniqueUnits.length === 1) {
                     unitSelect.value = uniqueUnits[0];
                 }
-                
 
-                console.log('Units loaded successfully:', uniqueUnits, 'Current value:', unitSelect.value);
             } catch (error) {
                 console.error('Error loading units:', error);
-                const unitSelect = document.getElementById('unit');
-                if (unitSelect) {
-                    unitSelect.innerHTML = '<option value="">Pilih Unit</option>';
-                    if (selectedUnit) {
-                        const option = document.createElement('option');
-                        option.value = selectedUnit;
-                        option.textContent = selectedUnit;
-                        option.selected = true;
-                        unitSelect.appendChild(option);
-                    }
-                }
-                
-                // Show notification to user
-                if (typeof showNotification === 'function') {
-                    showNotification('Gagal memuat data unit: ' + error.message, 'error');
+                unitSelect.innerHTML = '<option value="">Pilih Unit</option>';
+                if (targetUnit) {
+                    const option = document.createElement('option');
+                    option.value = targetUnit;
+                    option.textContent = targetUnit;
+                    option.selected = true;
+                    unitSelect.appendChild(option);
                 }
             }
         }
@@ -1915,13 +1871,34 @@
             
             // Periksa autentikasi terlebih dahulu
             const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-            const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+            let user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
             
-            if (!token || !user.nip) {
-                console.log('No valid session found, redirecting to login...');
+            if (!token) {
+                console.log('No valid session token found, redirecting to login...');
                 alert('Session expired. Please login again.');
                 window.location.href = '/login';
                 return;
+            }
+
+            // Jika user data belum lengkap di local storage, ambil dari /api/auth/me
+            if (!user || !user.nip || !user.name) {
+                try {
+                    const meRes = await fetch('/api/auth/me', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Accept': 'application/json'
+                        }
+                    });
+                    if (meRes.ok) {
+                        const meData = await meRes.json();
+                        if (meData.data) {
+                            user = { ...user, ...meData.data };
+                            localStorage.setItem('user', JSON.stringify(user));
+                        }
+                    }
+                } catch(e) {
+                    console.warn('Failed to refresh user profile:', e);
+                }
             }
             
             console.log('User authenticated:', { nip: user.nip, name: user.name });
@@ -1962,33 +1939,9 @@
                         const nip = document.getElementById('nip').value;
                         const unit = document.getElementById('unit').value;
                         const tanggalDibuat = document.getElementById('tanggalDibuat').value;
-                        const jenisKegiatan = document.getElementById('jenisKegiatan')?.value?.trim();
-                        const nip = document.getElementById('nip')?.value?.trim();
-                        let unit = document.getElementById('unit')?.value?.trim();
-                        const tanggalDibuat = document.getElementById('tanggalDibuat')?.value;
                         
                         if (!jenisKegiatan || !nip || !unit || !tanggalDibuat) {
                             throw new Error('Semua field wajib harus diisi');
-                        if (!jenisKegiatan) {
-                            document.getElementById('jenisKegiatan')?.focus();
-                            throw new Error('Jenis Kegiatan wajib diisi.');
-                        }
-                        if (!nip) {
-                            throw new Error('NIP tidak terdeteksi. Silakan login ulang.');
-                        }
-                        if (!unit) {
-                            if (user.ruangan) {
-                                unit = user.ruangan;
-                                const unitEl = document.getElementById('unit');
-                                if (unitEl) unitEl.value = unit;
-                            } else {
-                                document.getElementById('unit')?.focus();
-                                throw new Error('Silakan pilih atau tentukan Unit / Ruangan terlebih dahulu.');
-                            }
-                        }
-                        if (!tanggalDibuat) {
-                            document.getElementById('tanggalDibuat')?.focus();
-                            throw new Error('Silakan tentukan Tanggal Kegiatan.');
                         }
                         
                         const formData = new FormData();
@@ -2166,16 +2119,35 @@
                 // Ambil data user dari localStorage/sessionStorage
                 const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
                 const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-                
-                if (user.nip) {
-                    document.getElementById('nip').value = user.nip;
-                    console.log('Auto-filled NIP:', user.nip);
-                } else {
-                    console.error('NIP user tidak ditemukan dalam session');
-                    if (confirm('Session expired. Redirect to login?')) {
-                        window.location.href = '/login';
+
+                // Parse dataParam dengan aman (fallback dual parsing)
+                let pageData = null;
+                if (dataParam) {
+                    try {
+                        pageData = JSON.parse(dataParam);
+                    } catch (e1) {
+                        try {
+                            pageData = JSON.parse(decodeURIComponent(dataParam));
+                        } catch (e2) {
+                            console.error('Error parsing dataParam:', e2);
+                        }
                     }
-                    return;
+                }
+
+                // Auto-fill NIP dari data URL atau session user
+                const resolvedNip = pageData?.nip || user?.nip || user?.NIP || urlParams.get('nip') || '';
+                if (resolvedNip) {
+                    const nipEl = document.getElementById('nip');
+                    if (nipEl) nipEl.value = resolvedNip;
+                    console.log('Auto-filled NIP:', resolvedNip);
+                }
+
+                // Auto-fill Jenis Kegiatan dari data URL atau query param
+                const resolvedJenisKegiatan = pageData?.jenis_kegiatan || urlParams.get('jenis_kegiatan') || urlParams.get('jenisKegiatan') || '';
+                if (resolvedJenisKegiatan) {
+                    const jkEl = document.getElementById('jenisKegiatan');
+                    if (jkEl) jkEl.value = resolvedJenisKegiatan;
+                    console.log('Auto-filled Jenis Kegiatan:', resolvedJenisKegiatan);
                 }
 
                 let editData = null;
@@ -2220,51 +2192,10 @@
                     }
 
                     // 3. Fallback to URL dataParam if available
-                    if (!editData && dataParam) {
-                        try {
-                            editData = JSON.parse(decodeURIComponent(dataParam));
-                            if (editData.id) editItemId = editData.id;
-                        } catch (e) {
-                            console.error('Error parsing URL dataParam:', e);
-                        }
+                    if (!editData && pageData) {
+                        editData = pageData;
+                        if (editData.id) editItemId = editData.id;
                     }
-                } else if (dataParam) {
-                    // New entry with prefill from URL
-                    let urlData = null;
-                    try {
-                        const data = JSON.parse(decodeURIComponent(dataParam));
-                        if (data.jenis_kegiatan) {
-                            document.getElementById('jenisKegiatan').value = data.jenis_kegiatan;
-                        urlData = JSON.parse(dataParam);
-                    } catch (e1) {
-                        try {
-                            urlData = JSON.parse(decodeURIComponent(dataParam));
-                        } catch (e2) {
-                            console.error('Error parsing URL data:', e2);
-                        }
-                        if (data.nip) {
-                            document.getElementById('nip').value = data.nip;
-                    }
-                    if (urlData) {
-                        if (urlData.jenis_kegiatan) {
-                            document.getElementById('jenisKegiatan').value = urlData.jenis_kegiatan;
-                        }
-                    } catch (error) {
-                        console.error('Error parsing URL data:', error);
-                        if (urlData.nip) {
-                            document.getElementById('nip').value = urlData.nip;
-                        }
-                    }
-                }
-
-                // Check direct query parameters as fallback
-                const directJenis = urlParams.get('jenis_kegiatan') || urlParams.get('jenisKegiatan');
-                if (directJenis && !document.getElementById('jenisKegiatan').value) {
-                    document.getElementById('jenisKegiatan').value = directJenis;
-                }
-                const directNip = urlParams.get('nip');
-                if (directNip && !document.getElementById('nip').value) {
-                    document.getElementById('nip').value = directNip;
                 }
 
                 // If Edit Mode with data, populate everything!
@@ -2377,36 +2308,31 @@
 
                 } else {
                     // New item mode
-                    await loadUserUnits();
+                    const initialUnit = pageData?.unit || user?.ruangan || urlParams.get('unit') || '';
+                    await loadUserUnits(initialUnit);
 
                     const now = new Date();
                     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-                    document.getElementById('tanggalDibuat').value = now.toISOString().slice(0, 16);
+                    const tglInput = document.getElementById('tanggalDibuat');
+                    if (tglInput) tglInput.value = now.toISOString().slice(0, 16);
 
                     const petugasNameInput = document.getElementById('petugasNameInput');
-                    if (petugasNameInput && !petugasNameInput.value) {
-                        petugasNameInput.value = user.nama || user.name || '';
+                    if (petugasNameInput) {
+                        petugasNameInput.value = pageData?.nama_pelaksana || pageData?.nama_petugas || user?.nama || user?.name || '';
                     }
                 }
 
-                // Pastikan Tanggal Kegiatan selalu terisi
-                const tglEl = document.getElementById('tanggalDibuat');
-                if (tglEl && !tglEl.value) {
+                // Jaminan fallback: jika tanggal kegiatan atau nama petugas masih kosong, isi otomatis
+                const finalTgl = document.getElementById('tanggalDibuat');
+                if (finalTgl && !finalTgl.value) {
                     const now = new Date();
                     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-                    tglEl.value = now.toISOString().slice(0, 16);
+                    finalTgl.value = now.toISOString().slice(0, 16);
                 }
 
-                // Pastikan Nama Petugas otomatis terisi dari profil user
-                const petugasInput = document.getElementById('petugasNameInput');
-                if (petugasInput && !petugasInput.value) {
-                    petugasInput.value = user.nama || user.name || '';
-                }
-
-                // Pastikan NIP terisi jika masih kosong
-                const nipEl = document.getElementById('nip');
-                if (nipEl && !nipEl.value && user.nip) {
-                    nipEl.value = user.nip;
+                const finalPetugas = document.getElementById('petugasNameInput');
+                if (finalPetugas && !finalPetugas.value) {
+                    finalPetugas.value = pageData?.nama_pelaksana || pageData?.nama_petugas || user?.nama || user?.name || '';
                 }
 
                 updateSignatureBadges();
@@ -2795,33 +2721,28 @@
             const form = document.getElementById('detailKegiatanForm');
             if (!form) return;
 
-            const jenisKegiatan = document.getElementById('jenisKegiatan')?.value;
-            const nip = document.getElementById('nip')?.value;
-            const unit = document.getElementById('unit')?.value;
+            const btnSaveDraft = document.getElementById('btnSaveDraft');
+            const originalDraftContent = btnSaveDraft ? btnSaveDraft.innerHTML : '';
+
             const jenisKegiatan = document.getElementById('jenisKegiatan')?.value?.trim();
             const nip = document.getElementById('nip')?.value?.trim();
-            const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
-            const unit = document.getElementById('unit')?.value?.trim() || user.ruangan || '-';
+            const unit = document.getElementById('unit')?.value?.trim();
             const tanggalDibuat = document.getElementById('tanggalDibuat')?.value;
 
             if (!jenisKegiatan || !nip) {
-                alert('Pilih Jenis Kegiatan dan pastikan NIP terisi.');
-                showNotification('Pilih Jenis Kegiatan dan pastikan NIP terisi.', 'warning');
+                showNotification('Jenis Kegiatan dan NIP wajib terisi untuk menyimpan draft.', 'warning');
                 return;
             }
 
-            const btnSaveDraft = document.getElementById('btnSaveDraft');
-            const originalDraftContent = btnSaveDraft ? btnSaveDraft.innerHTML : '';
             if (btnSaveDraft) {
                 btnSaveDraft.disabled = true;
-                btnSaveDraft.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan Draft...';
+                btnSaveDraft.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Menyimpan...';
             }
 
             const formData = new FormData();
             formData.append('jenis_kegiatan', jenisKegiatan);
             formData.append('nip', nip);
             formData.append('unit', unit || '');
-            formData.append('unit', unit);
             
             if (tanggalDibuat) {
                 const date = new Date(tanggalDibuat);
@@ -2834,15 +2755,6 @@
                         String(date.getSeconds()).padStart(2, '0');
                     formData.append('tanggal_dibuat', formattedDate);
                 }
-            } else {
-                const now = new Date();
-                const formattedDate = now.getFullYear() + '-' + 
-                    String(now.getMonth() + 1).padStart(2, '0') + '-' + 
-                    String(now.getDate()).padStart(2, '0') + ' ' +
-                    String(now.getHours()).padStart(2, '0') + ':' +
-                    String(now.getMinutes()).padStart(2, '0') + ':' +
-                    String(now.getSeconds()).padStart(2, '0');
-                formData.append('tanggal_dibuat', formattedDate);
             }
 
             const hasilTemuan = document.getElementById('hasilTemuan')?.value || '';
@@ -2891,8 +2803,6 @@
             try {
                 const token = localStorage.getItem('token') || sessionStorage.getItem('token');
                 if (!token) {
-                    alert('Session expired. Please login again.');
-                    window.location.href = '/login';
                     showNotification('Sesi telah berakhir. Silakan login kembali.', 'warning');
                     setTimeout(() => { window.location.href = '/login'; }, 1500);
                     return;
@@ -2923,7 +2833,6 @@
                         } catch(e) {}
                     }
                 } else {
-                    showNotification('Gagal menyimpan draft: ' + (result.message || 'Terjadi kesalahan'), 'error');
                     let errMsg = result.message || 'Terjadi kesalahan saat menyimpan draft';
                     if (result.errors) {
                         const errorDetails = Object.entries(result.errors)
@@ -2946,42 +2855,19 @@
 
         function updateStatusBadge(status) {
             const badge = document.getElementById('statusBadge');
-            badge.className = `status-badge status-${status}`;
-            badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            if (badge) {
+                badge.className = `status-badge status-${status}`;
+                badge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            }
         }
 
         // Form submission is now handled in the DOMContentLoaded event
         
         // Add notification function
         function showNotification(message, type = 'info') {
-            // Remove existing notifications
-            const existingNotifications = document.querySelectorAll('.notification');
-            const existingNotifications = document.querySelectorAll('.app-toast-notification');
-            existingNotifications.forEach(notif => notif.remove());
-            
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.className = `notification fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-md transition-all duration-300 transform translate-x-full`;
-            notification.className = `notification fixed top-4 right-4 z-50 p-4 rounded-xl shadow-2xl backdrop-blur-md max-w-md transition-all duration-300 transform translate-x-full border`;
-            notification.className = 'app-toast-notification';
-            
-            // Set notification style based on type
-            switch(type) {
-                case 'success':
-                    notification.classList.add('bg-green-500', 'text-white');
-                    notification.classList.add('bg-emerald-900/90', 'border-emerald-500/40', 'text-white');
-                    break;
-                case 'error':
-                    notification.classList.add('bg-red-500', 'text-white');
-                    notification.classList.add('bg-rose-900/90', 'border-rose-500/40', 'text-white');
-                    break;
-                case 'warning':
-                    notification.classList.add('bg-yellow-500', 'text-black');
-                    notification.classList.add('bg-amber-900/90', 'border-amber-500/40', 'text-amber-100');
-                    break;
-                default:
-                    notification.classList.add('bg-blue-500', 'text-white');
-                    notification.classList.add('bg-slate-900/90', 'border-slate-700', 'text-white');
+            const existing = document.querySelectorAll('.app-toast-notification');
+            existing.forEach(el => el.remove());
+
             let bgGradient = 'linear-gradient(135deg, #1e293b, #0f172a)';
             let borderColor = 'rgba(255, 255, 255, 0.2)';
             let iconClass = 'fa-info-circle';
@@ -3007,83 +2893,61 @@
                 iconColor = '#fbbf24';
                 title = 'Perhatian';
             }
-            
 
-            notification.style.cssText = `
+            const toast = document.createElement('div');
+            toast.className = 'app-toast-notification';
+            toast.style.cssText = `
                 position: fixed;
                 top: 24px;
                 right: 24px;
                 z-index: 999999;
-                min-width: 320px;
-                max-width: 460px;
+                min-width: 300px;
+                max-width: 450px;
                 background: ${bgGradient};
                 border: 1px solid ${borderColor};
                 box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
-                border-radius: 14px;
-                padding: 16px 20px;
+                border-radius: 12px;
+                padding: 14px 18px;
                 color: #ffffff;
-                font-family: 'Inter', -apple-system, sans-serif;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                 transform: translateX(120%);
                 transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
                 opacity: 0;
-                backdrop-filter: blur(12px);
             `;
 
-            notification.innerHTML = `
-                <div class="flex items-start">
-                    <div class="flex-1">
-                        <p class="text-sm font-medium whitespace-pre-line">${message}</p>
-                <div style="display: flex; align-items: flex-start; gap: 14px;">
-                    <div style="font-size: 22px; color: ${iconColor}; flex-shrink: 0; margin-top: 2px;">
+            toast.innerHTML = `
+                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                    <div style="font-size: 20px; color: ${iconColor}; flex-shrink: 0; margin-top: 2px;">
                         <i class="fas ${iconClass}"></i>
                     </div>
-                    <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
                     <div style="flex: 1; min-width: 0;">
-                        <div style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; color: ${iconColor};">
+                        <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; color: ${iconColor};">
                             ${title}
                         </div>
-                        <div style="font-size: 13.5px; line-height: 1.5; color: #f1f5f9; white-space: pre-line; word-break: break-word;">
+                        <div style="font-size: 13.5px; line-height: 1.4; color: #f1f5f9; white-space: pre-line; word-break: break-word;">
                             ${message}
                         </div>
                     </div>
-                    <button type="button" onclick="this.closest('.app-toast-notification').remove()" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 16px; padding: 0; margin-left: 8px; line-height: 1;" title="Tutup">
+                    <button type="button" onclick="this.closest('.app-toast-notification').remove()" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 16px; padding: 0; margin-left: 6px; line-height: 1;" title="Tutup">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
             `;
-            
-            // Add to page
 
-            document.body.appendChild(notification);
-            
+            document.body.appendChild(toast);
 
-            // Animate in
-            setTimeout(() => {
-                notification.classList.remove('translate-x-full');
-            }, 100);
-            
-            // Auto remove after 5 seconds
-            setTimeout(() => {
-                notification.classList.add('translate-x-full');
-                setTimeout(() => {
-                    if (notification.parentElement) {
-                        notification.remove();
-                    }
-                }, 300);
-            }, 5000);
             requestAnimationFrame(() => {
-                notification.style.transform = 'translateX(0)';
-                notification.style.opacity = '1';
+                toast.style.transform = 'translateX(0)';
+                toast.style.opacity = '1';
             });
 
-            // Auto dismiss after 6 seconds
             const timer = setTimeout(() => {
-                notification.style.transform = 'translateX(120%)';
-                notification.style.opacity = '0';
-                setTimeout(() => notification.remove(), 350);
-            }, 6000);
+                toast.style.transform = 'translateX(120%)';
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 350);
+            }, 5000);
 
-            notification.addEventListener('mouseenter', () => clearTimeout(timer));
+            toast.addEventListener('mouseenter', () => clearTimeout(timer));
         }
 
         // Cleanup on page unload

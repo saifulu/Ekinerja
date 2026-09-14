@@ -1454,8 +1454,9 @@
 
             const dataToSend = {
                 jenis_kegiatan: item.jenis_kegiatan || '',
-                golongan: item.golongan || '',
-                nip: item.nip || ''
+                golongan: item.golongan || user?.golongan || '',
+                nip: item.nip || user?.nip || '',
+                nama_pelaksana: user?.name || user?.nama || ''
             };
             
             const jenisKegiatanData = encodeURIComponent(JSON.stringify(dataToSend));
