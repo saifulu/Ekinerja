@@ -52,11 +52,15 @@ class DetailJenisKegiatanController extends Controller
             'files' => $request->allFiles()
         ]);
         
+        $isDraft = ($request->status === 'draft');
+
         $validator = Validator::make($request->all(), [
             'jenis_kegiatan' => 'required|string|max:255',
             'nip' => 'required|string|max:255',
             'unit' => 'required|string|max:255',
             'tanggal_dibuat' => 'required|date',
+            'unit' => $isDraft ? 'nullable|string|max:255' : 'required|string|max:255',
+            'tanggal_dibuat' => $isDraft ? 'nullable|date' : 'required|date',
             'hasil_temuan' => 'nullable|string',
             'signature_pelaksana' => 'nullable|string',
             'signature_pj' => 'nullable|string',
@@ -187,11 +191,19 @@ class DetailJenisKegiatanController extends Controller
                 }
             }
             
+            $unit = $request->unit;
+            if (empty($unit)) {
+                $unit = $user->ruangan ?: '-';
+            }
+            $tanggalDibuat = $request->tanggal_dibuat ?: now()->toDateTimeString();
+
             $dataToCreate = [
                 'jenis_kegiatan' => $request->jenis_kegiatan,
                 'nip' => $request->nip,
                 'unit' => $request->unit,
                 'tanggal_dibuat' => $request->tanggal_dibuat,
+                'unit' => $unit,
+                'tanggal_dibuat' => $tanggalDibuat,
                 'hasil_temuan' => $request->hasil_temuan,
                 'signature_pelaksana' => $request->signature_pelaksana,
                 'signature_pj' => $request->signature_pj,
@@ -267,10 +279,13 @@ class DetailJenisKegiatanController extends Controller
             'files' => $request->allFiles()
         ]);
 
+        $isDraft = ($request->status === 'draft');
+
         $validator = Validator::make($request->all(), [
             'jenis_kegiatan' => 'sometimes|required|string|max:255',
             'nip' => 'sometimes|required|string|max:255',
             'unit' => 'sometimes|required|string|max:255',
+            'unit' => $isDraft ? 'nullable|string|max:255' : 'sometimes|required|string|max:255',
             'tanggal_dibuat' => 'sometimes|required|date',
             'hasil_temuan' => 'nullable|string',
             'signature_pelaksana' => 'nullable|string',
@@ -322,6 +337,7 @@ class DetailJenisKegiatanController extends Controller
 
         $updateFields = [
             'jenis_kegiatan', 'nip', 'unit', 'tanggal_dibuat',
+            'jenis_kegiatan', 'nip', 'tanggal_dibuat',
             'hasil_temuan', 'signature_pelaksana', 'signature_pj', 'status'
         ];
         
@@ -330,6 +346,14 @@ class DetailJenisKegiatanController extends Controller
             if ($request->has($field)) {
                 $updateData[$field] = $request->input($field);
             }
+        }
+
+        if ($request->has('unit')) {
+            $unitVal = $request->input('unit');
+            if (empty($unitVal)) {
+                $unitVal = $detailKegiatan->unit ?: ($user->ruangan ?: '-');
+            }
+            $updateData['unit'] = $unitVal;
         }
 
         if (\Illuminate\Support\Facades\Schema::hasColumn('detail_jenis_kegiatan', 'nama_pelaksana')) {

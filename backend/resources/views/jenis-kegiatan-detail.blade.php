@@ -1796,22 +1796,53 @@
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json',
                         'Accept': 'application/json'
+                let units = [];
+                try {
+                    const response = await fetch('/api/unit-ruangan', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result.success && Array.isArray(result.data)) {
+                            units = result.data.map(item => item.nama_ruangan).filter(Boolean);
+                        }
                     }
                 });
+                } catch (fetchErr) {
+                    console.warn('Gagal memuat /api/unit-ruangan:', fetchErr);
+                }
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
+                // Fallback dengan ruangan dari profil user jika belum ada
+                if (user.ruangan && !units.includes(user.ruangan)) {
+                    units.unshift(user.ruangan);
                 }
 
                 const result = await response.json();
                 console.log('API Response:', result);
                 
+                // Jika ada selectedUnit, pastikan masuk ke opsi
+                if (selectedUnit && !units.includes(selectedUnit)) {
+                    units.unshift(selectedUnit);
+                }
+
+                const uniqueUnits = [...new Set(units)];
                 const unitSelect = document.getElementById('unit');
                 if (!unitSelect) return;
                 
                 // Bersihkan options yang ada
                 unitSelect.innerHTML = '<option value="">Pilih Unit</option>';
                 
+
+                unitSelect.innerHTML = '<option value="">-- Pilih Unit / Ruangan --</option>';
+
                 let foundSelected = false;
                 // Tambahkan options dari data API
                 if (result.success && result.data && result.data.length > 0) {
@@ -1833,13 +1864,30 @@
                 
                 // If selectedUnit specified but not in list, append it so it's not lost
                 if (selectedUnit && !foundSelected) {
+                uniqueUnits.forEach(namaRuangan => {
                     const option = document.createElement('option');
                     option.value = selectedUnit;
                     option.textContent = selectedUnit;
                     option.selected = true;
+                    option.value = namaRuangan;
+                    option.textContent = namaRuangan;
+                    if (selectedUnit && (selectedUnit === namaRuangan || selectedUnit.trim().toLowerCase() === namaRuangan.trim().toLowerCase())) {
+                        option.selected = true;
+                        foundSelected = true;
+                    } else if (!selectedUnit && user.ruangan && (user.ruangan === namaRuangan || user.ruangan.trim().toLowerCase() === namaRuangan.trim().toLowerCase())) {
+                        option.selected = true;
+                        foundSelected = true;
+                    }
                     unitSelect.appendChild(option);
+                });
+
+                // Jika hanya ada 1 opsi dan belum ada yang dipilih, auto-pilih
+                if (!foundSelected && uniqueUnits.length === 1) {
+                    unitSelect.value = uniqueUnits[0];
                 }
                 
+
+                console.log('Units loaded successfully:', uniqueUnits, 'Current value:', unitSelect.value);
             } catch (error) {
                 console.error('Error loading units:', error);
                 const unitSelect = document.getElementById('unit');
@@ -1914,9 +1962,33 @@
                         const nip = document.getElementById('nip').value;
                         const unit = document.getElementById('unit').value;
                         const tanggalDibuat = document.getElementById('tanggalDibuat').value;
+                        const jenisKegiatan = document.getElementById('jenisKegiatan')?.value?.trim();
+                        const nip = document.getElementById('nip')?.value?.trim();
+                        let unit = document.getElementById('unit')?.value?.trim();
+                        const tanggalDibuat = document.getElementById('tanggalDibuat')?.value;
                         
                         if (!jenisKegiatan || !nip || !unit || !tanggalDibuat) {
                             throw new Error('Semua field wajib harus diisi');
+                        if (!jenisKegiatan) {
+                            document.getElementById('jenisKegiatan')?.focus();
+                            throw new Error('Jenis Kegiatan wajib diisi.');
+                        }
+                        if (!nip) {
+                            throw new Error('NIP tidak terdeteksi. Silakan login ulang.');
+                        }
+                        if (!unit) {
+                            if (user.ruangan) {
+                                unit = user.ruangan;
+                                const unitEl = document.getElementById('unit');
+                                if (unitEl) unitEl.value = unit;
+                            } else {
+                                document.getElementById('unit')?.focus();
+                                throw new Error('Silakan pilih atau tentukan Unit / Ruangan terlebih dahulu.');
+                            }
+                        }
+                        if (!tanggalDibuat) {
+                            document.getElementById('tanggalDibuat')?.focus();
+                            throw new Error('Silakan tentukan Tanggal Kegiatan.');
                         }
                         
                         const formData = new FormData();
@@ -2682,17 +2754,30 @@
             const jenisKegiatan = document.getElementById('jenisKegiatan')?.value;
             const nip = document.getElementById('nip')?.value;
             const unit = document.getElementById('unit')?.value;
+            const jenisKegiatan = document.getElementById('jenisKegiatan')?.value?.trim();
+            const nip = document.getElementById('nip')?.value?.trim();
+            const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+            const unit = document.getElementById('unit')?.value?.trim() || user.ruangan || '-';
             const tanggalDibuat = document.getElementById('tanggalDibuat')?.value;
 
             if (!jenisKegiatan || !nip) {
                 alert('Pilih Jenis Kegiatan dan pastikan NIP terisi.');
+                showNotification('Pilih Jenis Kegiatan dan pastikan NIP terisi.', 'warning');
                 return;
+            }
+
+            const btnSaveDraft = document.getElementById('btnSaveDraft');
+            const originalDraftContent = btnSaveDraft ? btnSaveDraft.innerHTML : '';
+            if (btnSaveDraft) {
+                btnSaveDraft.disabled = true;
+                btnSaveDraft.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan Draft...';
             }
 
             const formData = new FormData();
             formData.append('jenis_kegiatan', jenisKegiatan);
             formData.append('nip', nip);
             formData.append('unit', unit || '');
+            formData.append('unit', unit);
             
             if (tanggalDibuat) {
                 const date = new Date(tanggalDibuat);
@@ -2705,6 +2790,15 @@
                         String(date.getSeconds()).padStart(2, '0');
                     formData.append('tanggal_dibuat', formattedDate);
                 }
+            } else {
+                const now = new Date();
+                const formattedDate = now.getFullYear() + '-' + 
+                    String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                    String(now.getDate()).padStart(2, '0') + ' ' +
+                    String(now.getHours()).padStart(2, '0') + ':' +
+                    String(now.getMinutes()).padStart(2, '0') + ':' +
+                    String(now.getSeconds()).padStart(2, '0');
+                formData.append('tanggal_dibuat', formattedDate);
             }
 
             const hasilTemuan = document.getElementById('hasilTemuan')?.value || '';
@@ -2755,6 +2849,8 @@
                 if (!token) {
                     alert('Session expired. Please login again.');
                     window.location.href = '/login';
+                    showNotification('Sesi telah berakhir. Silakan login kembali.', 'warning');
+                    setTimeout(() => { window.location.href = '/login'; }, 1500);
                     return;
                 }
 
@@ -2773,12 +2869,34 @@
                     try { sessionStorage.removeItem('editDetailData'); } catch(e) {}
                     showNotification('Draft berhasil disimpan!', 'success');
                     updateStatusBadge('draft');
+                    if (result.data && result.data.id) {
+                        isEditMode = true;
+                        editItemId = result.data.id;
+                        try {
+                            const newUrl = new URL(window.location.href);
+                            newUrl.searchParams.set('id', result.data.id);
+                            window.history.replaceState({}, '', newUrl.toString());
+                        } catch(e) {}
+                    }
                 } else {
                     showNotification('Gagal menyimpan draft: ' + (result.message || 'Terjadi kesalahan'), 'error');
+                    let errMsg = result.message || 'Terjadi kesalahan saat menyimpan draft';
+                    if (result.errors) {
+                        const errorDetails = Object.entries(result.errors)
+                            .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+                            .join('\n');
+                        errMsg += ':\n' + errorDetails;
+                    }
+                    showNotification(errMsg, 'error');
                 }
             } catch (error) {
                 console.error('Error saving draft:', error);
                 showNotification('Terjadi kesalahan: ' + error.message, 'error');
+            } finally {
+                if (btnSaveDraft) {
+                    btnSaveDraft.disabled = false;
+                    btnSaveDraft.innerHTML = originalDraftContent;
+                }
             }
         }
 
@@ -2794,12 +2912,14 @@
         function showNotification(message, type = 'info') {
             // Remove existing notifications
             const existingNotifications = document.querySelectorAll('.notification');
+            const existingNotifications = document.querySelectorAll('.app-toast-notification');
             existingNotifications.forEach(notif => notif.remove());
             
             // Create notification element
             const notification = document.createElement('div');
             notification.className = `notification fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-md transition-all duration-300 transform translate-x-full`;
             notification.className = `notification fixed top-4 right-4 z-50 p-4 rounded-xl shadow-2xl backdrop-blur-md max-w-md transition-all duration-300 transform translate-x-full border`;
+            notification.className = 'app-toast-notification';
             
             // Set notification style based on type
             switch(type) {
@@ -2818,22 +2938,81 @@
                 default:
                     notification.classList.add('bg-blue-500', 'text-white');
                     notification.classList.add('bg-slate-900/90', 'border-slate-700', 'text-white');
+            let bgGradient = 'linear-gradient(135deg, #1e293b, #0f172a)';
+            let borderColor = 'rgba(255, 255, 255, 0.2)';
+            let iconClass = 'fa-info-circle';
+            let iconColor = '#38bdf8';
+            let title = 'Informasi';
+
+            if (type === 'success') {
+                bgGradient = 'linear-gradient(135deg, #064e3b, #022c22)';
+                borderColor = 'rgba(16, 185, 129, 0.5)';
+                iconClass = 'fa-circle-check';
+                iconColor = '#34d399';
+                title = 'Berhasil';
+            } else if (type === 'error') {
+                bgGradient = 'linear-gradient(135deg, #881337, #4c0519)';
+                borderColor = 'rgba(244, 63, 94, 0.5)';
+                iconClass = 'fa-circle-xmark';
+                iconColor = '#fb7185';
+                title = 'Gagal';
+            } else if (type === 'warning') {
+                bgGradient = 'linear-gradient(135deg, #78350f, #451a03)';
+                borderColor = 'rgba(245, 158, 11, 0.5)';
+                iconClass = 'fa-triangle-exclamation';
+                iconColor = '#fbbf24';
+                title = 'Perhatian';
             }
             
+
+            notification.style.cssText = `
+                position: fixed;
+                top: 24px;
+                right: 24px;
+                z-index: 999999;
+                min-width: 320px;
+                max-width: 460px;
+                background: ${bgGradient};
+                border: 1px solid ${borderColor};
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+                border-radius: 14px;
+                padding: 16px 20px;
+                color: #ffffff;
+                font-family: 'Inter', -apple-system, sans-serif;
+                transform: translateX(120%);
+                transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+                opacity: 0;
+                backdrop-filter: blur(12px);
+            `;
+
             notification.innerHTML = `
                 <div class="flex items-start">
                     <div class="flex-1">
                         <p class="text-sm font-medium whitespace-pre-line">${message}</p>
+                <div style="display: flex; align-items: flex-start; gap: 14px;">
+                    <div style="font-size: 22px; color: ${iconColor}; flex-shrink: 0; margin-top: 2px;">
+                        <i class="fas ${iconClass}"></i>
                     </div>
                     <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; color: ${iconColor};">
+                            ${title}
+                        </div>
+                        <div style="font-size: 13.5px; line-height: 1.5; color: #f1f5f9; white-space: pre-line; word-break: break-word;">
+                            ${message}
+                        </div>
+                    </div>
+                    <button type="button" onclick="this.closest('.app-toast-notification').remove()" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 16px; padding: 0; margin-left: 8px; line-height: 1;" title="Tutup">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
             `;
             
             // Add to page
+
             document.body.appendChild(notification);
             
+
             // Animate in
             setTimeout(() => {
                 notification.classList.remove('translate-x-full');
@@ -2848,6 +3027,19 @@
                     }
                 }, 300);
             }, 5000);
+            requestAnimationFrame(() => {
+                notification.style.transform = 'translateX(0)';
+                notification.style.opacity = '1';
+            });
+
+            // Auto dismiss after 6 seconds
+            const timer = setTimeout(() => {
+                notification.style.transform = 'translateX(120%)';
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 350);
+            }, 6000);
+
+            notification.addEventListener('mouseenter', () => clearTimeout(timer));
         }
 
         // Cleanup on page unload
