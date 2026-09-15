@@ -532,7 +532,20 @@
 
                     <!-- Expandable Filter Panel (Starts hidden on mobile, clean dropdown) -->
                     <div id="filterDrawer" class="hidden p-3.5 rounded-xl bg-slate-800/80 border border-slate-700/60 space-y-3 text-xs">
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5">
+                            <!-- Jenis Kegiatan Filter -->
+                            <div>
+                                <label class="text-[11px] text-slate-400 block mb-1 font-medium">Jenis Kegiatan</label>
+                                <select id="jenisKegiatanFilter" class="custom-select w-full py-1.5 text-xs">
+                                    <option value="">Semua Kegiatan</option>
+                                    @if(isset($jenisKegiatanStats))
+                                        @foreach($jenisKegiatanStats as $kegName => $kegCount)
+                                            <option value="{{ $kegName }}">{{ $kegName }} ({{ $kegCount }})</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+
                             <!-- Status Filter -->
                             <div>
                                 <label class="text-[11px] text-slate-400 block mb-1 font-medium">Status Laporan</label>
@@ -548,13 +561,13 @@
                             <!-- Start Date -->
                             <div>
                                 <label class="text-[11px] text-slate-400 block mb-1 font-medium">Dari Tanggal</label>
-                                <input type="date" id="startDate" class="custom-input w-full py-1.5 text-xs">
+                                <input type="date" id="startDate" value="{{ date('Y-m-d') }}" class="custom-input w-full py-1.5 text-xs">
                             </div>
 
                             <!-- End Date -->
                             <div>
                                 <label class="text-[11px] text-slate-400 block mb-1 font-medium">Sampai Tanggal</label>
-                                <input type="date" id="endDate" class="custom-input w-full py-1.5 text-xs">
+                                <input type="date" id="endDate" value="{{ date('Y-m-d') }}" class="custom-input w-full py-1.5 text-xs">
                             </div>
                         </div>
 
@@ -1188,11 +1201,13 @@
         // Live Search & Multi-criteria Filtering
         function applyFilters() {
             const searchInput = document.getElementById('searchInput');
+            const jenisKegiatanFilter = document.getElementById('jenisKegiatanFilter');
             const statusFilter = document.getElementById('statusFilter');
             const startDateInput = document.getElementById('startDate');
             const endDateInput = document.getElementById('endDate');
 
             const query = (searchInput ? searchInput.value.trim().toLowerCase() : '');
+            const selectedKegiatan = (jenisKegiatanFilter ? jenisKegiatanFilter.value.trim().toLowerCase() : '');
             const selectedStatus = (statusFilter ? statusFilter.value.trim().toLowerCase() : '');
             const startDate = (startDateInput && startDateInput.value) ? new Date(startDateInput.value + 'T00:00:00') : null;
             const endDate = (endDateInput && endDateInput.value) ? new Date(endDateInput.value + 'T23:59:59.999') : null;
@@ -1200,7 +1215,7 @@
             // Active filter badge indicator
             const activeBadge = document.getElementById('activeFilterBadge');
             if (activeBadge) {
-                if (selectedStatus || startDate || endDate) {
+                if (selectedKegiatan || selectedStatus || (startDateInput && startDateInput.value) || (endDateInput && endDateInput.value)) {
                     activeBadge.classList.remove('hidden');
                 } else {
                     activeBadge.classList.add('hidden');
@@ -1213,6 +1228,9 @@
             rows.forEach((row, index) => {
                 const textContent = row.textContent.toLowerCase();
                 const rowStatus = (row.getAttribute('data-status') || '').toLowerCase();
+                const id = row.getAttribute('data-id');
+                const rawItem = (typeof rawItemsData !== 'undefined' && rawItemsData[id]) ? rawItemsData[id] : null;
+                const rowKegiatan = rawItem && rawItem.jenis_kegiatan ? rawItem.jenis_kegiatan.toLowerCase() : (row.cells[1] ? row.cells[1].textContent.toLowerCase() : '');
                 
                 let rowMatchesDate = true;
                 const dateCell = row.cells[4];
@@ -1231,9 +1249,10 @@
                 }
 
                 const matchesSearch = (!query || textContent.includes(query));
+                const matchesKegiatan = (!selectedKegiatan || rowKegiatan.includes(selectedKegiatan));
                 const matchesStatus = (!selectedStatus || rowStatus === selectedStatus);
 
-                if (matchesSearch && matchesStatus && rowMatchesDate) {
+                if (matchesSearch && matchesKegiatan && matchesStatus && rowMatchesDate) {
                     filteredRowIndices.push(index);
                 }
             });
@@ -1344,15 +1363,18 @@
         }
 
         function resetTable() {
+            const todayStr = new Date().toISOString().split('T')[0];
             const startDate = document.getElementById('startDate');
             const endDate = document.getElementById('endDate');
             const searchInput = document.getElementById('searchInput');
             const statusFilter = document.getElementById('statusFilter');
+            const jenisKegiatanFilter = document.getElementById('jenisKegiatanFilter');
 
-            if (startDate) startDate.value = '';
-            if (endDate) endDate.value = '';
+            if (startDate) startDate.value = todayStr;
+            if (endDate) endDate.value = todayStr;
             if (searchInput) searchInput.value = '';
             if (statusFilter) statusFilter.value = '';
+            if (jenisKegiatanFilter) jenisKegiatanFilter.value = '';
 
             applyFilters();
         }
@@ -2285,9 +2307,24 @@
                 searchInput.addEventListener('input', applyFilters);
             }
 
+            const jenisKegiatanFilter = document.getElementById('jenisKegiatanFilter');
+            if (jenisKegiatanFilter) {
+                jenisKegiatanFilter.addEventListener('change', applyFilters);
+            }
+
             const statusFilter = document.getElementById('statusFilter');
             if (statusFilter) {
                 statusFilter.addEventListener('change', applyFilters);
+            }
+
+            const startDateInput = document.getElementById('startDate');
+            if (startDateInput) {
+                startDateInput.addEventListener('change', applyFilters);
+            }
+
+            const endDateInput = document.getElementById('endDate');
+            if (endDateInput) {
+                endDateInput.addEventListener('change', applyFilters);
             }
 
             const filterButton = document.getElementById('filterButton');
