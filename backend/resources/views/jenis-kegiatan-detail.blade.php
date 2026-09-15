@@ -1394,7 +1394,6 @@
                                 <label for="jenisKegiatan" class="form-label">
                                     <i class="fas fa-tasks me-2"></i>Jenis Kegiatan
                                 </label>
-                                <input type="text" class="form-control" id="jenisKegiatan" name="jenis_kegiatan" readonly>
                                 <input type="text" class="form-control" id="jenisKegiatan" name="jenis_kegiatan" value="{{ $prefilledJenisKegiatan ?? '' }}" readonly>
                             </div>
 
@@ -1403,7 +1402,6 @@
                                 <label for="nip" class="form-label">
                                     <i class="fas fa-id-card me-2"></i>NIP
                                 </label>
-                                <input type="text" class="form-control" id="nip" name="nip" readonly>
                                 <input type="text" class="form-control" id="nip" name="nip" value="{{ $prefilledNip ?? '' }}" readonly>
                             </div>
 
@@ -1438,7 +1436,6 @@
                                     <span class="input-group-text bg-slate-900/90 border-slate-700/80 text-emerald-400">
                                         <i class="fas fa-clock"></i>
                                     </span>
-                                    <input type="datetime-local" class="form-control" id="tanggalDibuat" name="tanggal_dibuat" required style="color-scheme: dark;">
                                     <input type="datetime-local" class="form-control" id="tanggalDibuat" name="tanggal_dibuat" value="{{ $prefilledTanggal ?? now()->format('Y-m-d\TH:i') }}" required style="color-scheme: dark;">
                                 </div>
                                 <small class="text-slate-400 mt-1 d-block" style="font-size: 11px;">
@@ -3061,13 +3058,12 @@
                     if (result.data && result.data.id) {
                         isEditMode = true;
                         editItemId = result.data.id;
-                        try {
-                            const newUrl = new URL(window.location.href);
-                            newUrl.searchParams.set('id', result.data.id);
-                            newUrl.searchParams.set('edit', 'true');
-                            window.history.replaceState({}, '', newUrl.toString());
-                        } catch(e) {}
                     }
+
+                    // Tutup form dan kembali ke halaman sebelumnya setelah notifikasi muncul
+                    setTimeout(() => {
+                        goBack();
+                    }, 1000);
                 } else {
                     let errMsg = result.message || 'Terjadi kesalahan saat menyimpan draft';
                     if (result.errors) {
