@@ -65,24 +65,6 @@ Route::get('/jenis-kegiatan/detail', function (\Illuminate\Http\Request $request
     $prefilledPetugas = $pageData['nama_pelaksana'] ?? $pageData['nama_petugas'] ?? '';
     $prefilledTanggal = now()->format('Y-m-d\TH:i');
 
-    $nipUser = $prefilledNip ?: ($request->user()?->nip ?? auth()->user()?->nip ?? auth('web')->user()?->nip ?? '');
-    $masterKegiatanList = [];
-    if ($nipUser) {
-        try {
-            $masterKegiatanList = \App\Models\JenisKegiatan::where('nip', $nipUser)
-                ->orderBy('created_at', 'desc')
-                ->pluck('jenis_kegiatan')
-                ->unique()
-                ->values()
-                ->toArray();
-        } catch (\Throwable $e) {
-            $masterKegiatanList = [];
-        }
-    }
-    if ($prefilledJenisKegiatan && !in_array($prefilledJenisKegiatan, $masterKegiatanList)) {
-        array_unshift($masterKegiatanList, $prefilledJenisKegiatan);
-    }
-
     return view('jenis-kegiatan-detail', compact(
         'prefilledJenisKegiatan', 
         'prefilledNip', 
@@ -90,8 +72,7 @@ Route::get('/jenis-kegiatan/detail', function (\Illuminate\Http\Request $request
         'prefilledGolongan', 
         'prefilledPetugas', 
         'prefilledTanggal',
-        'pageData',
-        'masterKegiatanList'
+        'pageData'
     ));
 })->name('jenis-kegiatan-detail');
 
