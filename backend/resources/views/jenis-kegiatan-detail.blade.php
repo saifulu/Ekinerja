@@ -1395,6 +1395,7 @@
                                     <i class="fas fa-tasks me-2"></i>Jenis Kegiatan
                                 </label>
                                 <input type="text" class="form-control" id="jenisKegiatan" name="jenis_kegiatan" readonly>
+                                <input type="text" class="form-control" id="jenisKegiatan" name="jenis_kegiatan" value="{{ $prefilledJenisKegiatan ?? '' }}" readonly>
                             </div>
 
                             <!-- NIP -->
@@ -1403,6 +1404,7 @@
                                     <i class="fas fa-id-card me-2"></i>NIP
                                 </label>
                                 <input type="text" class="form-control" id="nip" name="nip" readonly>
+                                <input type="text" class="form-control" id="nip" name="nip" value="{{ $prefilledNip ?? '' }}" readonly>
                             </div>
 
                             <!-- Unit -->
@@ -1413,6 +1415,11 @@
                                 <select class="form-select" id="unit" name="unit" required>
                                     <option value="">Memuat unit...</option>
                                     <!-- Options akan dimuat dari API berdasarkan NIP -->
+                                    @if(!empty($prefilledUnit))
+                                        <option value="{{ $prefilledUnit }}" selected>{{ $prefilledUnit }}</option>
+                                    @else
+                                        <option value="">Pilih Unit</option>
+                                    @endif
                                 </select>
                                 <div class="invalid-feedback">
                                     Silakan pilih unit yang tersedia untuk NIP Anda
@@ -1432,6 +1439,7 @@
                                         <i class="fas fa-clock"></i>
                                     </span>
                                     <input type="datetime-local" class="form-control" id="tanggalDibuat" name="tanggal_dibuat" required style="color-scheme: dark;">
+                                    <input type="datetime-local" class="form-control" id="tanggalDibuat" name="tanggal_dibuat" value="{{ $prefilledTanggal ?? now()->format('Y-m-d\TH:i') }}" required style="color-scheme: dark;">
                                 </div>
                                 <small class="text-slate-400 mt-1 d-block" style="font-size: 11px;">
                                     <i class="fas fa-info-circle text-emerald-400/80 me-1"></i>Satu tanggal berlaku untuk seluruh laporan kegiatan dan lembar tanda tangan.
@@ -1605,6 +1613,7 @@
                                                            class="form-control freetyping-input" 
                                                            id="petugasNameInput" 
                                                            name="nama_petugas" 
+                                                           value="{{ $prefilledPetugas ?? '' }}" 
                                                            placeholder="Nama Petugas" 
                                                            autocomplete="name">
                                                 </div>

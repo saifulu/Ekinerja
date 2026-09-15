@@ -47,6 +47,36 @@ Route::get('/rekap-bulanan', [DetailJenisKegiatanController::class, 'showRekapBu
 // Detail Jenis Kegiatan page - Updated route
 Route::get('/jenis-kegiatan/detail', function () {
     return view('jenis-kegiatan-detail');
+// Detail Jenis Kegiatan page - Updated route with server-side pre-population
+Route::get('/jenis-kegiatan/detail', function (\Illuminate\Http\Request $request) {
+    $dataParam = $request->query('data');
+    $pageData = [];
+    if ($dataParam) {
+        $decoded = json_decode($dataParam, true);
+        if (!$decoded) {
+            $decoded = json_decode(urldecode($dataParam), true);
+        }
+        if (is_array($decoded)) {
+            $pageData = $decoded;
+        }
+    }
+    
+    $prefilledJenisKegiatan = $pageData['jenis_kegiatan'] ?? $request->query('jenis_kegiatan', '');
+    $prefilledNip = $pageData['nip'] ?? $request->query('nip', '');
+    $prefilledUnit = $pageData['unit'] ?? $request->query('unit', '');
+    $prefilledGolongan = $pageData['golongan'] ?? $request->query('golongan', '');
+    $prefilledPetugas = $pageData['nama_pelaksana'] ?? $pageData['nama_petugas'] ?? '';
+    $prefilledTanggal = now()->format('Y-m-d\TH:i');
+
+    return view('jenis-kegiatan-detail', compact(
+        'prefilledJenisKegiatan', 
+        'prefilledNip', 
+        'prefilledUnit', 
+        'prefilledGolongan', 
+        'prefilledPetugas', 
+        'prefilledTanggal',
+        'pageData'
+    ));
 })->name('jenis-kegiatan-detail');
 
 // Fallback Route untuk melayani file gambar dokumentasi dari storage/app/public
