@@ -2298,7 +2298,7 @@
             }
         });
 
-         // ============================================================
+        // ============================================================
         // MULTI JENIS KEGIATAN - Executive Row-based Dropdown
         // ============================================================
 
@@ -2321,7 +2321,6 @@
                         fetched.forEach(item => {
                             if (!allKegiatanMaster.includes(item)) allKegiatanMaster.push(item);
                         });
-                        // Refresh opsi di select yang ada
                         populateAllSelectOptions();
                     }
                 }
@@ -2333,7 +2332,6 @@
             if (preselectedName) {
                 const firstSelect = document.getElementById('kegiatanSelect_1');
                 if (firstSelect && (!firstSelect.value || firstSelect.value !== preselectedName)) {
-                    // Pastikan opsi ada
                     let hasOpt = Array.from(firstSelect.options).some(o => o.value === preselectedName);
                     if (!hasOpt) {
                         const opt = new Option(preselectedName, preselectedName, true, true);
@@ -2512,18 +2510,6 @@
             const count = rows.length;
             const countEl = document.getElementById('selectedKegiatanCount');
             if (countEl) countEl.textContent = count;
-        }
-
-        function syncHiddenInput() {
-            const selected = getSelectedKegiatan();
-            const hidden = document.getElementById('jenisKegiatan');
-            if (hidden) hidden.value = selected[0] || '';
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.appendChild(document.createTextNode(text));
-            return div.innerHTML;
         }
 
         function syncHiddenInput() {
