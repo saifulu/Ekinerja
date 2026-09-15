@@ -187,6 +187,9 @@
                         <span>Cetak Matriks</span>
                             id="exportMatrixPdfBtn" 
                             onclick="exportMatrixToPDF()" 
+                    <button type="button"
+                            id="exportMatrixPdfBtn"
+                            onclick="exportMatrixToPDF()"
                             class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-semibold text-xs sm:text-sm shadow-md shadow-rose-600/25 transition-all">
                         <i class="fas fa-file-pdf"></i>
                         <span>Pratinjau & Cetak PDF</span>
@@ -330,6 +333,7 @@
                 </div>
             </div>
 
+
             <!-- Table Header Info Bar -->
             <div class="flex items-center justify-between gap-3 pb-2">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2">
@@ -353,6 +357,9 @@
                             class="no-print inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 border border-teal-500/40 text-teal-300 text-xs font-semibold transition-all shadow-sm">
                         <i class="fas fa-file-pdf text-rose-400"></i>
                         <span>Cetak PDF</span>
+                    <button type="button"
+                            id="btnTableExportMatrixPdf"
+                            onclick="exportMatrixToPDF()"
                             class="no-print inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-semibold text-xs shadow-md shadow-rose-600/25 transition-all">
                         <i class="fas fa-file-pdf"></i>
                         <span>Pratinjau & Cetak PDF</span>
