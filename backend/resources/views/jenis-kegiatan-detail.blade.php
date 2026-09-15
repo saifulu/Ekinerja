@@ -1340,6 +1340,46 @@
                 min-height: 44px;
             }
         }
+
+        /* ===== Jenis Kegiatan Chip Selector ===== */
+        .kegiatan-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            background: rgba(51, 65, 85, 0.7);
+            border: 1.5px solid rgba(255,255,255,0.1);
+            color: #94a3b8;
+            transition: all 0.18s ease;
+            user-select: none;
+            white-space: nowrap;
+        }
+        .kegiatan-chip:hover {
+            border-color: rgba(45, 212, 191, 0.4);
+            color: #e2e8f0;
+            background: rgba(45, 212, 191, 0.08);
+        }
+        .kegiatan-chip.selected {
+            background: rgba(20, 184, 166, 0.2);
+            border-color: rgba(45, 212, 191, 0.6);
+            color: #2dd4bf;
+            box-shadow: 0 0 0 2px rgba(45,212,191,0.12);
+        }
+        .kegiatan-chip.selected .chip-check {
+            opacity: 1;
+        }
+        .kegiatan-chip .chip-check {
+            opacity: 0;
+            font-size: 10px;
+            transition: opacity 0.15s;
+        }
+        .kegiatan-chip.hidden-chip {
+            display: none !important;
+        }
     </style>
     @include('partials.mobile-ux')
 </head>
@@ -1389,12 +1429,37 @@
                 <div class="glass-card p-4">
                     <form id="detailKegiatanForm">
                         <div class="row">
-                            <!-- Jenis Kegiatan -->
-                            <div class="col-md-6 mb-3">
-                                <label for="jenisKegiatan" class="form-label">
-                                    <i class="fas fa-tasks me-2"></i>Jenis Kegiatan
+                            <!-- Jenis Kegiatan Multi-Select -->
+                            <div class="col-12 mb-3">
+                                <label class="form-label d-flex align-items-center justify-content-between mb-2">
+                                    <span><i class="fas fa-tasks me-2"></i>Jenis Kegiatan</span>
+                                    <span class="badge bg-teal-500/20 text-teal-300 border border-teal-500/30 px-2 py-1" style="font-size:11px;" id="selectedKegiatanBadge">
+                                        <i class="fas fa-check-circle me-1"></i><span id="selectedKegiatanCount">0</span> dipilih
+                                    </span>
                                 </label>
-                                <input type="text" class="form-control" id="jenisKegiatan" name="jenis_kegiatan" value="{{ $prefilledJenisKegiatan ?? '' }}" readonly>
+
+                                <!-- Search / filter chips -->
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text bg-slate-900/90 border-slate-700/80 text-slate-400">
+                                        <i class="fas fa-search" style="font-size:12px;"></i>
+                                    </span>
+                                    <input type="text" id="kegiatanSearch" placeholder="Cari jenis kegiatan..."
+                                           class="form-control" style="background:rgba(15,23,42,0.9);border-color:rgba(255,255,255,0.12);color:#f8fafc;font-size:13px;"
+                                           oninput="filterKegiatanChips(this.value)">
+                                </div>
+
+                                <!-- Chip container -->
+                                <div id="kegiatanChipsContainer"
+                                     style="min-height:64px;max-height:180px;overflow-y:auto;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;">
+                                    <span class="text-slate-500" style="font-size:12px;"><i class="fas fa-spinner fa-spin me-1"></i>Memuat daftar kegiatan...</span>
+                                </div>
+
+                                <!-- Hidden input to track selected values (for legacy form compat) -->
+                                <input type="hidden" id="jenisKegiatan" name="jenis_kegiatan" value="{{ $prefilledJenisKegiatan ?? '' }}">
+                                <small class="text-slate-500 mt-1 d-block" style="font-size:11px;">
+                                    <i class="fas fa-info-circle text-teal-400/70 me-1"></i>
+                                    Pilih satu atau lebih jenis kegiatan. Setiap kegiatan akan tersimpan sebagai laporan terpisah dengan data yang sama.
+                                </small>
                             </div>
 
                             <!-- NIP -->
@@ -2133,177 +2198,80 @@
                     
                     const submitButton = form.querySelector('button[type="submit"]');
                     const originalText = submitButton.innerHTML;
-                    
+
                     try {
-                        // Disable button and show loading
-                        submitButton.disabled = true;
-                        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
-                        
-                        // Validate required fields before sending
-                        const jenisKegiatan = document.getElementById('jenisKegiatan')?.value?.trim();
+                        // Validasi
+                        const selectedKegiatan = getSelectedKegiatan();
                         const nip = document.getElementById('nip')?.value?.trim() || user?.nip || user?.NIP || '';
                         const unit = document.getElementById('unit')?.value?.trim();
                         const tanggalDibuat = document.getElementById('tanggalDibuat')?.value;
-                        
-                        if (!jenisKegiatan || !nip) {
-                            throw new Error('Jenis Kegiatan dan NIP wajib diisi');
+
+                        if (selectedKegiatan.length === 0) {
+                            throw new Error('Pilih minimal satu Jenis Kegiatan');
                         }
-                        
-                        const formData = new FormData();
-                        
-                        // Add basic fields with proper validation
-                        formData.append('jenis_kegiatan', jenisKegiatan);
-                        formData.append('nip', nip);
-                        formData.append('unit', unit || user?.ruangan || '-');
-                        
-                        // Fix date format - ensure it's in Y-m-d H:i:s format
-                        let formattedDate;
-                        if (tanggalDibuat) {
-                            const date = new Date(tanggalDibuat);
-                            if (isNaN(date.getTime())) {
-                                throw new Error('Format tanggal tidak valid');
+                        if (!nip) {
+                            throw new Error('NIP wajib diisi');
+                        }
+
+                        const formattedDate = formatDateForApi(tanggalDibuat);
+                        const { headers } = buildHeaders();
+
+                        submitButton.disabled = true;
+                        const total = selectedKegiatan.length;
+
+                        let successCount = 0;
+                        const errors = [];
+
+                        for (let i = 0; i < selectedKegiatan.length; i++) {
+                            const kegiatan = selectedKegiatan[i];
+                            submitButton.innerHTML = `<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan ${i + 1}/${total}...`;
+
+                            const fd = buildSharedFormData(nip, unit, formattedDate, 'submitted');
+                            fd.append('jenis_kegiatan', kegiatan);
+
+                            // Edit mode: PUT untuk kegiatan pertama saja, POST untuk kegiatan tambahan
+                            let apiUrl = '/api/detail-jenis-kegiatan';
+                            if (isEditMode && editItemId && i === 0) {
+                                apiUrl = `/api/detail-jenis-kegiatan/${editItemId}`;
+                                fd.append('_method', 'PUT');
                             }
-                            formattedDate = date.getFullYear() + '-' + 
-                                String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-                                String(date.getDate()).padStart(2, '0') + ' ' +
-                                String(date.getHours()).padStart(2, '0') + ':' +
-                                String(date.getMinutes()).padStart(2, '0') + ':' +
-                                String(date.getSeconds()).padStart(2, '0');
-                        } else {
-                            const now = new Date();
-                            formattedDate = now.getFullYear() + '-' + 
-                                String(now.getMonth() + 1).padStart(2, '0') + '-' + 
-                                String(now.getDate()).padStart(2, '0') + ' ' +
-                                String(now.getHours()).padStart(2, '0') + ':' +
-                                String(now.getMinutes()).padStart(2, '0') + ':' +
-                                String(now.getSeconds()).padStart(2, '0');
-                        }
-                        formData.append('tanggal_dibuat', formattedDate);
-                        
-                        // Add optional fields
-                        const hasilTemuan = document.getElementById('hasilTemuan')?.value || '';
-                        if (hasilTemuan) {
-                            formData.append('hasil_temuan', hasilTemuan);
-                        }
-                        
-                        // Add signatures if available
-                        if (signatures.petugas) {
-                            formData.append('signature_pelaksana', signatures.petugas);
-                        }
-                        if (signatures.kaUnit) {
-                            formData.append('signature_pj', signatures.kaUnit);
-                        }
 
-                        // Add signee names (free-typing)
-                        const namaPetugas = document.getElementById('petugasNameInput')?.value?.trim() || '';
-                        if (namaPetugas) {
-                            formData.append('nama_petugas', namaPetugas);
-                            formData.append('nama_pelaksana', namaPetugas);
-                        }
-                        const namaKaUnit = document.getElementById('kaUnitNameInput')?.value?.trim() || '';
-                        if (namaKaUnit) {
-                            formData.append('nama_ka_unit', namaKaUnit);
-                            formData.append('nama_pj', namaKaUnit);
-                        }
-                        
-                        // Add existing photos to retain
-                        if (existingPhotos && existingPhotos.length > 0) {
-                            existingPhotos.forEach((photo, index) => {
-                                formData.append(`existing_dokumentasi[${index}]`, photo.path);
-                            });
-                        }
-                        
-                        // Add captured photos
-                        if (capturedPhotos && capturedPhotos.length > 0) {
-                            capturedPhotos.forEach((photo, index) => {
-                                if (photo.data) {
-                                    formData.append(`captured_photos[${index}]`, photo.data);
-                                }
-                            });
-                        }
-                        
-                        // Add uploaded files
-                        if (uploadedFiles && uploadedFiles.length > 0) {
-                            uploadedFiles.forEach((fileData, index) => {
-                                if (fileData.file) {
-                                    formData.append(`uploaded_files[${index}]`, fileData.file);
-                                }
-                            });
-                        }
-                        
-                        // Set status
-                        formData.append('status', 'submitted');
-
-                        let apiUrl = '/api/detail-jenis-kegiatan';
-                        if (isEditMode && editItemId) {
-                            apiUrl = `/api/detail-jenis-kegiatan/${editItemId}`;
-                            formData.append('_method', 'PUT');
-                        }
-                        
-                        console.log('📤 Sending data to API:', apiUrl);
-                        
-                        const headers = {
-                            'Accept': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        };
-                        if (token) {
-                            headers['Authorization'] = `Bearer ${token}`;
-                        }
-                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                        if (csrfToken) {
-                            headers['X-CSRF-TOKEN'] = csrfToken;
-                        }
-                        
-                        const response = await fetch(apiUrl, {
-                            method: 'POST',
-                            headers: headers,
-                            body: formData
-                        });
-                        
-                        console.log('📥 Response status:', response.status);
-                        
-                        const result = await response.json();
-                        console.log('📥 Response data:', result);
-                        
-                        if (response.ok && result.success) {
                             try {
-                                sessionStorage.removeItem('editDetailData');
-                            } catch(e) {}
-
-                            const successMsg = isEditMode ? 'Data kegiatan berhasil diperbarui!' : 'Data kegiatan berhasil disimpan!';
-                            showNotification(successMsg, 'success');
-                            updateStatusBadge('submitted');
-                            
-                            setTimeout(() => {
-                                window.location.href = `/laporan-kinerja?nip=${nip}`;
-                            }, 1200);
-                        } else {
-                            console.error('❌ API Error:', result);
-                            
-                            let errorMessage = 'Terjadi kesalahan saat menyimpan data';
-                            if (result.message) {
-                                errorMessage = result.message;
+                                const response = await fetch(apiUrl, { method: 'POST', headers, body: fd });
+                                const result = await response.json();
+                                if (response.ok && result.success) {
+                                    successCount++;
+                                } else {
+                                    errors.push(`${kegiatan}: ${result.message || 'Gagal'}`);
+                                }
+                            } catch(e) {
+                                errors.push(`${kegiatan}: ${e.message}`);
                             }
-                            if (result.errors) {
-                                console.error('Validation errors:', result.errors);
-                                const errorDetails = Object.entries(result.errors)
-                                    .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
-                                    .join('\n');
-                                errorMessage += ':\n' + errorDetails;
-                            }
-                            
-                            showNotification(errorMessage, 'error');
                         }
-                        
+
+                        try { sessionStorage.removeItem('editDetailData'); } catch(e) {}
+                        updateStatusBadge('submitted');
+
+                        if (successCount === total) {
+                            showNotification(`✅ ${total} kegiatan berhasil disimpan!`, 'success');
+                        } else if (successCount > 0) {
+                            showNotification(`⚠️ ${successCount}/${total} kegiatan tersimpan. Gagal: ${errors.join('; ')}`, 'warning');
+                        } else {
+                            throw new Error('Semua kegiatan gagal disimpan: ' + errors.join('; '));
+                        }
+
+                        setTimeout(() => {
+                            window.location.href = `/laporan-kinerja?nip=${nip}`;
+                        }, 1400);
+
                     } catch (error) {
                         console.error('❌ Submit Error:', error);
                         showNotification('Error: ' + error.message, 'error');
                     } finally {
-                        // Reset button
                         submitButton.disabled = false;
                         submitButton.innerHTML = originalText;
                     }
-                    
+
                     return false;
                 }, true);
                 
@@ -2312,6 +2280,155 @@
                 console.error('❌ Form with ID "detailKegiatanForm" not found!');
             }
         });
+
+        // ============================================================
+        // MULTI JENIS KEGIATAN - Chip Selector Functions
+        // ============================================================
+
+        let allKegiatanMaster = []; // cache master data
+
+        async function loadKegiatanChips(preselectedName) {
+            const container = document.getElementById('kegiatanChipsContainer');
+            if (!container) return;
+
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            const headers = { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (csrfToken) headers['X-CSRF-TOKEN'] = csrfToken;
+
+            try {
+                const resp = await fetch('/api/jenis-kegiatan', { headers });
+                if (!resp.ok) throw new Error('Gagal memuat master kegiatan');
+                const data = await resp.json();
+                allKegiatanMaster = (data.data || []).map(k => k.jenis_kegiatan).filter(Boolean);
+            } catch(e) {
+                console.warn('Fallback: gagal load master kegiatan, gunakan prefilled saja', e);
+                allKegiatanMaster = [];
+            }
+
+            // Pastikan preselected ada di list (meski tidak ada di master)
+            if (preselectedName && !allKegiatanMaster.includes(preselectedName)) {
+                allKegiatanMaster.unshift(preselectedName);
+            }
+
+            renderKegiatanChips(preselectedName ? [preselectedName] : []);
+        }
+
+        function renderKegiatanChips(preselected = []) {
+            const container = document.getElementById('kegiatanChipsContainer');
+            if (!container) return;
+
+            if (allKegiatanMaster.length === 0) {
+                container.innerHTML = '<span style="font-size:12px;color:#64748b;"><i class="fas fa-exclamation-circle me-1"></i>Tidak ada jenis kegiatan. Tambahkan di Master Data terlebih dahulu.</span>';
+                return;
+            }
+
+            container.innerHTML = '';
+            allKegiatanMaster.forEach(name => {
+                const isSelected = preselected.includes(name);
+                const chip = document.createElement('span');
+                chip.className = 'kegiatan-chip' + (isSelected ? ' selected' : '');
+                chip.dataset.value = name;
+                chip.innerHTML = `<i class="fas fa-check chip-check"></i>${escapeHtml(name)}`;
+                chip.addEventListener('click', () => toggleChip(chip));
+                container.appendChild(chip);
+            });
+
+            updateSelectedBadge();
+            syncHiddenInput();
+        }
+
+        function toggleChip(chip) {
+            chip.classList.toggle('selected');
+            updateSelectedBadge();
+            syncHiddenInput();
+        }
+
+        function filterKegiatanChips(query) {
+            const chips = document.querySelectorAll('#kegiatanChipsContainer .kegiatan-chip');
+            const q = query.toLowerCase().trim();
+            chips.forEach(chip => {
+                const match = chip.dataset.value.toLowerCase().includes(q);
+                chip.classList.toggle('hidden-chip', !match);
+            });
+        }
+
+        function getSelectedKegiatan() {
+            const chips = document.querySelectorAll('#kegiatanChipsContainer .kegiatan-chip.selected');
+            return Array.from(chips).map(c => c.dataset.value);
+        }
+
+        function updateSelectedBadge() {
+            const count = getSelectedKegiatan().length;
+            const countEl = document.getElementById('selectedKegiatanCount');
+            const badge = document.getElementById('selectedKegiatanBadge');
+            if (countEl) countEl.textContent = count;
+            if (badge) {
+                badge.style.background = count > 0 ? 'rgba(20,184,166,0.2)' : 'rgba(20,184,166,0.1)';
+                badge.style.color = count > 0 ? '#2dd4bf' : '#6b7280';
+            }
+        }
+
+        function syncHiddenInput() {
+            const selected = getSelectedKegiatan();
+            const hidden = document.getElementById('jenisKegiatan');
+            if (hidden) hidden.value = selected[0] || '';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.appendChild(document.createTextNode(text));
+            return div.innerHTML;
+        }
+
+        // Helper: build shared FormData (tanpa jenis_kegiatan, akan di-set per iterasi)
+        function buildSharedFormData(nip, unit, formattedDate, status) {
+            const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
+            const fd = new FormData();
+            fd.append('nip', nip);
+            fd.append('unit', unit || user?.ruangan || '-');
+            if (formattedDate) fd.append('tanggal_dibuat', formattedDate);
+
+            const hasilTemuan = document.getElementById('hasilTemuan')?.value || '';
+            if (hasilTemuan) fd.append('hasil_temuan', hasilTemuan);
+
+            if (signatures?.petugas) fd.append('signature_pelaksana', signatures.petugas);
+            if (signatures?.kaUnit) fd.append('signature_pj', signatures.kaUnit);
+
+            const namaPetugas = document.getElementById('petugasNameInput')?.value?.trim() || '';
+            if (namaPetugas) { fd.append('nama_petugas', namaPetugas); fd.append('nama_pelaksana', namaPetugas); }
+            const namaKaUnit = document.getElementById('kaUnitNameInput')?.value?.trim() || '';
+            if (namaKaUnit) { fd.append('nama_ka_unit', namaKaUnit); fd.append('nama_pj', namaKaUnit); }
+
+            if (existingPhotos?.length > 0) existingPhotos.forEach((p, i) => fd.append(`existing_dokumentasi[${i}]`, p.path));
+            if (capturedPhotos?.length > 0) capturedPhotos.forEach((p, i) => { if (p.data) fd.append(`captured_photos[${i}]`, p.data); });
+            if (uploadedFiles?.length > 0) uploadedFiles.forEach((f, i) => { if (f.file) fd.append(`uploaded_files[${i}]`, f.file); });
+
+            fd.append('status', status);
+            return fd;
+        }
+
+        // Helper: format date string dari input datetime-local
+        function formatDateForApi(dateValue) {
+            if (!dateValue) {
+                const now = new Date();
+                return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+            }
+            const d = new Date(dateValue);
+            if (isNaN(d.getTime())) throw new Error('Format tanggal tidak valid');
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+        }
+
+        // Helper: build request headers
+        function buildHeaders() {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            const headers = { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (csrf) headers['X-CSRF-TOKEN'] = csrf;
+            return { headers, token };
+        }
 
         async function initializePageData() {
             try {
@@ -2356,13 +2473,10 @@
                     console.log('Auto-filled NIP:', resolvedNip);
                 }
 
-                // Auto-fill Jenis Kegiatan dari data URL atau query param
+                // Auto-fill Jenis Kegiatan → load chips dari master data, preselect dari URL/data
                 const resolvedJenisKegiatan = pageData?.jenis_kegiatan || urlParams.get('jenis_kegiatan') || urlParams.get('jenisKegiatan') || '';
-                if (resolvedJenisKegiatan) {
-                    const jkEl = document.getElementById('jenisKegiatan');
-                    if (jkEl) jkEl.value = resolvedJenisKegiatan;
-                    console.log('Auto-filled Jenis Kegiatan:', resolvedJenisKegiatan);
-                }
+                // Load chip selector (async, tidak block render lain)
+                loadKegiatanChips(resolvedJenisKegiatan).catch(e => console.warn('loadKegiatanChips error:', e));
 
                 // Auto-fill Petugas / Pelaksana jika ada
                 const resolvedPetugas = pageData?.nama_pelaksana || pageData?.nama_petugas || user?.name || user?.nama || '';
@@ -2454,9 +2568,11 @@
                         submitBtnText.textContent = 'Simpan Perubahan';
                     }
 
-                    // Pre-fill Jenis Kegiatan
+                    // Pre-fill Jenis Kegiatan (reload chips, preselect existing)
                     if (editData.jenis_kegiatan) {
                         document.getElementById('jenisKegiatan').value = editData.jenis_kegiatan;
+                        // Re-render chips dengan preselect dari data edit
+                        loadKegiatanChips(editData.jenis_kegiatan).catch(e => console.warn('loadKegiatanChips (edit) error:', e));
                     }
 
                     // Pre-fill NIP
@@ -2956,128 +3072,74 @@
             const originalDraftContent = btnSaveDraft ? btnSaveDraft.innerHTML : '';
 
             const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
-            const jenisKegiatan = document.getElementById('jenisKegiatan')?.value?.trim();
+            const selectedKegiatan = getSelectedKegiatan();
             const nip = document.getElementById('nip')?.value?.trim() || user?.nip || user?.NIP || '';
             const unit = document.getElementById('unit')?.value?.trim() || user?.ruangan || '';
             const tanggalDibuat = document.getElementById('tanggalDibuat')?.value;
 
-            if (!jenisKegiatan) {
-                showNotification('Jenis Kegiatan belum terisi.', 'warning');
+            if (selectedKegiatan.length === 0) {
+                showNotification('Pilih minimal satu Jenis Kegiatan.', 'warning');
+                return;
+            }
+
+            const { headers, token } = buildHeaders();
+            if (!token && !document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')) {
+                showNotification('Sesi telah berakhir. Silakan login kembali.', 'warning');
+                setTimeout(() => { window.location.href = '/login'; }, 1500);
                 return;
             }
 
             if (btnSaveDraft) {
                 btnSaveDraft.disabled = true;
-                btnSaveDraft.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Menyimpan...';
             }
 
-            const formData = new FormData();
-            formData.append('jenis_kegiatan', jenisKegiatan);
-            formData.append('nip', nip);
-            formData.append('unit', unit || '');
-            
-            if (tanggalDibuat) {
-                const date = new Date(tanggalDibuat);
-                if (!isNaN(date.getTime())) {
-                    const formattedDate = date.getFullYear() + '-' + 
-                        String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-                        String(date.getDate()).padStart(2, '0') + ' ' +
-                        String(date.getHours()).padStart(2, '0') + ':' +
-                        String(date.getMinutes()).padStart(2, '0') + ':' +
-                        String(date.getSeconds()).padStart(2, '0');
-                    formData.append('tanggal_dibuat', formattedDate);
-                }
-            }
+            let formattedDate;
+            try { formattedDate = formatDateForApi(tanggalDibuat); } catch(e) { formattedDate = null; }
 
-            const hasilTemuan = document.getElementById('hasilTemuan')?.value || '';
-            if (hasilTemuan) formData.append('hasil_temuan', hasilTemuan);
+            const total = selectedKegiatan.length;
+            let successCount = 0;
+            let lastSavedId = null;
+            const errors = [];
 
-            if (signatures.petugas) formData.append('signature_pelaksana', signatures.petugas);
-            if (signatures.kaUnit) formData.append('signature_pj', signatures.kaUnit);
+            for (let i = 0; i < selectedKegiatan.length; i++) {
+                const kegiatan = selectedKegiatan[i];
+                if (btnSaveDraft) btnSaveDraft.innerHTML = `<i class="fas fa-spinner fa-spin me-1"></i>Draft ${i+1}/${total}...`;
 
-            const namaPetugas = document.getElementById('petugasNameInput')?.value?.trim() || '';
-            if (namaPetugas) {
-                formData.append('nama_petugas', namaPetugas);
-                formData.append('nama_pelaksana', namaPetugas);
-            }
-            const namaKaUnit = document.getElementById('kaUnitNameInput')?.value?.trim() || '';
-            if (namaKaUnit) {
-                formData.append('nama_ka_unit', namaKaUnit);
-                formData.append('nama_pj', namaKaUnit);
-            }
+                const fd = buildSharedFormData(nip, unit, formattedDate, 'draft');
+                fd.append('jenis_kegiatan', kegiatan);
 
-            if (existingPhotos && existingPhotos.length > 0) {
-                existingPhotos.forEach((photo, index) => {
-                    formData.append(`existing_dokumentasi[${index}]`, photo.path);
-                });
-            }
-
-            if (capturedPhotos && capturedPhotos.length > 0) {
-                capturedPhotos.forEach((photo, index) => {
-                    if (photo.data) formData.append(`captured_photos[${index}]`, photo.data);
-                });
-            }
-
-            if (uploadedFiles && uploadedFiles.length > 0) {
-                uploadedFiles.forEach((fileData, index) => {
-                    if (fileData.file) formData.append(`uploaded_files[${index}]`, fileData.file);
-                });
-            }
-
-            formData.append('status', 'draft');
-
-            let apiUrl = '/api/detail-jenis-kegiatan';
-            if (isEditMode && editItemId) {
-                apiUrl = `/api/detail-jenis-kegiatan/${editItemId}`;
-                formData.append('_method', 'PUT');
-            }
-
-            try {
-                const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-                if (!token) {
-                    showNotification('Sesi telah berakhir. Silakan login kembali.', 'warning');
-                    setTimeout(() => { window.location.href = '/login'; }, 1500);
-                    return;
+                let apiUrl = '/api/detail-jenis-kegiatan';
+                if (isEditMode && editItemId && i === 0) {
+                    apiUrl = `/api/detail-jenis-kegiatan/${editItemId}`;
+                    fd.append('_method', 'PUT');
                 }
 
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: formData
-                });
-
-                const result = await response.json();
-                if (response.ok && result.success) {
-                    try { sessionStorage.removeItem('editDetailData'); } catch(e) {}
-                    showNotification('Draft berhasil disimpan!', 'success');
-                    updateStatusBadge('draft');
-                    if (result.data && result.data.id) {
-                        isEditMode = true;
-                        editItemId = result.data.id;
+                try {
+                    const response = await fetch(apiUrl, { method: 'POST', headers, body: fd });
+                    const result = await response.json();
+                    if (response.ok && result.success) {
+                        successCount++;
+                        if (result.data?.id && i === 0) lastSavedId = result.data.id;
+                    } else {
+                        errors.push(`${kegiatan}: ${result.message || 'Gagal'}`);
                     }
-
-                    // Tutup form dan kembali ke halaman sebelumnya setelah notifikasi muncul
-                    setTimeout(() => {
-                        goBack();
-                    }, 1000);
-                } else {
-                    let errMsg = result.message || 'Terjadi kesalahan saat menyimpan draft';
-                    if (result.errors) {
-                        const errorDetails = Object.entries(result.errors)
-                            .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
-                            .join('\n');
-                        errMsg += ':\n' + errorDetails;
-                    }
-                    showNotification(errMsg, 'error');
+                } catch(e) {
+                    errors.push(`${kegiatan}: ${e.message}`);
                 }
-            } catch (error) {
-                console.error('Error saving draft:', error);
-                showNotification('Terjadi kesalahan: ' + error.message, 'error');
-            } finally {
+            }
+
+            try { sessionStorage.removeItem('editDetailData'); } catch(e) {}
+
+            if (successCount > 0) {
+                if (lastSavedId) { isEditMode = true; editItemId = lastSavedId; }
+                updateStatusBadge('draft');
+                const msg = successCount === total
+                    ? `✅ Draft ${total} kegiatan berhasil disimpan!`
+                    : `⚠️ ${successCount}/${total} draft tersimpan. Gagal: ${errors.join('; ')}`;
+                showNotification(msg, successCount === total ? 'success' : 'warning');
+                setTimeout(() => { goBack(); }, 1000);
+            } else {
+                showNotification('Gagal menyimpan draft: ' + errors.join('; '), 'error');
                 if (btnSaveDraft) {
                     btnSaveDraft.disabled = false;
                     btnSaveDraft.innerHTML = originalDraftContent;
