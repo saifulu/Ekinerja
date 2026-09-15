@@ -413,13 +413,6 @@
                         Pantau seluruh riwayat pencatatan aktivitas, validasi tanda tangan elektronik, dan arsipkan rekapitulasi data kegiatan kinerja.
                     </p>
                 </div>
-
-                <button type="button" 
-                        id="exportPdfButton" 
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-semibold text-xs sm:text-sm shadow-md shadow-rose-600/25 transition-all">
-                    <i class="fas fa-file-pdf"></i>
-                    <span>Pratinjau & Cetak PDF</span>
-                </button>
             </div>
         </div>
 
@@ -500,10 +493,21 @@
                         </div>
                     </div>
 
-                    <!-- Live Count Indicator -->
-                    <div class="text-[11px] text-slate-300 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700/60 flex items-center gap-1.5 shrink-0" id="liveCountContainer">
-                        <i class="fas fa-list-check text-emerald-400"></i>
-                        <span><strong class="text-white font-bold" id="visibleCountIndicator">{{ $laporanData ? $laporanData->count() : 0 }}</strong> data</span>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <!-- Live Count Indicator -->
+                        <div class="text-[11px] text-slate-300 bg-slate-800/80 px-2.5 py-1.5 rounded-lg border border-slate-700/60 flex items-center gap-1.5" id="liveCountContainer">
+                            <i class="fas fa-list-check text-emerald-400"></i>
+                            <span><strong class="text-white font-bold" id="visibleCountIndicator">{{ $laporanData ? $laporanData->count() : 0 }}</strong> data</span>
+                        </div>
+
+                        <!-- Print / Export PDF Trigger Button -->
+                        <button type="button" 
+                                onclick="exportToPDF()" 
+                                id="btnTableExportPdf" 
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-semibold text-xs shadow-md shadow-rose-600/25 transition-all">
+                            <i class="fas fa-file-pdf"></i>
+                            <span>Pratinjau & Cetak PDF</span>
+                        </button>
                     </div>
                 </div>
 
@@ -1617,10 +1621,17 @@
         // Professional PDF Export Engine with Official Institutional Layout
         async function exportToPDF() {
             const exportBtn = document.getElementById('exportPdfButton');
+            const tableExportBtn = document.getElementById('btnTableExportPdf');
             const origContent = exportBtn ? exportBtn.innerHTML : '';
+            const origTableContent = tableExportBtn ? tableExportBtn.innerHTML : '';
+
             if (exportBtn) {
                 exportBtn.disabled = true;
-                exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Menyusun Dokumen PDF...';
+                exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Menyusun PDF...';
+            }
+            if (tableExportBtn) {
+                tableExportBtn.disabled = true;
+                tableExportBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Menyusun PDF...';
             }
 
             try {
@@ -2257,6 +2268,10 @@
                 if (exportBtn) {
                     exportBtn.disabled = false;
                     exportBtn.innerHTML = origContent;
+                }
+                if (tableExportBtn) {
+                    tableExportBtn.disabled = false;
+                    tableExportBtn.innerHTML = origTableContent;
                 }
             }
         }

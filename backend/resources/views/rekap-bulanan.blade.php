@@ -343,14 +343,19 @@
                     <span id="matrixCountIndicator"><strong>0</strong> Jenis Kegiatan</span>
                 <div class="flex items-center gap-2">
                     <div class="text-[11px] text-slate-300 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700/60 flex items-center gap-1.5">
+                    <div class="text-[11px] text-slate-300 bg-slate-800/80 px-2.5 py-1.5 rounded-lg border border-slate-700/60 flex items-center gap-1.5">
                         <i class="fas fa-chart-pie text-teal-400"></i>
                         <span id="matrixCountIndicator"><strong>0</strong> Jenis Kegiatan</span>
                     </div>
                     <button type="button" 
+                            id="btnTableExportMatrixPdf" 
                             onclick="exportMatrixToPDF()" 
                             class="no-print inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 border border-teal-500/40 text-teal-300 text-xs font-semibold transition-all shadow-sm">
                         <i class="fas fa-file-pdf text-rose-400"></i>
                         <span>Cetak PDF</span>
+                            class="no-print inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-semibold text-xs shadow-md shadow-rose-600/25 transition-all">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Pratinjau & Cetak PDF</span>
                     </button>
                 </div>
             </div>
@@ -691,10 +696,17 @@
 
         async function exportMatrixToPDF() {
             const btnHero = document.getElementById('exportMatrixPdfBtn');
+            const btnTable = document.getElementById('btnTableExportMatrixPdf');
             const origHeroContent = btnHero ? btnHero.innerHTML : '';
+            const origTableContent = btnTable ? btnTable.innerHTML : '';
+
             if (btnHero) {
                 btnHero.disabled = true;
                 btnHero.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Menyusun PDF...';
+            }
+            if (btnTable) {
+                btnTable.disabled = true;
+                btnTable.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Menyusun PDF...';
             }
 
             try {
@@ -1127,6 +1139,10 @@
                 if (btnHero) {
                     btnHero.disabled = false;
                     btnHero.innerHTML = origHeroContent;
+                }
+                if (btnTable) {
+                    btnTable.disabled = false;
+                    btnTable.innerHTML = origTableContent;
                 }
             }
         }
