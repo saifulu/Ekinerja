@@ -3,7 +3,7 @@
  * Version: 2.4.0
  */
 
-const CACHE_NAME = 'e-kinerja-v2.4';
+const CACHE_NAME = 'e-kinerja-v2.5';
 
 // Aset statis inti yang wajib tersedia untuk offline shell
 const PRECACHE_ASSETS = [

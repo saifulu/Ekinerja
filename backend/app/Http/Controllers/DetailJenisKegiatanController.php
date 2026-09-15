@@ -343,7 +343,6 @@ class DetailJenisKegiatanController extends Controller
 
         $updateFields = [
             'jenis_kegiatan', 'nip', 'unit', 'tanggal_dibuat',
-            'jenis_kegiatan', 'nip', 'tanggal_dibuat',
             'hasil_temuan', 'signature_pelaksana', 'signature_pj', 'status'
         ];
         
