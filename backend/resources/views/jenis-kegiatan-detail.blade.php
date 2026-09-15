@@ -1399,7 +1399,7 @@
                     <form id="detailKegiatanForm">
                         <div class="row">
                             <!-- Jenis Kegiatan -->
-                            <div class="col-12 mb-3">
+                            <div class="col-12 col-md-6 mb-3 order-1">
                                 <label for="jenisKegiatan" class="form-label d-flex align-items-center justify-content-between mb-1.5">
                                     <span><i class="fas fa-tasks me-2 text-teal-400"></i>Jenis Kegiatan</span>
                                     <button type="button" onclick="tambahKegiatanBaru()" 
@@ -1413,7 +1413,7 @@
                             </div>
 
                             <!-- Container Kegiatan Tambahan (Hanya muncul jika user klik + Tambah Kegiatan) -->
-                            <div class="col-12 mb-3" id="extraKegiatanSection" style="display:none;">
+                            <div class="col-12 mb-3 order-2 order-md-3" id="extraKegiatanSection" style="display:none;">
                                 <div class="p-3 rounded-3" style="background:rgba(15,23,42,0.6);border:1px solid rgba(45,212,191,0.25);">
                                     <div class="d-flex align-items-center justify-content-between mb-2">
                                         <span class="text-white fw-semibold" style="font-size:12.5px;">
@@ -1435,7 +1435,7 @@
                             </div>
 
                             <!-- NIP -->
-                            <div class="col-md-6 mb-3">
+                            <div class="col-12 col-md-6 mb-3 order-3 order-md-2">
                                 <label for="nip" class="form-label">
                                     <i class="fas fa-id-card me-2"></i>NIP
                                 </label>
@@ -1443,7 +1443,7 @@
                             </div>
 
                             <!-- Unit -->
-                            <div class="col-md-6 mb-3">
+                            <div class="col-12 col-md-6 mb-3 order-4 order-md-4">
                                 <label for="unit" class="form-label">
                                     <i class="fas fa-building me-2"></i>Unit
                                 </label>
@@ -1462,7 +1462,7 @@
                             </div>
 
                             <!-- Tanggal Kegiatan (Satu Tanggal Utama Untuk Seluruh Laporan) -->
-                            <div class="col-12 mb-3">
+                            <div class="col-12 col-md-6 mb-3 order-5 order-md-5">
                                 <label for="tanggalDibuat" class="form-label d-flex align-items-center justify-content-between mb-1.5">
                                     <span class="text-white"><i class="fas fa-calendar-day text-emerald-400 me-2"></i>Tanggal Kegiatan</span>
                                     <span class="badge bg-emerald-500/15 text-emerald-300 border border-emerald-500/25 px-2 py-0.5" style="font-size: 10.5px; font-weight: 500;">

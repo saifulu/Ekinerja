@@ -1,9 +1,9 @@
 /**
  * Service Worker - e-Kinerja Progressive Web App (PWA)
- * Version: 3.2.0
+ * Version: 3.3.0
  */
 
-const CACHE_NAME = 'e-kinerja-v3.2';
+const CACHE_NAME = 'e-kinerja-v3.3';
 
 // Aset statis inti yang wajib tersedia untuk offline shell
 const PRECACHE_ASSETS = [
