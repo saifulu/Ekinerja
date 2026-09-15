@@ -1399,7 +1399,7 @@
                     <form id="detailKegiatanForm">
                         <div class="row">
                             <!-- Jenis Kegiatan -->
-                            <div class="col-md-6 mb-3">
+                            <div class="col-12 mb-3">
                                 <label for="jenisKegiatan" class="form-label d-flex align-items-center justify-content-between mb-1.5">
                                     <span><i class="fas fa-tasks me-2 text-teal-400"></i>Jenis Kegiatan</span>
                                     <button type="button" onclick="tambahKegiatanBaru()" 
@@ -1410,14 +1410,6 @@
                                     </button>
                                 </label>
                                 <input type="text" class="form-control" id="jenisKegiatan" name="jenis_kegiatan" value="{{ $prefilledJenisKegiatan ?? '' }}" readonly>
-                            </div>
-
-                            <!-- NIP -->
-                            <div class="col-md-6 mb-3">
-                                <label for="nip" class="form-label">
-                                    <i class="fas fa-id-card me-2"></i>NIP
-                                </label>
-                                <input type="text" class="form-control" id="nip" name="nip" value="{{ $prefilledNip ?? '' }}" readonly>
                             </div>
 
                             <!-- Container Kegiatan Tambahan (Hanya muncul jika user klik + Tambah Kegiatan) -->
@@ -1442,6 +1434,14 @@
                                 </div>
                             </div>
 
+                            <!-- NIP -->
+                            <div class="col-md-6 mb-3">
+                                <label for="nip" class="form-label">
+                                    <i class="fas fa-id-card me-2"></i>NIP
+                                </label>
+                                <input type="text" class="form-control" id="nip" name="nip" value="{{ $prefilledNip ?? '' }}" readonly>
+                            </div>
+
                             <!-- Unit -->
                             <div class="col-md-6 mb-3">
                                 <label for="unit" class="form-label">
@@ -1462,7 +1462,7 @@
                             </div>
 
                             <!-- Tanggal Kegiatan (Satu Tanggal Utama Untuk Seluruh Laporan) -->
-                            <div class="col-md-6 mb-3">
+                            <div class="col-12 mb-3">
                                 <label for="tanggalDibuat" class="form-label d-flex align-items-center justify-content-between mb-1.5">
                                     <span class="text-white"><i class="fas fa-calendar-day text-emerald-400 me-2"></i>Tanggal Kegiatan</span>
                                     <span class="badge bg-emerald-500/15 text-emerald-300 border border-emerald-500/25 px-2 py-0.5" style="font-size: 10.5px; font-weight: 500;">
