@@ -1347,26 +1347,17 @@
     <div class="container-fluid py-2 py-sm-3 py-md-4">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <!-- Header (Slim & Compact on Mobile) -->
-                <div class="glass-card px-3 py-2.5 px-sm-4 py-sm-3 mb-3">
-                    <div class="d-flex align-items-center justify-content-between gap-2">
-                        <div class="d-flex align-items-center min-w-0">
-                            <button onclick="goBack()" class="btn btn-secondary rounded-xl d-inline-flex align-items-center justify-center me-2 me-sm-3 flex-shrink-0" style="width: 34px; height: 34px; min-width: 34px; padding: 0;" title="Kembali">
-                                <i class="fas fa-arrow-left text-xs text-slate-300"></i>
                 <!-- Header (Executive Slim & Professional) -->
                 <div class="app-header-bar mb-3">
-                    <div class="d-flex align-items-center justify-content-between gap-2.5">
-                        <div class="d-flex align-items-center min-w-0 gap-2 gap-sm-2.5">
+                    <div class="d-flex align-items-center justify-content-between gap-2.5" style="width: 100%;">
+                        <div class="d-flex align-items-center min-w-0 gap-2 gap-sm-2.5" style="flex: 1;">
                             <button onclick="goBack()" class="header-nav-btn flex-shrink-0" title="Kembali ke Laporan">
                                 <i class="fas fa-arrow-left text-xs"></i>
                             </button>
-                            <div class="min-w-0">
-                                <h5 class="text-white font-bold mb-0 text-sm sm:text-base leading-tight truncate" id="pageTitle">Detail Jenis Kegiatan</h5>
-                                <p class="text-slate-400 mb-0 text-[11px] sm:text-xs leading-tight truncate" id="pageSubtitle">Kelola detail kegiatan Anda</p>
                             <div class="min-w-0 d-flex flex-column justify-content-center">
                                 <div class="d-flex align-items-center gap-1.5 mb-0.5">
                                     <span class="header-micro-tag">
-                                        <i class="fas fa-file-pen" style="font-size: 8.5px;"></i>
+                                        <i class="fas fa-file-pen" style="font-size: 8px;"></i>
                                         <span>Logbook</span>
                                     </span>
                                 </div>
@@ -1374,7 +1365,6 @@
                                 <p class="header-subtitle-text text-truncate mb-0" id="pageSubtitle">Kelola detail kegiatan Anda</p>
                             </div>
                         </div>
-                        <div id="statusBadge" class="status-badge status-draft px-2.5 py-1 text-[11px] sm:text-xs font-semibold rounded-full flex-shrink-0" style="padding: 4px 10px;">
                         <div id="statusBadge" class="status-badge status-draft flex-shrink-0">
                             Draft
                         </div>
@@ -2068,11 +2058,18 @@
             console.log('🚀 DOM Content Loaded - Starting initialization...');
             
             // Periksa autentikasi terlebih dahulu
+            // 1. Inisialisasi data halaman sesegera mungkin agar input langsung terisi
+            await initializePageData();
+            initializeCamera();
+            initializeFileUpload();
+
+            // 2. Periksa autentikasi di latar belakang
             const token = localStorage.getItem('token') || sessionStorage.getItem('token');
             let user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
             
             if (!token) {
                 console.log('No valid session token found, redirecting to login...');
+                console.warn('No valid session token found, redirecting to login...');
                 alert('Session expired. Please login again.');
                 window.location.href = '/login';
                 return;
@@ -2092,6 +2089,13 @@
                         if (meData.data) {
                             user = { ...user, ...meData.data };
                             localStorage.setItem('user', JSON.stringify(user));
+                            // Update NIP / Petugas jika sebelumnya kosong
+                            const nipEl = document.getElementById('nip');
+                            if (nipEl && !nipEl.value && user.nip) nipEl.value = user.nip;
+                            const petugasNameInput = document.getElementById('petugasNameInput');
+                            if (petugasNameInput && !petugasNameInput.value && (user.name || user.nama)) {
+                                petugasNameInput.value = user.name || user.nama;
+                            }
                         }
                     }
                 } catch(e) {
@@ -2100,6 +2104,7 @@
             }
             
             console.log('User authenticated:', { nip: user.nip, name: user.name });
+            console.log('User authenticated:', { nip: user?.nip, name: user?.name || user?.nama });
             
             // Inisialisasi data halaman
             await initializePageData();
@@ -2331,6 +2336,13 @@
                         }
                     }
                 }
+                
+                // Jika pageData adalah string (terjadi jika double encoded), parse sekali lagi
+                if (typeof pageData === 'string') {
+                    try {
+                        pageData = JSON.parse(pageData);
+                    } catch (e3) {}
+                }
 
                 // Auto-fill NIP dari data URL atau session user
                 const resolvedNip = pageData?.nip || user?.nip || user?.NIP || urlParams.get('nip') || '';
@@ -2346,6 +2358,23 @@
                     const jkEl = document.getElementById('jenisKegiatan');
                     if (jkEl) jkEl.value = resolvedJenisKegiatan;
                     console.log('Auto-filled Jenis Kegiatan:', resolvedJenisKegiatan);
+                }
+
+                // Auto-fill Petugas / Pelaksana jika ada
+                const resolvedPetugas = pageData?.nama_pelaksana || pageData?.nama_petugas || user?.name || user?.nama || '';
+                if (resolvedPetugas) {
+                    const petugasInput = document.getElementById('petugasNameInput');
+                    if (petugasInput && !petugasInput.value) {
+                        petugasInput.value = resolvedPetugas;
+                    }
+                }
+
+                // Auto-fill Tanggal Kegiatan jika masih kosong dengan waktu lokal saat ini
+                const tglEl = document.getElementById('tanggalDibuat');
+                if (tglEl && !tglEl.value) {
+                    const now = new Date();
+                    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                    tglEl.value = now.toISOString().slice(0, 16);
                 }
 
                 let editData = null;

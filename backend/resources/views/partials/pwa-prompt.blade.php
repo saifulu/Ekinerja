@@ -74,26 +74,30 @@
 <style>
     /* Styling PWA Floating Button & Modal */
     .global-pwa-btn {
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        z-index: 99990;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 18px;
-        background: linear-gradient(135deg, #10b981, #059669);
-        color: #ffffff;
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 9999px;
-        box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        font-size: 13.5px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
+        position: fixed !important;
+        bottom: 24px !important;
+        right: 24px !important;
+        left: auto !important;
+        width: auto !important;
+        max-width: fit-content !important;
+        height: auto !important;
+        z-index: 99990 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        padding: 10px 18px !important;
+        background: linear-gradient(135deg, #10b981, #059669) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+        border-radius: 9999px !important;
+        box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3) !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        font-size: 13.5px !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease !important;
+        backdrop-filter: blur(8px) !important;
+        -webkit-backdrop-filter: blur(8px) !important;
     }
     .global-pwa-btn:hover {
         transform: translateY(-2px) scale(1.02);

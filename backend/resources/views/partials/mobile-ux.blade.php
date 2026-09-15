@@ -74,10 +74,6 @@
         .signature-actions .btn, form > .d-flex.justify-content-end .btn {
             width: 100%; margin: 0 !important;
         }
-        .glass-card > .d-flex.align-items-center.justify-content-between {
-            align-items: flex-start !important; flex-direction: column; gap: 0.75rem;
-        }
-        .glass-card > .d-flex.align-items-center.justify-content-between > .d-flex { width: 100%; min-width: 0; }
     }
 
     @media (max-width: 420px) {
