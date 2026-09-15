@@ -2066,11 +2066,6 @@
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 DOM Content Loaded - Starting initialization...');
             
-            // Periksa autentikasi terlebih dahulu
-            // 1. Inisialisasi data halaman sesegera mungkin agar input langsung terisi
-            await initializePageData();
-            initializeCamera();
-            initializeFileUpload();
             // 1. Inisialisasi data halaman sesegera mungkin agar input langsung terisi instan
             try {
                 await initializePageData();
@@ -2090,20 +2085,10 @@
                 console.error('Error in initializeFileUpload:', err);
             }
 
-            // 2. Periksa autentikasi di latar belakang
+            // 2. Periksa profil user di latar belakang jika token tersedia
             const token = localStorage.getItem('token') || sessionStorage.getItem('token');
             let user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
             
-            if (!token) {
-                console.log('No valid session token found, redirecting to login...');
-                console.warn('No valid session token found, redirecting to login...');
-                alert('Session expired. Please login again.');
-                window.location.href = '/login';
-                return;
-            }
-
-            // Jika user data belum lengkap di local storage, ambil dari /api/auth/me
-            if (!user || !user.nip || !user.name) {
             if (token && (!user || !user.nip || !user.name)) {
                 try {
                     const meRes = await fetch('/api/auth/me', {
@@ -2117,7 +2102,6 @@
                         if (meData.data) {
                             user = { ...user, ...meData.data };
                             localStorage.setItem('user', JSON.stringify(user));
-                            // Update NIP / Petugas jika sebelumnya kosong
                             const nipEl = document.getElementById('nip');
                             if (nipEl && !nipEl.value && user.nip) nipEl.value = user.nip;
                             const petugasNameInput = document.getElementById('petugasNameInput');
@@ -2131,13 +2115,7 @@
                 }
             }
             
-            console.log('User authenticated:', { nip: user.nip, name: user.name });
             console.log('User authenticated:', { nip: user?.nip, name: user?.name || user?.nama });
-            
-            // Inisialisasi data halaman
-            await initializePageData();
-            initializeCamera();
-            initializeFileUpload();
             
             // Setup form submission handler
             const form = document.getElementById('detailKegiatanForm');
@@ -2148,7 +2126,6 @@
                 form.removeAttribute('action');
                 form.removeAttribute('method');
                 form.onsubmit = null;
-                console.log('🧹 Removed form action and method attributes');
                 
                 form.addEventListener('submit', async function(event) {
                     event.preventDefault();
@@ -2166,13 +2143,13 @@
                         submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
                         
                         // Validate required fields before sending
-                        const jenisKegiatan = document.getElementById('jenisKegiatan').value;
-                        const nip = document.getElementById('nip').value;
-                        const unit = document.getElementById('unit').value;
-                        const tanggalDibuat = document.getElementById('tanggalDibuat').value;
+                        const jenisKegiatan = document.getElementById('jenisKegiatan')?.value?.trim();
+                        const nip = document.getElementById('nip')?.value?.trim() || user?.nip || user?.NIP || '';
+                        const unit = document.getElementById('unit')?.value?.trim();
+                        const tanggalDibuat = document.getElementById('tanggalDibuat')?.value;
                         
-                        if (!jenisKegiatan || !nip || !unit || !tanggalDibuat) {
-                            throw new Error('Semua field wajib harus diisi');
+                        if (!jenisKegiatan || !nip) {
+                            throw new Error('Jenis Kegiatan dan NIP wajib diisi');
                         }
                         
                         const formData = new FormData();
@@ -2180,7 +2157,7 @@
                         // Add basic fields with proper validation
                         formData.append('jenis_kegiatan', jenisKegiatan);
                         formData.append('nip', nip);
-                        formData.append('unit', unit);
+                        formData.append('unit', unit || user?.ruangan || '-');
                         
                         // Fix date format - ensure it's in Y-m-d H:i:s format
                         let formattedDate;
@@ -2196,7 +2173,6 @@
                                 String(date.getMinutes()).padStart(2, '0') + ':' +
                                 String(date.getSeconds()).padStart(2, '0');
                         } else {
-                            // Use current datetime if not provided
                             const now = new Date();
                             formattedDate = now.getFullYear() + '-' + 
                                 String(now.getMonth() + 1).padStart(2, '0') + '-' + 
@@ -2269,18 +2245,21 @@
                         
                         console.log('📤 Sending data to API:', apiUrl);
                         
-                        // Check token
-                        if (!token) {
-                            throw new Error('Token tidak ditemukan. Silakan login ulang.');
+                        const headers = {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        };
+                        if (token) {
+                            headers['Authorization'] = `Bearer ${token}`;
+                        }
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                        if (csrfToken) {
+                            headers['X-CSRF-TOKEN'] = csrfToken;
                         }
                         
                         const response = await fetch(apiUrl, {
                             method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Accept': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            },
+                            headers: headers,
                             body: formData
                         });
                         
@@ -2299,7 +2278,7 @@
                             updateStatusBadge('submitted');
                             
                             setTimeout(() => {
-                                window.location.href = `/laporan?nip=${nip}`;
+                                window.location.href = `/laporan-kinerja?nip=${nip}`;
                             }, 1200);
                         } else {
                             console.error('❌ API Error:', result);
@@ -2963,15 +2942,11 @@
             }
             
             const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
-            if (document.referrer && (document.referrer.includes('laporan') || document.referrer.includes('user-dashboard'))) {
             if (document.referrer && (document.referrer.includes('laporan') || document.referrer.includes('user-dashboard') || document.referrer.includes('rekap'))) {
                 window.history.back();
-            } else if (user.nip) {
-                window.location.href = `/laporan?nip=${user.nip}`;
             } else if (user && user.nip) {
                 window.location.href = `/laporan-kinerja?nip=${user.nip}`;
             } else {
-                window.location.href = '/dashboard';
                 window.location.href = '/user-dashboard';
             }
         }
@@ -2983,13 +2958,14 @@
             const btnSaveDraft = document.getElementById('btnSaveDraft');
             const originalDraftContent = btnSaveDraft ? btnSaveDraft.innerHTML : '';
 
+            const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
             const jenisKegiatan = document.getElementById('jenisKegiatan')?.value?.trim();
-            const nip = document.getElementById('nip')?.value?.trim();
-            const unit = document.getElementById('unit')?.value?.trim();
+            const nip = document.getElementById('nip')?.value?.trim() || user?.nip || user?.NIP || '';
+            const unit = document.getElementById('unit')?.value?.trim() || user?.ruangan || '';
             const tanggalDibuat = document.getElementById('tanggalDibuat')?.value;
 
-            if (!jenisKegiatan || !nip) {
-                showNotification('Jenis Kegiatan dan NIP wajib terisi untuk menyimpan draft.', 'warning');
+            if (!jenisKegiatan) {
+                showNotification('Jenis Kegiatan belum terisi.', 'warning');
                 return;
             }
 
@@ -3088,6 +3064,7 @@
                         try {
                             const newUrl = new URL(window.location.href);
                             newUrl.searchParams.set('id', result.data.id);
+                            newUrl.searchParams.set('edit', 'true');
                             window.history.replaceState({}, '', newUrl.toString());
                         } catch(e) {}
                     }

@@ -52,18 +52,20 @@ class DetailJenisKegiatanController extends Controller
     public function store(Request $request): JsonResponse
     {
         // Add debugging
-        \Log::info('Store request received', [
-            'all_data' => $request->all(),
-            'files' => $request->allFiles()
-        ]);
-        
+        $user = Auth::user() ?: $request->user() ?: Auth::guard('web')->user();
+        if (!$user && $request->filled('nip')) {
+            $user = \App\Models\User::where('nip', $request->nip)->first();
+        }
+
+        if ($user && !$request->filled('nip')) {
+            $request->merge(['nip' => $user->nip ?: ($user->username ?: (string)$user->id)]);
+        }
+
         $isDraft = ($request->status === 'draft');
 
         $validator = Validator::make($request->all(), [
             'jenis_kegiatan' => 'required|string|max:255',
             'nip' => 'required|string|max:255',
-            'unit' => 'required|string|max:255',
-            'tanggal_dibuat' => 'required|date',
             'unit' => $isDraft ? 'nullable|string|max:255' : 'required|string|max:255',
             'tanggal_dibuat' => $isDraft ? 'nullable|date' : 'required|date',
             'hasil_temuan' => 'nullable|string',
@@ -91,10 +93,6 @@ class DetailJenisKegiatanController extends Controller
         }
     
         try {
-            $user = Auth::user() ?: $request->user() ?: Auth::guard('web')->user();
-            if (!$user && $request->nip) {
-                $user = \App\Models\User::where('nip', $request->nip)->first();
-            }
             if (!$user) {
                 return response()->json([
                     'success' => false,
@@ -284,14 +282,22 @@ class DetailJenisKegiatanController extends Controller
             'files' => $request->allFiles()
         ]);
 
+        $user = Auth::user() ?: $request->user() ?: Auth::guard('web')->user();
+        if (!$user && $request->filled('nip')) {
+            $user = \App\Models\User::where('nip', $request->nip)->first();
+        }
+
+        if ($user && !$request->filled('nip')) {
+            $request->merge(['nip' => $user->nip ?: ($user->username ?: (string)$user->id)]);
+        }
+
         $isDraft = ($request->status === 'draft');
 
         $validator = Validator::make($request->all(), [
             'jenis_kegiatan' => 'sometimes|required|string|max:255',
             'nip' => 'sometimes|required|string|max:255',
-            'unit' => 'sometimes|required|string|max:255',
             'unit' => $isDraft ? 'nullable|string|max:255' : 'sometimes|required|string|max:255',
-            'tanggal_dibuat' => 'sometimes|required|date',
+            'tanggal_dibuat' => 'sometimes|nullable|date',
             'hasil_temuan' => 'nullable|string',
             'signature_pelaksana' => 'nullable|string',
             'signature_pj' => 'nullable|string',
@@ -316,11 +322,6 @@ class DetailJenisKegiatanController extends Controller
                 'message' => 'Validation failed',
                 'errors' => $validator->errors()
             ], 422);
-        }
-
-        $user = Auth::user() ?: $request->user() ?: Auth::guard('web')->user();
-        if (!$user && $request->nip) {
-            $user = \App\Models\User::where('nip', $request->nip)->first();
         }
 
         if (!$user) {

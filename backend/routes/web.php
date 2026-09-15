@@ -44,9 +44,6 @@ Route::get('/laporan-kinerja', [DetailJenisKegiatanController::class, 'showLapor
 Route::get('/laporan/rekap-bulanan', [DetailJenisKegiatanController::class, 'showRekapBulanan'])->name('laporan.rekap-bulanan');
 Route::get('/rekap-bulanan', [DetailJenisKegiatanController::class, 'showRekapBulanan'])->name('rekap-bulanan');
 
-// Detail Jenis Kegiatan page - Updated route
-Route::get('/jenis-kegiatan/detail', function () {
-    return view('jenis-kegiatan-detail');
 // Detail Jenis Kegiatan page - Updated route with server-side pre-population
 Route::get('/jenis-kegiatan/detail', function (\Illuminate\Http\Request $request) {
     $dataParam = $request->query('data');
