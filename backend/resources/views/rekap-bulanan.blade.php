@@ -180,19 +180,18 @@
                 </div>
 
                 <div class="flex items-center gap-2 w-full sm:w-auto no-print">
-                    <button type="button" 
-                            onclick="window.print()" 
-                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-semibold text-xs sm:text-sm shadow-md shadow-teal-600/25 transition-all">
+                    <button type="button"
+                            onclick="window.print()"
+                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-700/80 hover:bg-slate-600/80 border border-slate-600/60 text-slate-100 font-semibold text-xs sm:text-sm shadow-sm transition-all">
                         <i class="fas fa-print"></i>
                         <span>Cetak Matriks</span>
-                            id="exportMatrixPdfBtn" 
-                            onclick="exportMatrixToPDF()" 
+                    </button>
                     <button type="button"
                             id="exportMatrixPdfBtn"
                             onclick="exportMatrixToPDF()"
-                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-semibold text-xs sm:text-sm shadow-md shadow-rose-600/25 transition-all">
+                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-semibold text-xs sm:text-sm shadow-md shadow-rose-900/40 transition-all">
                         <i class="fas fa-file-pdf"></i>
-                        <span>Pratinjau & Cetak PDF</span>
+                        <span>Pratinjau &amp; Cetak PDF</span>
                     </button>
                 </div>
             </div>
@@ -334,41 +333,41 @@
             </div>
 
 
-            <!-- Table Header Info Bar -->
-            <div class="flex items-center justify-between gap-3 pb-2">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2">
-                <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
-                    <span class="text-xs font-bold text-slate-200" id="matrixTitle">Tabel Tabulasi Harian</span>
-                    <span class="text-xs sm:text-sm font-bold text-slate-200" id="matrixTitle">Tabel Tabulasi Harian</span>
-                </div>
-                <div class="text-[11px] text-slate-300 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700/60 flex items-center gap-1.5">
-                    <i class="fas fa-chart-pie text-teal-400"></i>
-                    <span id="matrixCountIndicator"><strong>0</strong> Jenis Kegiatan</span>
-                <div class="flex items-center gap-2">
-                    <div class="text-[11px] text-slate-300 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700/60 flex items-center gap-1.5">
-                    <div class="text-[11px] text-slate-300 bg-slate-800/80 px-2.5 py-1.5 rounded-lg border border-slate-700/60 flex items-center gap-1.5">
-                        <i class="fas fa-chart-pie text-teal-400"></i>
-                        <span id="matrixCountIndicator"><strong>0</strong> Jenis Kegiatan</span>
+            <!-- Table Header Info Bar (clean, no duplicates) -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 px-1">
+                <!-- Left: Title + Indicator -->
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-teal-400 animate-pulse flex-shrink-0"></span>
+                        <span class="text-sm font-bold text-slate-100 tracking-tight" id="matrixTitle">Tabel Tabulasi Harian</span>
                     </div>
-                    <button type="button" 
-                            id="btnTableExportMatrixPdf" 
-                            onclick="exportMatrixToPDF()" 
-                            class="no-print inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 border border-teal-500/40 text-teal-300 text-xs font-semibold transition-all shadow-sm">
-                        <i class="fas fa-file-pdf text-rose-400"></i>
-                        <span>Cetak PDF</span>
+                    <div class="inline-flex items-center gap-1.5 bg-slate-800/90 border border-slate-700/60 px-2.5 py-1 rounded-lg">
+                        <i class="fas fa-layer-group text-teal-400 text-[11px]"></i>
+                        <span class="text-[11px] text-slate-300 font-medium" id="matrixCountIndicator"><strong class="text-teal-300">0</strong> Jenis Kegiatan</span>
+                    </div>
+                </div>
+
+                <!-- Right: Action Buttons -->
+                <div class="flex items-center gap-2 no-print">
                     <button type="button"
                             id="btnTableExportMatrixPdf"
                             onclick="exportMatrixToPDF()"
-                            class="no-print inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-semibold text-xs shadow-md shadow-rose-600/25 transition-all">
-                        <i class="fas fa-file-pdf"></i>
-                        <span>Pratinjau & Cetak PDF</span>
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-700/80 hover:bg-slate-600/80 border border-slate-600/60 text-slate-200 text-xs font-semibold transition-all duration-200 shadow-sm hover:shadow-md">
+                        <i class="fas fa-file-pdf text-rose-400 text-[11px]"></i>
+                        <span>Cetak PDF</span>
+                    </button>
+                    <button type="button"
+                            id="btnPreviewMatrixPdf"
+                            onclick="exportMatrixToPDF()"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white text-xs font-semibold shadow-md shadow-rose-900/40 transition-all duration-200 hover:shadow-rose-600/40">
+                        <i class="fas fa-eye text-[11px]"></i>
+                        <span>Pratinjau &amp; Cetak PDF</span>
                     </button>
                 </div>
             </div>
 
             <!-- Crosstab Matrix Table Container -->
-            <div class="table-responsive bg-slate-900/80 p-1" id="matrixTableWrapper">
+            <div class="table-responsive bg-slate-900/80 rounded-xl border border-slate-700/40 p-1" id="matrixTableWrapper">
                 <!-- Dynamically generated via JavaScript -->
             </div>
 
