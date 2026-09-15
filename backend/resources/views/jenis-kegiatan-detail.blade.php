@@ -1403,6 +1403,7 @@
                 <div class="glass-card p-4">
                     <form id="detailKegiatanForm">
                         <div class="row">
+                            <!-- Jenis Kegiatan - Row-based multi select -->
                             @php
                                 $serverMasterKegiatan = $masterKegiatanList ?? [];
                                 if (!empty($prefilledJenisKegiatan) && !in_array($prefilledJenisKegiatan, $serverMasterKegiatan)) {
@@ -1412,6 +1413,11 @@
 
                             <!-- Jenis Kegiatan (Multi-Kegiatan Terintegrasi) -->
                             <div class="col-12 mb-3">
+                                <label class="form-label d-flex align-items-center justify-content-between mb-2">
+                                    <span><i class="fas fa-tasks me-2 text-teal-400"></i>Jenis Kegiatan</span>
+                                    <span class="badge px-2 py-1" id="selectedKegiatanBadge"
+                                          style="font-size:11px;background:rgba(20,184,166,0.15);color:#2dd4bf;border:1px solid rgba(45,212,191,0.3);">
+                                        <i class="fas fa-layer-group me-1"></i><span id="selectedKegiatanCount">1</span> kegiatan
                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                     <label class="form-label mb-0 d-flex align-items-center gap-2">
                                         <span class="d-inline-flex align-items-center justify-content-center rounded-2" 
@@ -1424,8 +1430,15 @@
                                           style="font-size:11px; font-weight:600; background:rgba(20,184,166,0.15); color:#2dd4bf; border:1px solid rgba(45,212,191,0.3);">
                                         <i class="fas fa-layer-group me-1"></i><span id="selectedKegiatanCount">1</span> Kegiatan
                                     </span>
+                                </label>
                                 </div>
 
+                                <!-- Rows container -->
+                                <div id="kegiatanRowsContainer" class="d-flex flex-column gap-2">
+                                    <!-- Baris pertama dirender oleh JS via initKegiatanRows() -->
+                                    <div class="d-flex align-items-center justify-content-center py-3">
+                                        <i class="fas fa-spinner fa-spin text-slate-500 me-2"></i>
+                                        <span class="text-slate-500" style="font-size:12px;">Memuat daftar kegiatan...</span>
                                 <!-- Container Baris Kegiatan -->
                                 <div id="kegiatanRowsContainer" class="d-flex flex-column gap-2 p-2.5 rounded-3" 
                                      style="background:rgba(15, 23, 42, 0.6); border:1px solid rgba(255, 255, 255, 0.1);">
@@ -1460,6 +1473,9 @@
 
                                 <!-- Tombol Tambah Kegiatan -->
                                 <button type="button" id="btnAddKegiatan" onclick="addKegiatanRow()"
+                                        class="mt-2 d-flex align-items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                                        style="background:rgba(20,184,166,0.1);border:1px dashed rgba(45,212,191,0.4);color:#2dd4bf;width:100%;justify-content:center;">
+                                    <i class="fas fa-plus"></i> Tambah Jenis Kegiatan
                                         class="btn w-100 mt-2 d-flex align-items-center justify-content-center gap-2 py-2 px-3 rounded-3 transition-all"
                                         style="background:rgba(20,184,166,0.1); border:1px dashed rgba(45,212,191,0.45); color:#2dd4bf; font-weight:600; font-size:12.5px;">
                                     <i class="fas fa-plus-circle" style="font-size:13px;"></i>
@@ -1477,6 +1493,10 @@
 
                                 <!-- Hidden input legacy compat -->
                                 <input type="hidden" id="jenisKegiatan" name="jenis_kegiatan" value="{{ $prefilledJenisKegiatan ?? '' }}">
+                                <small class="text-slate-500 mt-2 d-block" style="font-size:11px;">
+                                    <i class="fas fa-info-circle text-teal-400/70 me-1"></i>
+                                    Setiap baris kegiatan akan tersimpan sebagai laporan terpisah dengan foto, TTD, dan tanggal yang sama.
+                                </small>
                             </div>
 
                             <!-- NIP -->
@@ -2298,13 +2318,18 @@
             }
         });
 
+         // ============================================================
+        // MULTI JENIS KEGIATAN - Row-based Dropdown
         // ============================================================
         // MULTI JENIS KEGIATAN - Executive Row-based Dropdown
         // ============================================================
 
+        let allKegiatanMaster = []; // cache master data dari API
+        let kegiatanRowCounter = 0; // unik ID per baris
         let allKegiatanMaster = @json($serverMasterKegiatan ?? []);
         let kegiatanRowCounter = 1; // Baris 1 sudah ada di DOM server-rendered
 
+        // Load master data dari API kemudian init baris pertama
         // Sinkronisasi data master dari API di latar belakang (tanpa merusak baris yang sudah ada)
         async function loadKegiatanChips(preselectedName) {
             if (preselectedName && !allKegiatanMaster.includes(preselectedName)) {
@@ -2314,6 +2339,9 @@
             const { headers } = buildHeaders();
             try {
                 const resp = await fetch('/api/jenis-kegiatan', { headers });
+                if (!resp.ok) throw new Error('Gagal memuat master kegiatan');
+                const data = await resp.json();
+                allKegiatanMaster = (data.data || []).map(k => k.jenis_kegiatan).filter(Boolean);
                 if (resp.ok) {
                     const data = await resp.json();
                     const fetched = (data.data || []).map(k => k.jenis_kegiatan).filter(Boolean);
@@ -2321,17 +2349,24 @@
                         fetched.forEach(item => {
                             if (!allKegiatanMaster.includes(item)) allKegiatanMaster.push(item);
                         });
+                        // Refresh opsi di select yang ada
                         populateAllSelectOptions();
                     }
                 }
             } catch(e) {
+                console.warn('Fallback: gagal load master kegiatan', e);
+                allKegiatanMaster = [];
                 console.warn('Background sync master kegiatan:', e);
             }
 
+            // Pastikan preselected ada di list
+            if (preselectedName && !allKegiatanMaster.includes(preselectedName)) {
+                allKegiatanMaster.unshift(preselectedName);
             // Pastikan baris 1 terisi nilai preselected jika ada
             if (preselectedName) {
                 const firstSelect = document.getElementById('kegiatanSelect_1');
                 if (firstSelect && (!firstSelect.value || firstSelect.value !== preselectedName)) {
+                    // Pastikan opsi ada
                     let hasOpt = Array.from(firstSelect.options).some(o => o.value === preselectedName);
                     if (!hasOpt) {
                         const opt = new Option(preselectedName, preselectedName, true, true);
@@ -2341,15 +2376,21 @@
                 }
             }
 
+            initKegiatanRows(preselectedName);
             updateRowNumbers();
             updateSelectedBadge();
             syncHiddenInput();
         }
 
+        // Inisialisasi baris pertama dengan nilai preselected
+        function initKegiatanRows(preselectedName) {
         // Refresh opsi di setiap select tanpa merusak nilai yang sedang dipilih
         function populateAllSelectOptions() {
             const container = document.getElementById('kegiatanRowsContainer');
             if (!container) return;
+            container.innerHTML = '';
+            kegiatanRowCounter = 0;
+            addKegiatanRow(preselectedName);
             const selects = container.querySelectorAll('select.kegiatan-select');
             selects.forEach(sel => {
                 const curVal = sel.value;
@@ -2364,21 +2405,28 @@
             });
         }
 
+        // Tambah baris baru dengan satu dropdown select
+        function addKegiatanRow(preselectedValue) {
         // Tambah baris baru kegiatan saat user klik tombol (+)
         function addKegiatanRow(preselectedValue = '') {
             const container = document.getElementById('kegiatanRowsContainer');
             if (!container) return;
 
+            const rowId = ++kegiatanRowCounter;
             kegiatanRowCounter++;
             const rowId = kegiatanRowCounter;
 
             const row = document.createElement('div');
+            row.className = 'd-flex align-items-center gap-2';
             row.className = 'kegiatan-row-item d-flex align-items-center gap-2';
             row.id = `kegiatanRow_${rowId}`;
+            row.style.cssText = 'animation: fadeIn 0.2s ease;';
             row.style.cssText = 'animation: fadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);';
 
             // Nomor baris
             const num = document.createElement('span');
+            num.style.cssText = 'min-width:22px;height:22px;border-radius:50%;background:rgba(45,212,191,0.15);border:1px solid rgba(45,212,191,0.3);color:#2dd4bf;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;';
+            num.textContent = rowId;
             num.className = 'kegiatan-row-num flex-shrink-0 d-flex align-items-center justify-content-center fw-bold';
             num.id = `kegiatanRowNum_${rowId}`;
             num.style.cssText = 'width:26px; height:26px; border-radius:8px; background:rgba(45,212,191,0.15); border:1px solid rgba(45,212,191,0.35); color:#2dd4bf; font-size:11px;';
@@ -2390,6 +2438,9 @@
 
             const select = document.createElement('select');
             select.id = `kegiatanSelect_${rowId}`;
+            select.className = 'form-select flex-grow-1';
+            select.style.cssText = 'background:rgba(15,23,42,0.9);border-color:rgba(255,255,255,0.12);color:#f8fafc;font-size:13px;';
+            select.onchange = () => syncHiddenInput();
             select.className = 'form-select kegiatan-select';
             select.required = true;
             select.style.cssText = 'background:rgba(15,23,42,0.92); border-color:rgba(255,255,255,0.15); color:#ffffff; font-size:13px; border-radius:10px; padding:8px 12px;';
@@ -2399,11 +2450,13 @@
             const defaultOpt = document.createElement('option');
             defaultOpt.value = '';
             defaultOpt.textContent = '— Pilih Jenis Kegiatan —';
+            defaultOpt.style.color = '#64748b';
             select.appendChild(defaultOpt);
 
             if (allKegiatanMaster.length === 0) {
                 const emptyOpt = document.createElement('option');
                 emptyOpt.disabled = true;
+                emptyOpt.textContent = 'Tidak ada kegiatan. Tambahkan di Master Data.';
                 emptyOpt.textContent = 'Tidak ada kegiatan di Master Data.';
                 select.appendChild(emptyOpt);
             } else {
@@ -2417,19 +2470,25 @@
             }
             selectWrapper.appendChild(select);
 
+            // Tombol hapus (hanya tampil jika ada >1 baris)
             // Tombol hapus (trash icon)
             const btnDel = document.createElement('button');
             btnDel.type = 'button';
             btnDel.id = `kegiatanBtnDel_${rowId}`;
+            btnDel.title = 'Hapus baris ini';
+            btnDel.style.cssText = 'flex-shrink:0;width:32px;height:32px;border-radius:8px;border:1px solid rgba(239,68,68,0.4);background:rgba(239,68,68,0.1);color:#f87171;display:flex;align-items:center;justify-content:center;transition:all 0.15s;cursor:pointer;';
             btnDel.title = 'Hapus kegiatan ini';
             btnDel.className = 'btn-delete-row btn p-0 d-flex align-items-center justify-content-center flex-shrink-0';
             btnDel.style.cssText = 'width:34px; height:34px; border-radius:8px; border:1px solid rgba(244,63,94,0.3); background:rgba(244,63,94,0.1); color:#fb7185; transition:all 0.15s;';
             btnDel.innerHTML = '<i class="fas fa-trash-alt" style="font-size:12px;"></i>';
+            btnDel.onmouseenter = () => { btnDel.style.background = 'rgba(239,68,68,0.25)'; };
+            btnDel.onmouseleave = () => { btnDel.style.background = 'rgba(239,68,68,0.1)'; };
             btnDel.onmouseenter = () => { btnDel.style.background = 'rgba(244,63,94,0.25)'; };
             btnDel.onmouseleave = () => { btnDel.style.background = 'rgba(244,63,94,0.1)'; };
             btnDel.onclick = () => removeKegiatanRow(rowId);
 
             row.appendChild(num);
+            row.appendChild(select);
             row.appendChild(selectWrapper);
             row.appendChild(btnDel);
             container.appendChild(row);
@@ -2444,9 +2503,11 @@
             }, 60);
         }
 
+        // Hapus baris berdasarkan ID
         // Hapus baris berdasarkan rowId
         function removeKegiatanRow(rowId) {
             const container = document.getElementById('kegiatanRowsContainer');
+            const rows = container.querySelectorAll('[id^="kegiatanRow_"]');
             if (!container) return;
             const rows = container.querySelectorAll('.kegiatan-row-item');
             if (rows.length <= 1) {
@@ -2456,6 +2517,8 @@
             const row = document.getElementById(`kegiatanRow_${rowId}`);
             if (row) {
                 row.style.opacity = '0';
+                row.style.transform = 'translateX(10px)';
+                row.style.transition = 'all 0.15s ease';
                 row.style.transform = 'translateX(12px)';
                 row.style.transition = 'all 0.18s ease';
                 setTimeout(() => {
@@ -2463,18 +2526,25 @@
                     updateRowNumbers();
                     updateSelectedBadge();
                     syncHiddenInput();
+                }, 150);
                 }, 180);
             }
         }
 
+        // Update nomor urut baris
         // Update nomor urut baris (1, 2, 3...) dan visibilitas tombol sampah
         function updateRowNumbers() {
             const container = document.getElementById('kegiatanRowsContainer');
             if (!container) return;
+            const rows = container.querySelectorAll('[id^="kegiatanRow_"]');
             const rows = container.querySelectorAll('.kegiatan-row-item');
             rows.forEach((row, idx) => {
+                const num = row.querySelector('[id^="kegiatanRowNum_"]');
                 const num = row.querySelector('.kegiatan-row-num');
                 if (num) num.textContent = idx + 1;
+                // Sembunyikan tombol hapus jika hanya ada 1 baris
+                const btnDel = row.querySelector('[id^="kegiatanBtnDel_"]');
+                if (btnDel) btnDel.style.visibility = rows.length > 1 ? 'visible' : 'hidden';
                 // Tombol sampah hanya tampil jika ada > 1 baris kegiatan
                 const btnDel = row.querySelector('.btn-delete-row');
                 if (btnDel) {
@@ -2483,6 +2553,7 @@
             });
         }
 
+        // Ambil semua nilai kegiatan yang dipilih dari semua dropdown
         function handleKegiatanSelectChange(sel) {
             syncHiddenInput();
             updateSelectedBadge();
@@ -2492,10 +2563,12 @@
         function getSelectedKegiatan() {
             const container = document.getElementById('kegiatanRowsContainer');
             if (!container) return [];
+            const selects = container.querySelectorAll('select[id^="kegiatanSelect_"]');
             const selects = container.querySelectorAll('select.kegiatan-select');
             const values = [];
             selects.forEach(sel => {
                 const val = sel.value?.trim();
+                if (val) values.push(val);
                 if (val && !values.includes(val)) {
                     values.push(val);
                 }
@@ -2504,12 +2577,26 @@
         }
 
         function updateSelectedBadge() {
+            const count = document.getElementById('kegiatanRowsContainer')
+                ?.querySelectorAll('[id^="kegiatanRow_"]').length || 0;
             const container = document.getElementById('kegiatanRowsContainer');
             if (!container) return;
             const rows = container.querySelectorAll('.kegiatan-row-item');
             const count = rows.length;
             const countEl = document.getElementById('selectedKegiatanCount');
             if (countEl) countEl.textContent = count;
+        }
+
+        function syncHiddenInput() {
+            const selected = getSelectedKegiatan();
+            const hidden = document.getElementById('jenisKegiatan');
+            if (hidden) hidden.value = selected[0] || '';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.appendChild(document.createTextNode(text));
+            return div.innerHTML;
         }
 
         function syncHiddenInput() {
