@@ -538,7 +538,6 @@ class DetailJenisKegiatanController extends Controller
             // Recent activities (last 10)
             $recentActivities = $laporanData->take(10);
     
-            return view('laporan', compact(
             return view('laporan-kinerja', compact(
                 'laporanData',
                 'statusStats', 
@@ -549,8 +548,6 @@ class DetailJenisKegiatanController extends Controller
             ));
     
         } catch (\Exception $e) {
-            \Log::error('Error in showLaporan: ' . $e->getMessage());
-            return view('laporan')->with('error', 'Terjadi kesalahan saat memuat data laporan.');
             \Log::error('Error in showLaporanKinerja: ' . $e->getMessage());
             return view('laporan-kinerja')->with('error', 'Terjadi kesalahan saat memuat data laporan kinerja.');
         }

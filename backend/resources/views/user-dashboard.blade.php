@@ -1022,250 +1022,108 @@
                 <!-- Reports Content -->
                 <div id="reportsContent" class="content-section hidden fade-in space-y-4 sm:space-y-6">
                     
-                    <!-- Top Navigation & Tab Pills for Reports -->
-                    <!-- Top Navigation & Header for Reports -->
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white/5 border border-white/10 rounded-2xl p-3 sm:p-4 backdrop-blur-md">
+                    <!-- Header Bar & Quick Switcher -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white/5 border border-white/10 rounded-2xl p-4 sm:p-5 backdrop-blur-md">
                         <div class="flex items-center gap-3">
                             <button type="button" onclick="showDashboard()" class="p-2 sm:p-2.5 glass rounded-xl hover:bg-white hover:bg-opacity-20 transition-all text-white flex items-center justify-center flex-shrink-0" title="Kembali ke Dashboard">
                                 <i class="fas fa-arrow-left text-sm sm:text-base"></i>
                             </button>
-                            <div class="min-w-0">
-                                <h2 class="text-lg sm:text-2xl font-bold text-white flex items-center gap-2">
+                            <div>
+                                <h2 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
                                     <i class="fas fa-chart-line text-amber-400"></i>
-                                    <span>Menu Laporan & Rekapitulasi</span>
+                                    <span>Laporan & Rekapitulasi</span>
                                 </h2>
-                                <p class="text-xs text-gray-300">Pilih jenis laporan untuk melihat rincian aktivitas dan tabulasi bulanan</p>
+                                <p class="text-xs text-gray-300">Pilih format laporan kinerja pegawai</p>
                             </div>
                         </div>
 
-                        <!-- Segmented Tab Switcher -->
-                        <!-- Segmented Tab / Quick Link Switcher -->
-                        <div class="flex items-center bg-black/40 p-1 rounded-xl border border-white/10 self-start md:self-auto overflow-x-auto max-w-full">
-                            <button type="button" id="repTabMenu" onclick="openReportsMenu()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-white/20 transition-all flex items-center gap-1.5 whitespace-nowrap">
-                            <button type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-white/20 transition-all flex items-center gap-1.5 whitespace-nowrap">
+                        <!-- Top Quick Navigation -->
+                        <div class="flex items-center bg-black/40 p-1 rounded-xl border border-white/10 self-start sm:self-auto">
+                            <button type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-white/20 transition-all flex items-center gap-1.5">
                                 <i class="fas fa-grid-2 text-xs"></i>
-                                <span>Menu Laporan</span>
+                                <span>Menu Utama</span>
                             </button>
-                            <button type="button" id="repTabLaporan" onclick="openSubLaporanKinerja()" class="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-300 hover:text-white transition-all flex items-center gap-1.5 whitespace-nowrap">
-                            <button type="button" onclick="openSubLaporanKinerja()" class="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-300 hover:text-white transition-all flex items-center gap-1.5 whitespace-nowrap">
+                            <button type="button" onclick="openSubLaporanKinerja()" class="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-300 hover:text-white transition-all flex items-center gap-1.5">
                                 <i class="fas fa-clipboard-list text-xs"></i>
                                 <span>Laporan Kinerja</span>
                             </button>
-                            <button type="button" id="repTabRekap" onclick="openSubRekapBulanan()" class="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-300 hover:text-white transition-all flex items-center gap-1.5 whitespace-nowrap">
-                            <button type="button" onclick="openSubRekapBulanan()" class="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-300 hover:text-white transition-all flex items-center gap-1.5 whitespace-nowrap">
+                            <button type="button" onclick="openSubRekapBulanan()" class="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-300 hover:text-white transition-all flex items-center gap-1.5">
                                 <i class="fas fa-table-list text-xs"></i>
                                 <span>Rekap Bulanan</span>
                             </button>
                         </div>
                     </div>
 
-                    <!-- VIEW 1: MENU UTAMA LAPORAN (2 Big Interactive Menu Cards) -->
-                    <!-- MENU UTAMA LAPORAN (2 Big Interactive Menu Cards) -->
-                    <div id="reportsMenuHub" class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                    <!-- 2 Main Menu Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                        
+                        <!-- Card 1: Laporan Kinerja -->
+                        <div onclick="openSubLaporanKinerja()" class="morphism-card rounded-2xl p-5 sm:p-6 text-left transition-all duration-300 hover:-translate-y-1.5 cursor-pointer border border-white/10 hover:border-emerald-400/50 group relative overflow-hidden flex flex-col justify-between">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all pointer-events-none"></div>
                             
-                            <!-- Card 1: Laporan Kinerja -->
-                            <div onclick="openSubLaporanKinerja()" class="morphism-card rounded-2xl p-5 sm:p-7 text-left transition-all duration-300 hover:-translate-y-1.5 cursor-pointer border border-white/15 hover:border-emerald-400/60 group relative overflow-hidden flex flex-col justify-between">
-                            <div onclick="openSubLaporanKinerja()" class="morphism-card rounded-2xl p-5 sm:p-7 text-left transition-all duration-300 hover:-translate-y-1.5 cursor-pointer border border-white/15 hover:border-emerald-400/60 group relative overflow-hidden flex flex-col justify-between min-h-[220px]">
-                                <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all pointer-events-none"></div>
-                                <div>
-                                    <div class="flex items-start justify-between gap-3 mb-4">
-                                        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white text-2xl shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform flex-shrink-0">
-                                            <i class="fas fa-clipboard-list"></i>
-                                        </div>
-                                        <span class="px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-bold flex items-center gap-1.5">
-                                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                                            <span id="hubTotalLaporanBadge">0 Data</span>
-                                            <span id="hubTotalLaporanBadge">Memuat...</span>
-                                        </span>
+                            <div>
+                                <div class="flex items-start justify-between gap-3 mb-4">
+                                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white text-xl sm:text-2xl shadow-lg shadow-emerald-500/30 group-hover:scale-105 transition-transform flex-shrink-0">
+                                        <i class="fas fa-clipboard-list"></i>
                                     </div>
-                                    <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 group-hover:text-emerald-300 transition-colors">
-                                        Laporan Kinerja
-                                    </h3>
-                                    <p class="text-gray-300 text-xs sm:text-sm leading-relaxed mb-6">
-                                        Daftar rincian logbook seluruh aktivitas pekerjaan yang telah dicatat, lengkap dengan tanda tangan elektronik, status verifikasi penanggung jawab, dan dokumentasi foto.
-                                    </p>
-                                </div>
-                                
-                                <div class="pt-4 border-t border-white/10 flex items-center justify-between">
-                                    <div class="flex items-center gap-2 text-xs text-gray-300">
-                                        <span class="text-emerald-400 font-semibold" id="hubApprovedCount">0 Approved</span>
-                                        <span>•</span>
-                                        <span class="text-cyan-400 font-semibold" id="hubSubmittedCount">0 Submitted</span>
-                                    </div>
-                                    <span class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-emerald-400 group-hover:translate-x-1 transition-transform">
-                                        <span>Buka Laporan</span>
-                                        <i class="fas fa-arrow-right"></i>
+                                    <span class="px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-1.5">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                        <span id="hubTotalLaporanBadge">Memuat...</span>
                                     </span>
                                 </div>
-                            </div>
 
-                            <!-- Card 2: Rekap Bulanan -->
-                            <div onclick="openSubRekapBulanan()" class="morphism-card rounded-2xl p-5 sm:p-7 text-left transition-all duration-300 hover:-translate-y-1.5 cursor-pointer border border-white/15 hover:border-teal-400/60 group relative overflow-hidden flex flex-col justify-between">
-                            <div onclick="openSubRekapBulanan()" class="morphism-card rounded-2xl p-5 sm:p-7 text-left transition-all duration-300 hover:-translate-y-1.5 cursor-pointer border border-white/15 hover:border-teal-400/60 group relative overflow-hidden flex flex-col justify-between min-h-[220px]">
-                                <div class="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-2xl group-hover:bg-teal-500/20 transition-all pointer-events-none"></div>
-                                <div>
-                                    <div class="flex items-start justify-between gap-3 mb-4">
-                                        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-teal-500 to-cyan-400 flex items-center justify-center text-white text-2xl shadow-lg shadow-teal-500/30 group-hover:scale-110 transition-transform flex-shrink-0">
-                                            <i class="fas fa-table-list"></i>
-                                        </div>
-                                        <span class="px-2.5 py-1 rounded-full bg-teal-500/20 border border-teal-500/30 text-teal-300 text-xs font-bold flex items-center gap-1.5">
-                                            <i class="fas fa-calendar-alt text-[11px]"></i>
-                                            <span>Matriks Crosstab</span>
-                                        </span>
-                                    </div>
-                                    <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 group-hover:text-teal-300 transition-colors">
-                                        Rekap Bulanan
-                                    </h3>
-                                    <p class="text-gray-300 text-xs sm:text-sm leading-relaxed mb-6">
-                                        Tabel rekapitulasi matriks bulanan: Jenis kegiatan di kolom kiri, tanggal di baris atas, jumlah pelaksanaan harian di dalam sel, total pelaksanaan per tanggal, dan total akumulasi.
-                                    </p>
+                                <h3 class="text-lg sm:text-xl font-bold text-white mb-1.5 group-hover:text-emerald-300 transition-colors">
+                                    Laporan Kinerja
+                                </h3>
+                                <p class="text-gray-300 text-xs sm:text-sm leading-relaxed mb-5">
+                                    Daftar rincian logbook harian, status verifikasi tanda tangan, bukti dokumentasi, serta cetak PDF.
+                                </p>
+                            </div>
+                            
+                            <div class="pt-3.5 border-t border-white/10 flex items-center justify-between">
+                                <div class="flex items-center gap-2 text-xs text-gray-300">
+                                    <span class="text-emerald-400 font-semibold" id="hubApprovedCount">0 Approved</span>
+                                    <span>•</span>
+                                    <span class="text-cyan-400 font-semibold" id="hubSubmittedCount">0 Submitted</span>
                                 </div>
-                                
-                                <div class="pt-4 border-t border-white/10 flex items-center justify-between">
-                                    <div class="text-xs text-gray-300">
-                                        <span class="text-teal-300 font-semibold" id="hubMonthLabel">Bulan Berjalan</span>
+                                <span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-400 group-hover:translate-x-1 transition-transform">
+                                    <span>Buka</span>
+                                    <i class="fas fa-arrow-right text-[11px]"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Rekap Bulanan -->
+                        <div onclick="openSubRekapBulanan()" class="morphism-card rounded-2xl p-5 sm:p-6 text-left transition-all duration-300 hover:-translate-y-1.5 cursor-pointer border border-white/10 hover:border-teal-400/50 group relative overflow-hidden flex flex-col justify-between">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-2xl group-hover:bg-teal-500/20 transition-all pointer-events-none"></div>
+                            
+                            <div>
+                                <div class="flex items-start justify-between gap-3 mb-4">
+                                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-teal-500 to-cyan-400 flex items-center justify-center text-white text-xl sm:text-2xl shadow-lg shadow-teal-500/30 group-hover:scale-105 transition-transform flex-shrink-0">
+                                        <i class="fas fa-table-list"></i>
                                     </div>
-                                    <span class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-teal-400 group-hover:translate-x-1 transition-transform">
-                                        <span>Buka Rekapitulasi</span>
-                                        <i class="fas fa-arrow-right"></i>
+                                    <span class="px-2.5 py-1 rounded-full bg-teal-500/15 border border-teal-500/30 text-teal-300 text-xs font-semibold flex items-center gap-1.5">
+                                        <i class="fas fa-calendar-alt text-[10px]"></i>
+                                        <span>Matriks Tabulasi</span>
                                     </span>
                                 </div>
-                            </div>
 
-                        </div>
-                    </div>
-
-                    <!-- VIEW 2: SUB-MENU LAPORAN KINERJA (Full Data Table & Mobile Cards) -->
-                    <div id="subLaporanKinerjaSection" class="hidden space-y-4">
-                        
-                        <!-- Header Bar for Laporan Kinerja -->
-                        <div class="morphism-card rounded-2xl p-4 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div class="flex items-center gap-3">
-                                <button type="button" onclick="openReportsMenu()" class="p-2 sm:p-2.5 glass rounded-xl hover:bg-white hover:bg-opacity-20 transition-all text-white flex items-center justify-center flex-shrink-0" title="Kembali ke Menu Laporan">
-                                    <i class="fas fa-arrow-left"></i>
-                                </button>
-                                <div>
-                                    <h3 class="text-base sm:text-xl font-bold text-white flex items-center gap-2">
-                                        <i class="fas fa-clipboard-list text-emerald-400"></i>
-                                        <span>Daftar Laporan Kinerja Pegawai</span>
-                                    </h3>
-                                    <p class="text-xs text-gray-300">Riwayat lengkap aktivitas pekerjaan harian dan status verifikasi</p>
-                                </div>
+                                <h3 class="text-lg sm:text-xl font-bold text-white mb-1.5 group-hover:text-teal-300 transition-colors">
+                                    Rekap Bulanan
+                                </h3>
+                                <p class="text-gray-300 text-xs sm:text-sm leading-relaxed mb-5">
+                                    Matriks tabulasi kegiatan per tanggal kalender dalam satu bulan dengan total harian dan akumulasi.
+                                </p>
                             </div>
                             
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <button type="button" onclick="exportReportPdfDirect()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-rose-600/30 transition-all flex items-center gap-2">
-                                    <i class="fas fa-file-pdf"></i>
-                                    <span>Cetak PDF / Pratinjau</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Filter Controls -->
-                        <div class="morphism-card rounded-2xl p-3.5 sm:p-5 space-y-3">
-                            <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
-                                <!-- Search -->
-                                <div class="sm:col-span-6 relative">
-                                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                                    <input type="text" id="repSearchInput" oninput="applyReportFilters()" class="w-full pl-9 pr-3 py-2 bg-black/40 border border-white/15 rounded-xl text-white text-xs placeholder-gray-400 focus:outline-none focus:border-emerald-400" placeholder="Cari kegiatan, unit, atau temuan...">
+                            <div class="pt-3.5 border-t border-white/10 flex items-center justify-between">
+                                <div class="text-xs text-gray-300">
+                                    <span class="text-teal-300 font-semibold" id="hubMonthLabel">Bulan Berjalan</span>
                                 </div>
-                                <!-- Status Filter -->
-                                <div class="sm:col-span-3">
-                                    <select id="repStatusFilter" onchange="applyReportFilters()" class="w-full px-3 py-2 bg-black/40 border border-white/15 rounded-xl text-white text-xs focus:outline-none focus:border-emerald-400">
-                                        <option value="" class="bg-gray-900 text-white">Semua Status</option>
-                                        <option value="draft" class="bg-gray-900 text-amber-300">Draft</option>
-                                        <option value="submitted" class="bg-gray-900 text-cyan-300">Submitted</option>
-                                        <option value="approved" class="bg-gray-900 text-emerald-300">Approved</option>
-                                        <option value="rejected" class="bg-gray-900 text-rose-300">Rejected</option>
-                                    </select>
-                                </div>
-                                <!-- Reset Button -->
-                                <div class="sm:col-span-3">
-                                    <button type="button" onclick="resetReportFilters()" class="w-full py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white text-xs font-semibold transition-all flex items-center justify-center gap-1.5">
-                                        <i class="fas fa-rotate-left"></i>
-                                        <span>Reset Filter</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Data Container -->
-                        <div id="repLoadingState" class="text-center py-12">
-                            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-400 mx-auto mb-3"></div>
-                            <p class="text-gray-300 text-xs">Memuat data laporan...</p>
-                        </div>
-
-                        <!-- Empty State -->
-                        <div id="repEmptyState" class="hidden morphism-card rounded-2xl p-10 text-center">
-                            <div class="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-gray-400 text-2xl mx-auto mb-3">
-                                <i class="fas fa-inbox"></i>
-                            </div>
-                            <h4 class="text-white font-bold text-base mb-1">Belum Ada Data Laporan</h4>
-                            <p class="text-gray-400 text-xs max-w-sm mx-auto mb-4">Anda belum mencatat kegiatan atau tidak ada data yang sesuai dengan filter pencarian.</p>
-                            <button type="button" onclick="showMasterKegiatan()" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-xs font-bold rounded-xl shadow-lg">
-                                Mulai Catat Kegiatan
-                            </button>
-                        </div>
-
-                        <!-- Desktop Table -->
-                        <div id="repTableWrapper" class="hidden morphism-card rounded-2xl p-4 overflow-x-auto">
-                            <table class="w-full text-left border-collapse min-w-[700px]">
-                                <thead>
-                                    <tr class="border-b border-white/10 text-gray-300 text-xs uppercase tracking-wider">
-                                        <th class="p-3 w-12 text-center">No</th>
-                                        <th class="p-3">Jenis Kegiatan</th>
-                                        <th class="p-3">Unit</th>
-                                        <th class="p-3">Tanggal Dibuat</th>
-                                        <th class="p-3">Status</th>
-                                        <th class="p-3 text-center">TTD</th>
-                                        <th class="p-3 text-center">Dokumentasi</th>
-                                        <th class="p-3 text-center">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="repTableBody" class="divide-y divide-white/5 text-xs text-gray-200">
-                                    <!-- Populated via JS -->
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Mobile Cards -->
-                        <div id="repMobileCards" class="block md:hidden space-y-3">
-                            <!-- Populated via JS -->
-                        </div>
-
-                    </div>
-
-                    <!-- VIEW 3: SUB-MENU REKAP BULANAN (Matrix Crosstab Table) -->
-                    <div id="subRekapBulananSection" class="hidden space-y-4">
-                        
-                        <!-- Header Bar for Rekap Bulanan -->
-                        <div class="morphism-card rounded-2xl p-4 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div class="flex items-center gap-3">
-                                <button type="button" onclick="openReportsMenu()" class="p-2 sm:p-2.5 glass rounded-xl hover:bg-white hover:bg-opacity-20 transition-all text-white flex items-center justify-center flex-shrink-0" title="Kembali ke Menu Laporan">
-                                    <i class="fas fa-arrow-left"></i>
-                                </button>
-                                <div>
-                                    <h3 class="text-base sm:text-xl font-bold text-white flex items-center gap-2">
-                                        <i class="fas fa-table-list text-teal-400"></i>
-                                        <span>Rekapitulasi Kegiatan Bulanan</span>
-                                    </h3>
-                                    <p class="text-xs text-gray-300">Tabulasi jumlah pelaksanaan kegiatan per tanggal dalam satu bulan</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Month Filter Selector -->
-                            <div class="flex items-center gap-2">
-                                <select id="rekapMonthSelect" onchange="renderRekapBulananView()" class="px-3 py-2 bg-black/40 border border-white/15 rounded-xl text-white text-xs focus:outline-none focus:border-teal-400">
-                                    <!-- Populated by JS -->
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Matrix Table Container -->
-                        <div class="morphism-card rounded-2xl p-4 overflow-hidden">
-                            <div id="rekapMatrixContainer" class="overflow-x-auto">
-                                <!-- Matrix Table Populated by JS -->
+                                <span class="inline-flex items-center gap-1 text-xs font-bold text-teal-400 group-hover:translate-x-1 transition-transform">
+                                    <span>Buka</span>
+                                    <i class="fas fa-arrow-right text-[11px]"></i>
+                                </span>
                             </div>
                         </div>
 
