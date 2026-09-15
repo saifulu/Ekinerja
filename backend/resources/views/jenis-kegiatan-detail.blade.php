@@ -31,6 +31,186 @@
             border: 1px solid rgba(255, 255, 255, 0.15);
             box-shadow: 0 16px 40px rgba(2, 6, 23, 0.35);
         }
+
+        /* ====================================================
+           EXECUTIVE MODERN APP HEADER BAR (RESPONSIVE & SLIM)
+           ==================================================== */
+        .app-header-bar {
+            background: rgba(15, 23, 42, 0.82);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            padding: 10px 16px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.25s ease;
+        }
+
+        .app-header-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #10b981, #06b6d4, #6366f1);
+            opacity: 0.8;
+        }
+
+        .header-nav-btn {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: #cbd5e1;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            padding: 0;
+        }
+
+        .header-nav-btn:hover {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.45);
+            color: #34d399;
+            transform: translateX(-2px);
+            box-shadow: 0 0 14px rgba(16, 185, 129, 0.3);
+        }
+
+        .header-nav-btn:active {
+            transform: scale(0.94);
+        }
+
+        .header-micro-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #34d399;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            padding: 1px 7px;
+            border-radius: 9999px;
+            width: fit-content;
+        }
+
+        .header-title-text {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.01em;
+            line-height: 1.25;
+            margin: 0;
+        }
+
+        .header-subtitle-text {
+            font-size: 0.72rem;
+            color: #94a3b8;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        /* Live Pill Status Badge with Glowing Dot */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 11px;
+            border-radius: 9999px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .status-badge::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .status-draft {
+            background: rgba(245, 158, 11, 0.14);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.35);
+        }
+        .status-draft::before {
+            background: #fbbf24;
+            box-shadow: 0 0 7px #f59e0b;
+        }
+
+        .status-submitted {
+            background: rgba(6, 182, 212, 0.14);
+            color: #38bdf8;
+            border: 1px solid rgba(6, 182, 212, 0.35);
+        }
+        .status-submitted::before {
+            background: #38bdf8;
+            box-shadow: 0 0 7px #06b6d4;
+        }
+
+        .status-approved {
+            background: rgba(16, 185, 129, 0.14);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.35);
+        }
+        .status-approved::before {
+            background: #34d399;
+            box-shadow: 0 0 7px #10b981;
+        }
+
+        .status-rejected {
+            background: rgba(239, 68, 68, 0.14);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.35);
+        }
+        .status-rejected::before {
+            background: #f87171;
+            box-shadow: 0 0 7px #ef4444;
+        }
+
+        @media (max-width: 576px) {
+            .app-header-bar {
+                padding: 7px 12px;
+                border-radius: 13px;
+            }
+            .header-nav-btn {
+                width: 32px;
+                height: 32px;
+                min-width: 32px;
+                border-radius: 8px;
+            }
+            .header-title-text {
+                font-size: 0.82rem;
+            }
+            .header-subtitle-text {
+                font-size: 0.67rem;
+            }
+            .status-badge {
+                padding: 3px 8px;
+                font-size: 0.67rem;
+                gap: 4px;
+            }
+            .status-badge::before {
+                width: 5px;
+                height: 5px;
+            }
+        }
         .form-control, .form-select {
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -1164,22 +1344,38 @@
     @include('partials.mobile-ux')
 </head>
 <body>
-    <div class="container-fluid py-4">
+    <div class="container-fluid py-2 py-sm-3 py-md-4">
         <div class="row justify-content-center">
             <div class="col-lg-8">
-                <!-- Header -->
-                <div class="glass-card p-4 mb-4">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div class="d-flex align-items-center">
-                            <button onclick="goBack()" class="btn btn-secondary me-3">
-                                <i class="fas fa-arrow-left"></i>
+                <!-- Header (Slim & Compact on Mobile) -->
+                <div class="glass-card px-3 py-2.5 px-sm-4 py-sm-3 mb-3">
+                    <div class="d-flex align-items-center justify-content-between gap-2">
+                        <div class="d-flex align-items-center min-w-0">
+                            <button onclick="goBack()" class="btn btn-secondary rounded-xl d-inline-flex align-items-center justify-center me-2 me-sm-3 flex-shrink-0" style="width: 34px; height: 34px; min-width: 34px; padding: 0;" title="Kembali">
+                                <i class="fas fa-arrow-left text-xs text-slate-300"></i>
+                <!-- Header (Executive Slim & Professional) -->
+                <div class="app-header-bar mb-3">
+                    <div class="d-flex align-items-center justify-content-between gap-2.5">
+                        <div class="d-flex align-items-center min-w-0 gap-2 gap-sm-2.5">
+                            <button onclick="goBack()" class="header-nav-btn flex-shrink-0" title="Kembali ke Laporan">
+                                <i class="fas fa-arrow-left text-xs"></i>
                             </button>
-                            <div>
-                                <h4 class="text-white mb-1" id="pageTitle">Detail Jenis Kegiatan</h4>
-                                <p class="text-white-50 mb-0" id="pageSubtitle">Kelola detail kegiatan Anda</p>
+                            <div class="min-w-0">
+                                <h5 class="text-white font-bold mb-0 text-sm sm:text-base leading-tight truncate" id="pageTitle">Detail Jenis Kegiatan</h5>
+                                <p class="text-slate-400 mb-0 text-[11px] sm:text-xs leading-tight truncate" id="pageSubtitle">Kelola detail kegiatan Anda</p>
+                            <div class="min-w-0 d-flex flex-column justify-content-center">
+                                <div class="d-flex align-items-center gap-1.5 mb-0.5">
+                                    <span class="header-micro-tag">
+                                        <i class="fas fa-file-pen" style="font-size: 8.5px;"></i>
+                                        <span>Logbook</span>
+                                    </span>
+                                </div>
+                                <h5 class="header-title-text text-truncate mb-0" id="pageTitle">Detail Jenis Kegiatan</h5>
+                                <p class="header-subtitle-text text-truncate mb-0" id="pageSubtitle">Kelola detail kegiatan Anda</p>
                             </div>
                         </div>
-                        <div id="statusBadge" class="status-badge status-draft">
+                        <div id="statusBadge" class="status-badge status-draft px-2.5 py-1 text-[11px] sm:text-xs font-semibold rounded-full flex-shrink-0" style="padding: 4px 10px;">
+                        <div id="statusBadge" class="status-badge status-draft flex-shrink-0">
                             Draft
                         </div>
                     </div>
@@ -2711,11 +2907,14 @@
             
             const user = JSON.parse(localStorage.getItem('user') || sessionStorage.getItem('user') || '{}');
             if (document.referrer && (document.referrer.includes('laporan') || document.referrer.includes('user-dashboard'))) {
+            if (document.referrer && (document.referrer.includes('laporan') || document.referrer.includes('user-dashboard') || document.referrer.includes('rekap'))) {
                 window.history.back();
             } else if (user.nip) {
                 window.location.href = `/laporan?nip=${user.nip}`;
+                window.location.href = `/laporan-kinerja?nip=${user.nip}`;
             } else {
                 window.location.href = '/dashboard';
+                window.location.href = '/user-dashboard';
             }
         }
 
