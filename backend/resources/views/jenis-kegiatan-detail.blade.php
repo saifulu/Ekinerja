@@ -1399,7 +1399,7 @@
                     <form id="detailKegiatanForm">
                         <div class="row">
                             <!-- Jenis Kegiatan -->
-                            <div class="col-12 col-md-6 mb-3 order-1">
+                            <div class="col-md-6 mb-3">
                                 <label for="jenisKegiatan" class="form-label d-flex align-items-center justify-content-between mb-1.5">
                                     <span><i class="fas fa-tasks me-2 text-teal-400"></i>Jenis Kegiatan</span>
                                     <button type="button" onclick="tambahKegiatanBaru()" 
@@ -1410,32 +1410,32 @@
                                     </button>
                                 </label>
                                 <input type="text" class="form-control" id="jenisKegiatan" name="jenis_kegiatan" value="{{ $prefilledJenisKegiatan ?? '' }}" readonly>
-                            </div>
 
-                            <!-- Container Kegiatan Tambahan (Hanya muncul jika user klik + Tambah Kegiatan) -->
-                            <div class="col-12 mb-3 order-2 order-md-3" id="extraKegiatanSection" style="display:none;">
-                                <div class="p-3 rounded-3" style="background:rgba(15,23,42,0.6);border:1px solid rgba(45,212,191,0.25);">
-                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <span class="text-white fw-semibold" style="font-size:12.5px;">
-                                            <i class="fas fa-layer-group text-teal-400 me-1.5"></i>Kegiatan Tambahan (Otomatis Duplikasi Data)
-                                        </span>
-                                        <span class="badge" id="extraKegiatanBadge" style="background:rgba(20,184,166,0.2);color:#2dd4bf;font-size:11px;">
-                                            +<span id="extraKegiatanCount">0</span> kegiatan
-                                        </span>
+                                <!-- Container Kegiatan Tambahan (Tepat di bawah input jenis kegiatan) -->
+                                <div id="extraKegiatanSection" style="display:none;" class="mt-2.5">
+                                    <div class="p-3 rounded-3" style="background:rgba(15,23,42,0.6);border:1px solid rgba(45,212,191,0.25);">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <span class="text-white fw-semibold" style="font-size:12.5px;">
+                                                <i class="fas fa-layer-group text-teal-400 me-1.5"></i>Kegiatan Tambahan (Otomatis Duplikasi Data)
+                                            </span>
+                                            <span class="badge" id="extraKegiatanBadge" style="background:rgba(20,184,166,0.2);color:#2dd4bf;font-size:11px;">
+                                                +<span id="extraKegiatanCount">0</span> kegiatan
+                                            </span>
+                                        </div>
+                                        <div id="extraKegiatanList" class="d-flex flex-column gap-2">
+                                            <!-- Baris kegiatan tambahan dinamis -->
+                                        </div>
+                                        <button type="button" onclick="tambahKegiatanBaru()" 
+                                                class="btn btn-sm w-100 mt-2 d-flex align-items-center justify-content-center gap-1.5 py-1.5 rounded-2"
+                                                style="background:rgba(20,184,166,0.1);border:1px dashed rgba(45,212,191,0.4);color:#2dd4bf;font-size:12px;font-weight:600;">
+                                            <i class="fas fa-plus"></i> Tambah Kegiatan Lainnya
+                                        </button>
                                     </div>
-                                    <div id="extraKegiatanList" class="d-flex flex-column gap-2">
-                                        <!-- Baris kegiatan tambahan dinamis -->
-                                    </div>
-                                    <button type="button" onclick="tambahKegiatanBaru()" 
-                                            class="btn btn-sm w-100 mt-2 d-flex align-items-center justify-content-center gap-1.5 py-1.5 rounded-2"
-                                            style="background:rgba(20,184,166,0.1);border:1px dashed rgba(45,212,191,0.4);color:#2dd4bf;font-size:12px;font-weight:600;">
-                                        <i class="fas fa-plus"></i> Tambah Kegiatan Lainnya
-                                    </button>
                                 </div>
                             </div>
 
                             <!-- NIP -->
-                            <div class="col-12 col-md-6 mb-3 order-3 order-md-2">
+                            <div class="col-md-6 mb-3">
                                 <label for="nip" class="form-label">
                                     <i class="fas fa-id-card me-2"></i>NIP
                                 </label>
@@ -1443,7 +1443,7 @@
                             </div>
 
                             <!-- Unit -->
-                            <div class="col-12 col-md-6 mb-3 order-4 order-md-4">
+                            <div class="col-md-6 mb-3">
                                 <label for="unit" class="form-label">
                                     <i class="fas fa-building me-2"></i>Unit
                                 </label>
@@ -1462,7 +1462,7 @@
                             </div>
 
                             <!-- Tanggal Kegiatan (Satu Tanggal Utama Untuk Seluruh Laporan) -->
-                            <div class="col-12 col-md-6 mb-3 order-5 order-md-5">
+                            <div class="col-md-6 mb-3">
                                 <label for="tanggalDibuat" class="form-label d-flex align-items-center justify-content-between mb-1.5">
                                     <span class="text-white"><i class="fas fa-calendar-day text-emerald-400 me-2"></i>Tanggal Kegiatan</span>
                                     <span class="badge bg-emerald-500/15 text-emerald-300 border border-emerald-500/25 px-2 py-0.5" style="font-size: 10.5px; font-weight: 500;">
