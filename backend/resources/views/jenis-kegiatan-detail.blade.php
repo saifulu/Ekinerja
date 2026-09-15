@@ -2062,6 +2062,24 @@
             await initializePageData();
             initializeCamera();
             initializeFileUpload();
+            // 1. Inisialisasi data halaman sesegera mungkin agar input langsung terisi instan
+            try {
+                await initializePageData();
+            } catch (err) {
+                console.error('Error in initializePageData:', err);
+            }
+
+            try {
+                initializeCamera();
+            } catch (err) {
+                console.error('Error in initializeCamera:', err);
+            }
+
+            try {
+                initializeFileUpload();
+            } catch (err) {
+                console.error('Error in initializeFileUpload:', err);
+            }
 
             // 2. Periksa autentikasi di latar belakang
             const token = localStorage.getItem('token') || sessionStorage.getItem('token');
@@ -2077,6 +2095,7 @@
 
             // Jika user data belum lengkap di local storage, ambil dari /api/auth/me
             if (!user || !user.nip || !user.name) {
+            if (token && (!user || !user.nip || !user.name)) {
                 try {
                     const meRes = await fetch('/api/auth/me', {
                         headers: {
@@ -2940,6 +2959,7 @@
                 window.history.back();
             } else if (user.nip) {
                 window.location.href = `/laporan?nip=${user.nip}`;
+            } else if (user && user.nip) {
                 window.location.href = `/laporan-kinerja?nip=${user.nip}`;
             } else {
                 window.location.href = '/dashboard';
