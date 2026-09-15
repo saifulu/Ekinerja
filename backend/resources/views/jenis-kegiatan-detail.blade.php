@@ -1341,44 +1341,18 @@
             }
         }
 
-        /* ===== Jenis Kegiatan Chip Selector ===== */
-        .kegiatan-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            background: rgba(51, 65, 85, 0.7);
-            border: 1.5px solid rgba(255,255,255,0.1);
-            color: #94a3b8;
-            transition: all 0.18s ease;
-            user-select: none;
-            white-space: nowrap;
+        /* ===== Jenis Kegiatan Row Dropdown ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .kegiatan-chip:hover {
-            border-color: rgba(45, 212, 191, 0.4);
-            color: #e2e8f0;
-            background: rgba(45, 212, 191, 0.08);
+        #kegiatanRowsContainer select option {
+            background: #1e293b;
+            color: #f8fafc;
         }
-        .kegiatan-chip.selected {
-            background: rgba(20, 184, 166, 0.2);
-            border-color: rgba(45, 212, 191, 0.6);
-            color: #2dd4bf;
-            box-shadow: 0 0 0 2px rgba(45,212,191,0.12);
-        }
-        .kegiatan-chip.selected .chip-check {
-            opacity: 1;
-        }
-        .kegiatan-chip .chip-check {
-            opacity: 0;
-            font-size: 10px;
-            transition: opacity 0.15s;
-        }
-        .kegiatan-chip.hidden-chip {
-            display: none !important;
+        #btnAddKegiatan:hover {
+            background: rgba(20,184,166,0.18) !important;
+            border-color: rgba(45,212,191,0.6) !important;
         }
     </style>
     @include('partials.mobile-ux')
@@ -1429,36 +1403,37 @@
                 <div class="glass-card p-4">
                     <form id="detailKegiatanForm">
                         <div class="row">
-                            <!-- Jenis Kegiatan Multi-Select -->
+                            <!-- Jenis Kegiatan - Row-based multi select -->
                             <div class="col-12 mb-3">
                                 <label class="form-label d-flex align-items-center justify-content-between mb-2">
-                                    <span><i class="fas fa-tasks me-2"></i>Jenis Kegiatan</span>
-                                    <span class="badge bg-teal-500/20 text-teal-300 border border-teal-500/30 px-2 py-1" style="font-size:11px;" id="selectedKegiatanBadge">
-                                        <i class="fas fa-check-circle me-1"></i><span id="selectedKegiatanCount">0</span> dipilih
+                                    <span><i class="fas fa-tasks me-2 text-teal-400"></i>Jenis Kegiatan</span>
+                                    <span class="badge px-2 py-1" id="selectedKegiatanBadge"
+                                          style="font-size:11px;background:rgba(20,184,166,0.15);color:#2dd4bf;border:1px solid rgba(45,212,191,0.3);">
+                                        <i class="fas fa-layer-group me-1"></i><span id="selectedKegiatanCount">1</span> kegiatan
                                     </span>
                                 </label>
 
-                                <!-- Search / filter chips -->
-                                <div class="input-group mb-2">
-                                    <span class="input-group-text bg-slate-900/90 border-slate-700/80 text-slate-400">
-                                        <i class="fas fa-search" style="font-size:12px;"></i>
-                                    </span>
-                                    <input type="text" id="kegiatanSearch" placeholder="Cari jenis kegiatan..."
-                                           class="form-control" style="background:rgba(15,23,42,0.9);border-color:rgba(255,255,255,0.12);color:#f8fafc;font-size:13px;"
-                                           oninput="filterKegiatanChips(this.value)">
+                                <!-- Rows container -->
+                                <div id="kegiatanRowsContainer" class="d-flex flex-column gap-2">
+                                    <!-- Baris pertama dirender oleh JS via initKegiatanRows() -->
+                                    <div class="d-flex align-items-center justify-content-center py-3">
+                                        <i class="fas fa-spinner fa-spin text-slate-500 me-2"></i>
+                                        <span class="text-slate-500" style="font-size:12px;">Memuat daftar kegiatan...</span>
+                                    </div>
                                 </div>
 
-                                <!-- Chip container -->
-                                <div id="kegiatanChipsContainer"
-                                     style="min-height:64px;max-height:180px;overflow-y:auto;background:rgba(15,23,42,0.6);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;">
-                                    <span class="text-slate-500" style="font-size:12px;"><i class="fas fa-spinner fa-spin me-1"></i>Memuat daftar kegiatan...</span>
-                                </div>
+                                <!-- Tombol Tambah Kegiatan -->
+                                <button type="button" id="btnAddKegiatan" onclick="addKegiatanRow()"
+                                        class="mt-2 d-flex align-items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                                        style="background:rgba(20,184,166,0.1);border:1px dashed rgba(45,212,191,0.4);color:#2dd4bf;width:100%;justify-content:center;">
+                                    <i class="fas fa-plus"></i> Tambah Jenis Kegiatan
+                                </button>
 
-                                <!-- Hidden input to track selected values (for legacy form compat) -->
+                                <!-- Hidden input legacy compat -->
                                 <input type="hidden" id="jenisKegiatan" name="jenis_kegiatan" value="{{ $prefilledJenisKegiatan ?? '' }}">
-                                <small class="text-slate-500 mt-1 d-block" style="font-size:11px;">
+                                <small class="text-slate-500 mt-2 d-block" style="font-size:11px;">
                                     <i class="fas fa-info-circle text-teal-400/70 me-1"></i>
-                                    Pilih satu atau lebih jenis kegiatan. Setiap kegiatan akan tersimpan sebagai laporan terpisah dengan data yang sama.
+                                    Setiap baris kegiatan akan tersimpan sebagai laporan terpisah dengan foto, TTD, dan tanggal yang sama.
                                 </small>
                             </div>
 
@@ -2281,93 +2256,164 @@
             }
         });
 
-        // ============================================================
-        // MULTI JENIS KEGIATAN - Chip Selector Functions
+         // ============================================================
+        // MULTI JENIS KEGIATAN - Row-based Dropdown
         // ============================================================
 
-        let allKegiatanMaster = []; // cache master data
+        let allKegiatanMaster = []; // cache master data dari API
+        let kegiatanRowCounter = 0; // unik ID per baris
 
+        // Load master data dari API kemudian init baris pertama
         async function loadKegiatanChips(preselectedName) {
-            const container = document.getElementById('kegiatanChipsContainer');
-            if (!container) return;
-
-            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-            const headers = { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' };
-            if (token) headers['Authorization'] = `Bearer ${token}`;
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-            if (csrfToken) headers['X-CSRF-TOKEN'] = csrfToken;
-
+            const { headers } = buildHeaders();
             try {
                 const resp = await fetch('/api/jenis-kegiatan', { headers });
                 if (!resp.ok) throw new Error('Gagal memuat master kegiatan');
                 const data = await resp.json();
                 allKegiatanMaster = (data.data || []).map(k => k.jenis_kegiatan).filter(Boolean);
             } catch(e) {
-                console.warn('Fallback: gagal load master kegiatan, gunakan prefilled saja', e);
+                console.warn('Fallback: gagal load master kegiatan', e);
                 allKegiatanMaster = [];
             }
 
-            // Pastikan preselected ada di list (meski tidak ada di master)
+            // Pastikan preselected ada di list
             if (preselectedName && !allKegiatanMaster.includes(preselectedName)) {
                 allKegiatanMaster.unshift(preselectedName);
             }
 
-            renderKegiatanChips(preselectedName ? [preselectedName] : []);
+            initKegiatanRows(preselectedName);
         }
 
-        function renderKegiatanChips(preselected = []) {
-            const container = document.getElementById('kegiatanChipsContainer');
+        // Inisialisasi baris pertama dengan nilai preselected
+        function initKegiatanRows(preselectedName) {
+            const container = document.getElementById('kegiatanRowsContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            kegiatanRowCounter = 0;
+            addKegiatanRow(preselectedName);
+        }
+
+        // Tambah baris baru dengan satu dropdown select
+        function addKegiatanRow(preselectedValue) {
+            const container = document.getElementById('kegiatanRowsContainer');
             if (!container) return;
 
+            const rowId = ++kegiatanRowCounter;
+            const row = document.createElement('div');
+            row.className = 'd-flex align-items-center gap-2';
+            row.id = `kegiatanRow_${rowId}`;
+            row.style.cssText = 'animation: fadeIn 0.2s ease;';
+
+            // Nomor baris
+            const num = document.createElement('span');
+            num.style.cssText = 'min-width:22px;height:22px;border-radius:50%;background:rgba(45,212,191,0.15);border:1px solid rgba(45,212,191,0.3);color:#2dd4bf;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;';
+            num.textContent = rowId;
+            num.id = `kegiatanRowNum_${rowId}`;
+
+            // Dropdown select
+            const select = document.createElement('select');
+            select.id = `kegiatanSelect_${rowId}`;
+            select.className = 'form-select flex-grow-1';
+            select.style.cssText = 'background:rgba(15,23,42,0.9);border-color:rgba(255,255,255,0.12);color:#f8fafc;font-size:13px;';
+            select.onchange = () => syncHiddenInput();
+
+            // Opsi default
+            const defaultOpt = document.createElement('option');
+            defaultOpt.value = '';
+            defaultOpt.textContent = '— Pilih Jenis Kegiatan —';
+            defaultOpt.style.color = '#64748b';
+            select.appendChild(defaultOpt);
+
             if (allKegiatanMaster.length === 0) {
-                container.innerHTML = '<span style="font-size:12px;color:#64748b;"><i class="fas fa-exclamation-circle me-1"></i>Tidak ada jenis kegiatan. Tambahkan di Master Data terlebih dahulu.</span>';
-                return;
+                const emptyOpt = document.createElement('option');
+                emptyOpt.disabled = true;
+                emptyOpt.textContent = 'Tidak ada kegiatan. Tambahkan di Master Data.';
+                select.appendChild(emptyOpt);
+            } else {
+                allKegiatanMaster.forEach(name => {
+                    const opt = document.createElement('option');
+                    opt.value = name;
+                    opt.textContent = name;
+                    if (name === preselectedValue) opt.selected = true;
+                    select.appendChild(opt);
+                });
             }
 
-            container.innerHTML = '';
-            allKegiatanMaster.forEach(name => {
-                const isSelected = preselected.includes(name);
-                const chip = document.createElement('span');
-                chip.className = 'kegiatan-chip' + (isSelected ? ' selected' : '');
-                chip.dataset.value = name;
-                chip.innerHTML = `<i class="fas fa-check chip-check"></i>${escapeHtml(name)}`;
-                chip.addEventListener('click', () => toggleChip(chip));
-                container.appendChild(chip);
-            });
+            // Tombol hapus (hanya tampil jika ada >1 baris)
+            const btnDel = document.createElement('button');
+            btnDel.type = 'button';
+            btnDel.id = `kegiatanBtnDel_${rowId}`;
+            btnDel.title = 'Hapus baris ini';
+            btnDel.style.cssText = 'flex-shrink:0;width:32px;height:32px;border-radius:8px;border:1px solid rgba(239,68,68,0.4);background:rgba(239,68,68,0.1);color:#f87171;display:flex;align-items:center;justify-content:center;transition:all 0.15s;cursor:pointer;';
+            btnDel.innerHTML = '<i class="fas fa-trash-alt" style="font-size:12px;"></i>';
+            btnDel.onmouseenter = () => { btnDel.style.background = 'rgba(239,68,68,0.25)'; };
+            btnDel.onmouseleave = () => { btnDel.style.background = 'rgba(239,68,68,0.1)'; };
+            btnDel.onclick = () => removeKegiatanRow(rowId);
 
+            row.appendChild(num);
+            row.appendChild(select);
+            row.appendChild(btnDel);
+            container.appendChild(row);
+
+            updateRowNumbers();
             updateSelectedBadge();
             syncHiddenInput();
         }
 
-        function toggleChip(chip) {
-            chip.classList.toggle('selected');
-            updateSelectedBadge();
-            syncHiddenInput();
+        // Hapus baris berdasarkan ID
+        function removeKegiatanRow(rowId) {
+            const container = document.getElementById('kegiatanRowsContainer');
+            const rows = container.querySelectorAll('[id^="kegiatanRow_"]');
+            if (rows.length <= 1) {
+                showNotification('Minimal harus ada 1 jenis kegiatan.', 'warning');
+                return;
+            }
+            const row = document.getElementById(`kegiatanRow_${rowId}`);
+            if (row) {
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(10px)';
+                row.style.transition = 'all 0.15s ease';
+                setTimeout(() => {
+                    row.remove();
+                    updateRowNumbers();
+                    updateSelectedBadge();
+                    syncHiddenInput();
+                }, 150);
+            }
         }
 
-        function filterKegiatanChips(query) {
-            const chips = document.querySelectorAll('#kegiatanChipsContainer .kegiatan-chip');
-            const q = query.toLowerCase().trim();
-            chips.forEach(chip => {
-                const match = chip.dataset.value.toLowerCase().includes(q);
-                chip.classList.toggle('hidden-chip', !match);
+        // Update nomor urut baris
+        function updateRowNumbers() {
+            const container = document.getElementById('kegiatanRowsContainer');
+            if (!container) return;
+            const rows = container.querySelectorAll('[id^="kegiatanRow_"]');
+            rows.forEach((row, idx) => {
+                const num = row.querySelector('[id^="kegiatanRowNum_"]');
+                if (num) num.textContent = idx + 1;
+                // Sembunyikan tombol hapus jika hanya ada 1 baris
+                const btnDel = row.querySelector('[id^="kegiatanBtnDel_"]');
+                if (btnDel) btnDel.style.visibility = rows.length > 1 ? 'visible' : 'hidden';
             });
         }
 
+        // Ambil semua nilai kegiatan yang dipilih dari semua dropdown
         function getSelectedKegiatan() {
-            const chips = document.querySelectorAll('#kegiatanChipsContainer .kegiatan-chip.selected');
-            return Array.from(chips).map(c => c.dataset.value);
+            const container = document.getElementById('kegiatanRowsContainer');
+            if (!container) return [];
+            const selects = container.querySelectorAll('select[id^="kegiatanSelect_"]');
+            const values = [];
+            selects.forEach(sel => {
+                const val = sel.value?.trim();
+                if (val) values.push(val);
+            });
+            return values;
         }
 
         function updateSelectedBadge() {
-            const count = getSelectedKegiatan().length;
+            const count = document.getElementById('kegiatanRowsContainer')
+                ?.querySelectorAll('[id^="kegiatanRow_"]').length || 0;
             const countEl = document.getElementById('selectedKegiatanCount');
-            const badge = document.getElementById('selectedKegiatanBadge');
             if (countEl) countEl.textContent = count;
-            if (badge) {
-                badge.style.background = count > 0 ? 'rgba(20,184,166,0.2)' : 'rgba(20,184,166,0.1)';
-                badge.style.color = count > 0 ? '#2dd4bf' : '#6b7280';
-            }
         }
 
         function syncHiddenInput() {
