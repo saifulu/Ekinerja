@@ -9,9 +9,16 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Bootstrap 5 CSS for modal compatibility -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- jsPDF & AutoTable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
     <style>
         * {
@@ -178,6 +185,11 @@
                             class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white font-semibold text-xs sm:text-sm shadow-md shadow-teal-600/25 transition-all">
                         <i class="fas fa-print"></i>
                         <span>Cetak Matriks</span>
+                            id="exportMatrixPdfBtn" 
+                            onclick="exportMatrixToPDF()" 
+                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-semibold text-xs sm:text-sm shadow-md shadow-rose-600/25 transition-all">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Pratinjau & Cetak PDF</span>
                     </button>
                 </div>
             </div>
@@ -320,13 +332,26 @@
 
             <!-- Table Header Info Bar -->
             <div class="flex items-center justify-between gap-3 pb-2">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2">
                 <div class="flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
                     <span class="text-xs font-bold text-slate-200" id="matrixTitle">Tabel Tabulasi Harian</span>
+                    <span class="text-xs sm:text-sm font-bold text-slate-200" id="matrixTitle">Tabel Tabulasi Harian</span>
                 </div>
                 <div class="text-[11px] text-slate-300 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700/60 flex items-center gap-1.5">
                     <i class="fas fa-chart-pie text-teal-400"></i>
                     <span id="matrixCountIndicator"><strong>0</strong> Jenis Kegiatan</span>
+                <div class="flex items-center gap-2">
+                    <div class="text-[11px] text-slate-300 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700/60 flex items-center gap-1.5">
+                        <i class="fas fa-chart-pie text-teal-400"></i>
+                        <span id="matrixCountIndicator"><strong>0</strong> Jenis Kegiatan</span>
+                    </div>
+                    <button type="button" 
+                            onclick="exportMatrixToPDF()" 
+                            class="no-print inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-teal-500/20 hover:bg-teal-500/30 border border-teal-500/40 text-teal-300 text-xs font-semibold transition-all shadow-sm">
+                        <i class="fas fa-file-pdf text-rose-400"></i>
+                        <span>Cetak PDF</span>
+                    </button>
                 </div>
             </div>
 
@@ -657,9 +682,555 @@
                 .replace(/'/g, '&#039;');
         }
 
+        // ==========================================
+        // PROFESSIONAL PDF EXPORT & PREVIEW ENGINE
+        // ==========================================
+        let currentPdfBlob = null;
+        let currentPdfUrl = null;
+        let currentPdfFilename = 'Rekap_Matriks_Kinerja.pdf';
+
+        async function exportMatrixToPDF() {
+            const btnHero = document.getElementById('exportMatrixPdfBtn');
+            const origHeroContent = btnHero ? btnHero.innerHTML : '';
+            if (btnHero) {
+                btnHero.disabled = true;
+                btnHero.innerHTML = '<i class="fas fa-spinner fa-spin mr-1.5"></i> Menyusun PDF...';
+            }
+
+            try {
+                if (!window.jspdf || !window.jspdf.jsPDF) {
+                    throw new Error('Pustaka jsPDF belum selesai dimuat. Silakan muat ulang halaman.');
+                }
+
+                // 1. Ambil data hasil kalkulasi matriks aktif
+                const startDateVal = document.getElementById('filterStartDate')?.value;
+                const endDateVal = document.getElementById('filterEndDate')?.value;
+                const selectedKegiatan = document.getElementById('filterKegiatan')?.value || '';
+                const grouping = document.getElementById('filterGrouping')?.value || 'daily';
+
+                const startDate = startDateVal ? new Date(startDateVal + 'T00:00:00') : null;
+                const endDate = endDateVal ? new Date(endDateVal + 'T23:59:59.999') : null;
+
+                const filteredItems = rawActivities.filter(item => {
+                    if (!item.tanggal_dibuat) return false;
+                    const d = new Date(item.tanggal_dibuat);
+                    if (isNaN(d.getTime())) return false;
+                    if (startDate && d < startDate) return false;
+                    if (endDate && d > endDate) return false;
+                    if (selectedKegiatan && (item.jenis_kegiatan || '').toLowerCase() !== selectedKegiatan.toLowerCase()) {
+                        return false;
+                    }
+                    return true;
+                });
+
+                const matrix = {};
+                const colMap = {};
+                const colTotals = {};
+                let grandTotal = 0;
+
+                filteredItems.forEach(item => {
+                    const keg = item.jenis_kegiatan || 'Tanpa Kegiatan';
+                    const d = new Date(item.tanggal_dibuat);
+                    let colKey = '';
+                    let colLabel = '';
+
+                    if (grouping === 'monthly') {
+                        colKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                        const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+                        colLabel = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+                    } else {
+                        colKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+                        colLabel = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+                    }
+
+                    if (!colMap[colKey]) {
+                        colMap[colKey] = colLabel;
+                        colTotals[colKey] = 0;
+                    }
+
+                    if (!matrix[keg]) {
+                        matrix[keg] = {};
+                    }
+
+                    matrix[keg][colKey] = (matrix[keg][colKey] || 0) + 1;
+                    colTotals[colKey] = (colTotals[colKey] || 0) + 1;
+                    grandTotal++;
+                });
+
+                const colKeys = Object.keys(colMap).sort();
+                const kegList = Object.keys(matrix).sort();
+
+                if (kegList.length === 0 || colKeys.length === 0) {
+                    alert('Tidak ada data kegiatan pada rentang filter ini untuk dicetak.');
+                    return;
+                }
+
+                // 2. Inisialisasi jsPDF Dokumen Landscape
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'mm',
+                    format: 'a4',
+                    compress: true
+                });
+
+                const pageWidth = doc.internal.pageSize.getWidth(); // 297mm
+                const pageHeight = doc.internal.pageSize.getHeight(); // 210mm
+                const marginX = 14;
+                const contentWidth = pageWidth - (marginX * 2); // 269mm
+
+                const rawInstansi = '{{ $currentUser->instansi ?? "RUMAH SAKIT UMUM DAERAH" }}';
+                const namaInstansi = rawInstansi ? rawInstansi.trim() : 'RUMAH SAKIT UMUM DAERAH';
+                const userName = '{{ $currentUser->name ?? "Pegawai" }}';
+                const userNip = '{{ $currentUser->nip ?? "" }}';
+
+                // 3. KOP SURAT / HEADER RESMI
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(13);
+                doc.setTextColor(15, 23, 42); // slate-900
+                doc.text(namaInstansi.toUpperCase(), pageWidth / 2, 12, { align: 'center' });
+
+                doc.setFontSize(12);
+                doc.setTextColor(13, 148, 136); // teal-600
+                const docTitle = grouping === 'monthly' ? 'REKAPITULASI MATRIKS TABULASI BULANAN KEGIATAN KINERJA' : 'REKAPITULASI MATRIKS TABULASI HARIAN KEGIATAN KINERJA';
+                doc.text(docTitle, pageWidth / 2, 17.5, { align: 'center' });
+
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8);
+                doc.setTextColor(100, 116, 139); // slate-500
+                doc.text('Sistem Informasi Manajemen Akuntabilitas & Kinerja Pegawai Terpadu (e-Kinerja)', pageWidth / 2, 22, { align: 'center' });
+
+                // Double Rule Line
+                doc.setDrawColor(15, 23, 42);
+                doc.setLineWidth(0.65);
+                doc.line(marginX, 25, pageWidth - marginX, 25);
+
+                doc.setDrawColor(148, 163, 184);
+                doc.setLineWidth(0.25);
+                doc.line(marginX, 26.2, pageWidth - marginX, 26.2);
+
+                // 4. KOTAK INFORMASI METADATA PEGAWAI & PERIODE
+                const metaBoxY = 28.5;
+                const metaBoxH = 16.5;
+                doc.setFillColor(248, 250, 252);
+                doc.setDrawColor(226, 232, 240);
+                doc.setLineWidth(0.3);
+                doc.roundedRect(marginX, metaBoxY, contentWidth, metaBoxH, 1.5, 1.5, 'FD');
+
+                const midX = marginX + 135;
+                doc.setDrawColor(226, 232, 240);
+                doc.setLineWidth(0.25);
+                doc.line(midX, metaBoxY + 2, midX, metaBoxY + metaBoxH - 2);
+
+                const sStr = startDate ? formatDateDisplay(startDate) : '-';
+                const eStr = endDate ? formatDateDisplay(endDate) : '-';
+                const groupText = grouping === 'monthly' ? 'Mode Akumulasi Bulanan' : 'Mode Harian (Per Tanggal)';
+                const periodeText = `${sStr} s/d ${eStr}`;
+
+                const printDateStr = new Date().toLocaleDateString('id-ID', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                // Metadata Kiri
+                doc.setFontSize(7.5);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(71, 85, 105);
+                doc.text('Nama Pegawai', marginX + 4, metaBoxY + 5);
+                doc.text(':', marginX + 28, metaBoxY + 5);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(15, 23, 42);
+                doc.text(userName, marginX + 31, metaBoxY + 5);
+
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(71, 85, 105);
+                doc.text('NIP Pegawai', marginX + 4, metaBoxY + 9.5);
+                doc.text(':', marginX + 28, metaBoxY + 9.5);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(15, 23, 42);
+                doc.text(userNip || '-', marginX + 31, metaBoxY + 9.5);
+
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(71, 85, 105);
+                doc.text('Instansi / Unit', marginX + 4, metaBoxY + 14);
+                doc.text(':', marginX + 28, metaBoxY + 14);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(15, 23, 42);
+                doc.text(namaInstansi, marginX + 31, metaBoxY + 14);
+
+                // Metadata Kanan
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(71, 85, 105);
+                doc.text('Periode & Format', midX + 6, metaBoxY + 5);
+                doc.text(':', midX + 32, metaBoxY + 5);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(15, 23, 42);
+                doc.text(`${periodeText} (${groupText})`, midX + 35, metaBoxY + 5);
+
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(71, 85, 105);
+                doc.text('Ringkasan Matriks', midX + 6, metaBoxY + 9.5);
+                doc.text(':', midX + 32, metaBoxY + 9.5);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(13, 148, 136);
+                doc.text(`${kegList.length} Jenis Kegiatan | ${grandTotal} Total Frekuensi`, midX + 35, metaBoxY + 9.5);
+
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(71, 85, 105);
+                doc.text('Waktu Cetak', midX + 6, metaBoxY + 14);
+                doc.text(':', midX + 32, metaBoxY + 14);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(15, 23, 42);
+                doc.text(printDateStr + ' WIB', midX + 35, metaBoxY + 14);
+
+                // 5. PENYIAPAN TABEL AUTOTABLE MATRIX
+                const tableHeaders = ['NO', 'JENIS KEGIATAN'];
+                colKeys.forEach(ck => {
+                    tableHeaders.push(colMap[ck]);
+                });
+                tableHeaders.push('TOTAL');
+
+                const tableBody = [];
+                kegList.forEach((keg, idx) => {
+                    let rowSum = 0;
+                    const row = [idx + 1, keg];
+                    colKeys.forEach(ck => {
+                        const count = matrix[keg][ck] || 0;
+                        rowSum += count;
+                        row.push(count > 0 ? String(count) : '-');
+                    });
+                    row.push(String(rowSum));
+                    tableBody.push(row);
+                });
+
+                // Footer Baris Total
+                const footerLabel = grouping === 'monthly' ? 'TOTAL BULANAN' : 'TOTAL HARIAN';
+                const footerRow = ['', footerLabel];
+                colKeys.forEach(ck => {
+                    footerRow.push(String(colTotals[ck] || 0));
+                });
+                footerRow.push(String(grandTotal));
+
+                // Hitung lebar & font size responsif
+                const numDateCols = colKeys.length;
+                let fontSize = 7.5;
+                let cellPadding = { top: 2.8, right: 2, bottom: 2.8, left: 2 };
+                if (numDateCols > 22) {
+                    fontSize = 5.8;
+                    cellPadding = { top: 2, right: 0.8, bottom: 2, left: 0.8 };
+                } else if (numDateCols > 14) {
+                    fontSize = 6.6;
+                    cellPadding = { top: 2.2, right: 1.2, bottom: 2.2, left: 1.2 };
+                }
+
+                // Definisi styling kolom
+                const colStyles = {
+                    0: { halign: 'center', cellWidth: 9, valign: 'middle' },
+                    1: { halign: 'left', valign: 'middle', fontStyle: 'normal' }
+                };
+
+                // Kolom Total paling akhir
+                const totalColIndex = tableHeaders.length - 1;
+                colStyles[totalColIndex] = {
+                    halign: 'center',
+                    valign: 'middle',
+                    fontStyle: 'bold',
+                    fillColor: [240, 253, 250],
+                    textColor: [13, 148, 136]
+                };
+
+                // Set auto date col alignment
+                for (let c = 2; c < totalColIndex; c++) {
+                    colStyles[c] = { halign: 'center', valign: 'middle' };
+                }
+
+                doc.autoTable({
+                    head: [tableHeaders],
+                    body: tableBody,
+                    foot: [footerRow],
+                    startY: 48,
+                    theme: 'grid',
+                    styles: {
+                        fontSize: fontSize,
+                        cellPadding: cellPadding,
+                        overflow: 'linebreak',
+                        valign: 'middle',
+                        lineColor: [203, 213, 225],
+                        lineWidth: 0.2
+                    },
+                    headStyles: {
+                        fillColor: [15, 23, 42],
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold',
+                        halign: 'center',
+                        fontSize: fontSize + 0.5,
+                        valign: 'middle',
+                        minCellHeight: 8
+                    },
+                    footStyles: {
+                        fillColor: [241, 245, 249],
+                        textColor: [15, 23, 42],
+                        fontStyle: 'bold',
+                        halign: 'center',
+                        fontSize: fontSize + 0.5,
+                        valign: 'middle',
+                        minCellHeight: 8.5
+                    },
+                    alternateRowStyles: {
+                        fillColor: [252, 253, 254]
+                    },
+                    columnStyles: colStyles,
+                    margin: { left: marginX, right: marginX, top: 14, bottom: 14 },
+                    didDrawCell: function(data) {
+                        // Highlight angka non-zero pada body
+                        if (data.section === 'body' && data.column.index >= 2 && data.column.index < totalColIndex) {
+                            if (data.cell.raw !== '-') {
+                                doc.setFont('helvetica', 'bold');
+                                doc.setTextColor(5, 150, 105); // emerald-600
+                            }
+                        }
+                        // Highlight Grand Total pada Footer
+                        if (data.section === 'foot' && data.column.index === totalColIndex) {
+                            doc.setFillColor(13, 148, 136); // teal-600
+                            doc.rect(data.cell.x, data.cell.y, data.cell.width, data.cell.height, 'F');
+                            doc.setFont('helvetica', 'bold');
+                            doc.setFontSize(fontSize + 1.5);
+                            doc.setTextColor(255, 255, 255);
+                            doc.text(String(grandTotal), data.cell.x + (data.cell.width / 2), data.cell.y + (data.cell.height / 2) + 1.2, { align: 'center' });
+                        }
+                    }
+                });
+
+                // 6. BLOK TANDA TANGAN PENGESAHAN
+                let finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 8 : 120;
+                if (finalY + 38 > pageHeight - 15) {
+                    doc.addPage();
+                    finalY = 18;
+                }
+
+                const todayFormatted = new Date().toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+
+                const sigBoxW = 85;
+                const sigLeftX = marginX + 15;
+                const sigRightX = pageWidth - marginX - sigBoxW - 15;
+
+                // TTD Pegawai (Kiri)
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(71, 85, 105);
+                doc.text('Pegawai yang Bersangkutan,', sigLeftX + (sigBoxW / 2), finalY, { align: 'center' });
+
+                const ttdLineY = finalY + 22;
+                doc.setDrawColor(203, 213, 225);
+                doc.setLineWidth(0.25);
+                doc.line(sigLeftX + 5, ttdLineY, sigLeftX + sigBoxW - 5, ttdLineY);
+
+                doc.setFontSize(8.5);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(15, 23, 42);
+                doc.text(userName, sigLeftX + (sigBoxW / 2), ttdLineY + 4, { align: 'center' });
+
+                doc.setFontSize(7.5);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(100, 116, 139);
+                doc.text(`NIP. ${userNip || '-'}`, sigLeftX + (sigBoxW / 2), ttdLineY + 7.5, { align: 'center' });
+
+                // TTD Atasan Langsung (Kanan)
+                doc.setFontSize(8);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(71, 85, 105);
+                doc.text(`${todayFormatted}`, sigRightX + (sigBoxW / 2), finalY - 3.5, { align: 'center' });
+                doc.text('Mengetahui / Menyetujui,', sigRightX + (sigBoxW / 2), finalY, { align: 'center' });
+                doc.text('Atasan Langsung / Penilai Kinerja,', sigRightX + (sigBoxW / 2), finalY + 3.5, { align: 'center' });
+
+                doc.line(sigRightX + 5, ttdLineY, sigRightX + sigBoxW - 5, ttdLineY);
+
+                doc.setFontSize(8.5);
+                doc.setFont('helvetica', 'bold');
+                doc.setTextColor(15, 23, 42);
+                doc.text('( .................................................... )', sigRightX + (sigBoxW / 2), ttdLineY + 4, { align: 'center' });
+
+                doc.setFontSize(7.5);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(100, 116, 139);
+                doc.text('NIP. ................................................', sigRightX + (sigBoxW / 2), ttdLineY + 7.5, { align: 'center' });
+
+                // 7. RUNNING HEADER & RUNNING FOOTER
+                const totalPages = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
+                    doc.setPage(i);
+
+                    if (i > 1) {
+                        doc.setFontSize(7);
+                        doc.setFont('helvetica', 'normal');
+                        doc.setTextColor(148, 163, 184);
+                        doc.text(`${namaInstansi} | Rekapitulasi Matriks Tabulasi Kinerja Pegawai`, marginX, 7);
+                        doc.setDrawColor(226, 232, 240);
+                        doc.setLineWidth(0.2);
+                        doc.line(marginX, 8.5, pageWidth - marginX, 8.5);
+                    }
+
+                    // Running Footer di setiap halaman
+                    doc.setDrawColor(226, 232, 240);
+                    doc.setLineWidth(0.2);
+                    doc.line(marginX, pageHeight - 9, pageWidth - marginX, pageHeight - 9);
+
+                    doc.setFontSize(7);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setTextColor(148, 163, 184);
+                    doc.text(`Dokumen Resmi e-Kinerja Pegawai | Waktu Cetak: ${printDateStr} WIB`, marginX, pageHeight - 5.5);
+                    doc.text(`Halaman ${i} dari ${totalPages}`, pageWidth - marginX, pageHeight - 5.5, { align: 'right' });
+                }
+
+                // 8. TAMPILKAN DI MODAL PRATINJAU (TIDAK LANGSUNG DOWNLOAD / CETAK)
+                const fileName = `Rekap_Matriks_Kinerja_${userNip || 'Pegawai'}_${new Date().toISOString().split('T')[0]}.pdf`;
+                const pdfBlob = doc.output('blob');
+                currentPdfBlob = pdfBlob;
+                currentPdfFilename = fileName;
+
+                if (currentPdfUrl) {
+                    URL.revokeObjectURL(currentPdfUrl);
+                }
+                currentPdfUrl = URL.createObjectURL(pdfBlob);
+
+                const frame = document.getElementById('pdfPreviewFrame');
+                const filenameLabel = document.getElementById('pdfPreviewFilename');
+                const skeleton = document.getElementById('pdfLoadingSkeleton');
+
+                if (filenameLabel) filenameLabel.textContent = fileName;
+                if (skeleton) skeleton.style.display = 'flex';
+
+                if (frame) {
+                    frame.onload = function() {
+                        if (skeleton) skeleton.style.display = 'none';
+                    };
+                    frame.src = currentPdfUrl;
+                }
+
+                const previewModalEl = document.getElementById('pdfPreviewModal');
+                if (previewModalEl && window.bootstrap) {
+                    const previewModal = new bootstrap.Modal(previewModalEl);
+                    previewModal.show();
+                }
+
+            } catch (err) {
+                console.error('Matrix PDF generation error:', err);
+                alert('Terjadi kesalahan saat memproses dokumen PDF: ' + err.message);
+            } finally {
+                if (btnHero) {
+                    btnHero.disabled = false;
+                    btnHero.innerHTML = origHeroContent;
+                }
+            }
+        }
+
+        function openPdfInNewTab() {
+            if (currentPdfUrl) {
+                window.open(currentPdfUrl, '_blank');
+            }
+        }
+
+        function downloadCurrentPdf() {
+            if (!currentPdfBlob && !currentPdfUrl) return;
+            const a = document.createElement('a');
+            a.href = currentPdfUrl;
+            a.download = currentPdfFilename || 'Rekap_Matriks_Kinerja.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        function printPdfFromPreview() {
+            const frame = document.getElementById('pdfPreviewFrame');
+            if (frame && frame.contentWindow) {
+                try {
+                    frame.contentWindow.focus();
+                    frame.contentWindow.print();
+                    return;
+                } catch (e) {
+                    console.warn('Frame print failed, opening popup for print:', e);
+                }
+            }
+            if (currentPdfUrl) {
+                window.open(currentPdfUrl, '_blank');
+            }
+        }
+
         // Initialize on DOM load
         document.addEventListener('DOMContentLoaded', initMatrix);
     </script>
+
+    <!-- PDF Preview Modal -->
+    <div class="modal fade" id="pdfPreviewModal" tabindex="-1" aria-labelledby="pdfPreviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width: 96vw;">
+            <div class="modal-content border border-slate-700 bg-slate-900 shadow-2xl rounded-2xl overflow-hidden">
+                <!-- Header -->
+                <div class="modal-header border-b border-slate-700/80 px-4 sm:px-6 py-3.5 flex items-center justify-between bg-slate-900/95 backdrop-blur">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-9 h-9 rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-400 flex items-center justify-center text-base shrink-0">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <h5 class="modal-title font-bold text-white text-sm sm:text-base truncate" id="pdfPreviewModalLabel">
+                                Pratinjau Dokumen Matriks Tabulasi PDF
+                            </h5>
+                            <span class="text-[11px] text-slate-400 truncate block" id="pdfPreviewFilename">Rekap_Matriks_Kinerja.pdf</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button type="button" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors flex items-center gap-1.5" onclick="openPdfInNewTab()" title="Buka dokumen di tab baru browser">
+                            <i class="fas fa-arrow-up-right-from-square"></i> <span class="hidden md:inline">Buka di Tab Baru</span>
+                        </button>
+                        <button type="button" class="text-slate-400 hover:text-white transition-colors text-base p-1.5" data-bs-dismiss="modal" aria-label="Close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Helper Notice -->
+                <div class="bg-amber-500/10 border-b border-amber-500/20 px-4 py-2 flex items-center justify-between text-xs text-amber-300 sm:hidden">
+                    <span class="truncate"><i class="fas fa-mobile-screen mr-1 text-amber-400"></i> Mode Ponsel: Gunakan tombol Buka Tab Baru jika pratinjau tidak muncul</span>
+                    <button type="button" class="text-amber-300 font-bold underline shrink-0 ml-2" onclick="openPdfInNewTab()">Buka Tab</button>
+                </div>
+
+                <!-- Body (responsive height PDF container) -->
+                <div class="modal-body p-0 bg-slate-950 relative" style="height: 75vh; min-height: 480px;">
+                    <!-- Loading Indicator -->
+                    <div id="pdfLoadingSkeleton" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950 text-slate-400 z-10">
+                        <i class="fas fa-spinner fa-spin text-3xl text-rose-500 mb-3"></i>
+                        <p class="text-xs font-medium text-slate-300">Menyusun dan merender pratinjau dokumen PDF...</p>
+                    </div>
+                    <!-- PDF Iframe -->
+                    <iframe id="pdfPreviewFrame" src="" class="w-full h-full border-0" title="Pratinjau Dokumen PDF"></iframe>
+                </div>
+
+                <!-- Footer -->
+                <div class="modal-footer border-t border-slate-700/80 px-4 sm:px-6 py-3 flex flex-wrap justify-between items-center gap-2 bg-slate-900/95">
+                    <button type="button" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors flex items-center gap-1.5" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Tutup
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <button type="button" class="px-3.5 sm:px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 text-xs font-semibold transition-colors flex items-center gap-1.5" onclick="printPdfFromPreview()">
+                            <i class="fas fa-print text-emerald-400"></i> <span class="hidden sm:inline">Cetak Langsung</span><span class="sm:hidden">Cetak</span>
+                        </button>
+                        <button type="button" class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-semibold shadow-md shadow-emerald-600/30 transition-all flex items-center gap-1.5" onclick="downloadCurrentPdf()">
+                            <i class="fas fa-download"></i> Unduh File PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     @include('partials.pwa-prompt')
 </body>
