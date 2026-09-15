@@ -429,60 +429,56 @@
                 <span>{{ $error }}</span>
             </div>
         @else
-            <!-- Mobile Segmented Tab Switcher (Takes minimal vertical space!) -->
-            <div class="block md:hidden bg-slate-900/90 p-1.5 rounded-2xl border border-slate-700/60 shadow-md">
-                <div class="flex items-center gap-1">
-                    <button type="button" 
-                            id="mobileTabLaporan" 
-                            onclick="showLaporanKegiatan()" 
-                            class="seg-tab-btn active flex items-center justify-center gap-1.5">
-                        <i class="fas fa-clipboard-list text-xs"></i>
-                        <span>Laporan Kinerja</span>
-                    </button>
-                    <button type="button" 
-                            id="mobileTabRekap" 
-                            onclick="showRekapLaporan()" 
-                            class="seg-tab-btn flex items-center justify-center gap-1.5">
-                        <i class="fas fa-table-list text-xs"></i>
-                        <span>Rekap Bulanan</span>
-                    </button>
+            <!-- Metric Summary Cards for Laporan Kinerja -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                <div class="stat-card p-4 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <div class="text-[11px] text-slate-400 font-semibold uppercase tracking-wider">Total Laporan</div>
+                        <div class="text-2xl font-extrabold text-white mt-1">{{ ($statusStats['draft'] ?? 0) + ($statusStats['submitted'] ?? 0) + ($statusStats['approved'] ?? 0) + ($statusStats['rejected'] ?? 0) }}</div>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                </div>
+                <div class="stat-card p-4 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <div class="text-[11px] text-emerald-400 font-semibold uppercase tracking-wider">Approved</div>
+                        <div class="text-2xl font-extrabold text-emerald-400 mt-1">{{ $statusStats['approved'] ?? 0 }}</div>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="stat-card p-4 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <div class="text-[11px] text-cyan-400 font-semibold uppercase tracking-wider">Submitted</div>
+                        <div class="text-2xl font-extrabold text-cyan-400 mt-1">{{ $statusStats['submitted'] ?? 0 }}</div>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-lg">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                </div>
+                <div class="stat-card p-4 rounded-2xl flex items-center justify-between">
+                    <div>
+                        <div class="text-[11px] text-amber-400 font-semibold uppercase tracking-wider">Draft</div>
+                        <div class="text-2xl font-extrabold text-amber-400 mt-1">{{ $statusStats['draft'] ?? 0 }}</div>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg">
+                        <i class="fas fa-pencil"></i>
+                    </div>
                 </div>
             </div>
 
-            <!-- Desktop Metric Cards (Hidden on mobile) - 2 Cards Menu -->
-            <div class="hidden md:grid grid-cols-2 gap-4">
-                <!-- Card 1: Laporan Kinerja -->
-                <div class="stat-card active flex flex-col justify-between" id="laporanKegiatanCard" onclick="showLaporanKegiatan()">
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-lg shrink-0">
-                                <i class="fas fa-clipboard-list"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <h3 class="text-slate-200 font-bold text-sm leading-tight truncate">Laporan Kinerja</h3>
-                                <div class="text-xs text-slate-400 mt-0.5">Daftar rincian log harian</div>
-                            </div>
-                        </div>
-                        <div class="text-2xl font-extrabold text-white leading-none shrink-0">
-                            {{ ($statusStats['draft'] ?? 0) + ($statusStats['submitted'] ?? 0) + ($statusStats['approved'] ?? 0) + ($statusStats['rejected'] ?? 0) }}
-                        </div>
-                    </div>
+            <!-- Switcher to Rekap Bulanan -->
+            <div class="flex items-center justify-between bg-slate-900/80 border border-slate-700/60 p-2.5 sm:p-3 rounded-2xl">
+                <div class="flex items-center gap-2 text-xs text-slate-300">
+                    <i class="fas fa-table-list text-teal-400"></i>
+                    <span>Ingin melihat rekapitulasi matriks bulanan per tanggal?</span>
                 </div>
-
-                <!-- Card 2: Rekap Bulanan -->
-                <div class="stat-card flex flex-col justify-between" id="rekapLaporanCard" onclick="showRekapLaporan()">
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-500/30 text-teal-400 flex items-center justify-center text-lg shrink-0">
-                                <i class="fas fa-table-list"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <h3 class="text-slate-200 font-bold text-sm leading-tight truncate">Rekap Bulanan</h3>
-                                <div class="text-xs text-slate-400 mt-0.5">Tabulasi jumlah kegiatan per tanggal</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <a href="/rekap-bulanan{{ isset($currentUser->nip) ? '?nip='.$currentUser->nip : '' }}" class="px-3 py-1.5 rounded-xl bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/30 text-xs font-bold transition-all inline-flex items-center gap-1.5">
+                    <span>Buka Rekap Bulanan</span>
+                    <i class="fas fa-arrow-right text-[10px]"></i>
+                </a>
             </div>
 
             <!-- Main Data Table & Card Feed Container -->
@@ -579,6 +575,7 @@
                         </div>
                     </div>
                 </div>
+
 
                 <!-- View 1: Laporan Kegiatan (Desktop Table + Mobile Cards) -->
                 <div id="laporanKegiatanTable">
@@ -918,116 +915,8 @@
                     @endif
                 </div>
 
-                <!-- View 2: Rekap Bulanan View (Cross Tabular) -->
-                <div id="rekapLaporanTable" style="display: none;">
-                    @php
-                        $rekapData = [];
-                        $allDates = [];
-                        $totalPerDate = [];
-                        $grandTotal = 0;
-                        
-                        if (isset($laporanData)) {
-                            foreach($laporanData as $item) {
-                                $kegiatan = $item->jenis_kegiatan ?: 'Tanpa Kegiatan';
-                                $dateStr = $item->tanggal_dibuat ? \Carbon\Carbon::parse($item->tanggal_dibuat)->format('Y-m-d') : null;
-                                
-                                if ($dateStr) {
-                                    if (!isset($rekapData[$kegiatan])) {
-                                        $rekapData[$kegiatan] = [];
-                                    }
-                                    if (!isset($rekapData[$kegiatan][$dateStr])) {
-                                        $rekapData[$kegiatan][$dateStr] = 0;
-                                    }
-                                    $rekapData[$kegiatan][$dateStr]++;
-                                    $allDates[$dateStr] = true;
-                                }
-                            }
-                        }
-                        
-                        $allDatesList = array_keys($allDates);
-                        sort($allDatesList);
-                        
-                        foreach($allDatesList as $date) {
-                            $totalPerDate[$date] = 0;
-                        }
-                        
-                        foreach($rekapData as $kegiatan => $datesCount) {
-                            foreach($datesCount as $date => $count) {
-                                $totalPerDate[$date] += $count;
-                                $grandTotal += $count;
-                            }
-                        }
-                    @endphp
-
-                    <div class="table-responsive bg-slate-900/60 p-1">
-                        <table class="w-full min-w-max border-collapse" id="rekapBulananTable">
-                            <thead>
-                                <tr>
-                                    <th class="bg-slate-800 text-slate-300 p-3 text-xs font-bold text-left border-b border-slate-700 w-64 uppercase tracking-wider">Jenis Kegiatan</th>
-                                    @foreach($allDatesList as $date)
-                                        <th class="bg-slate-800 text-slate-300 p-3 text-[11px] font-bold text-center border-b border-slate-700 border-l border-slate-700/50">
-                                            {{ \Carbon\Carbon::parse($date)->format('d/m') }}
-                                        </th>
-                                    @endforeach
-                                    <th class="bg-teal-900/40 text-teal-300 p-3 text-xs font-bold text-center border-b border-slate-700 border-l border-teal-500/30 uppercase tracking-wider">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse($rekapData as $kegiatan => $counts)
-                                    <tr class="hover:bg-slate-800/40 transition-colors">
-                                        <td class="p-3 text-xs text-slate-200 border-b border-slate-700/50 font-medium">
-                                            {{ $kegiatan }}
-                                        </td>
-                                        @php $rowTotal = 0; @endphp
-                                        @foreach($allDatesList as $date)
-                                            @php 
-                                                $count = $counts[$date] ?? 0; 
-                                                $rowTotal += $count;
-                                            @endphp
-                                            <td class="p-3 text-xs text-center border-b border-slate-700/50 border-l border-slate-700/30 {{ $count > 0 ? 'text-emerald-400 font-bold' : 'text-slate-600' }}">
-                                                {{ $count > 0 ? $count : '-' }}
-                                            </td>
-                                        @endforeach
-                                        <td class="p-3 text-xs text-center border-b border-slate-700/50 border-l border-teal-500/30 bg-teal-900/10 text-teal-300 font-bold">
-                                            {{ $rowTotal }}
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="{{ count($allDatesList) + 2 }}" class="p-8 text-center text-slate-500 text-xs italic">
-                                            Belum ada data rekapitulasi kegiatan.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                            @if(count($rekapData) > 0)
-                            <tfoot>
-                                <tr class="bg-slate-800/80">
-                                    <td class="p-3 text-xs text-right text-slate-300 font-bold border-t border-slate-600">
-                                        Total Harian
-                                    </td>
-                                    @foreach($allDatesList as $date)
-                                        <td class="p-3 text-xs text-center text-emerald-400 font-bold border-t border-slate-600 border-l border-slate-700/50">
-                                            {{ $totalPerDate[$date] }}
-                                        </td>
-                                    @endforeach
-                                    <td class="p-3 text-sm text-center text-white bg-teal-600/40 font-bold border-t border-teal-500/50 border-l border-teal-500/30 shadow-[inset_0_0_10px_rgba(20,184,166,0.2)]">
-                                        {{ $grandTotal }}
-                                    </td>
-                                </tr>
-                            </tfoot>
-                            @endif
-                        </table>
-                    </div>
-                </div>
-
-
             </div>
         @endif
-
-    </div>
-
-    <!-- Lightbox Modal untuk Tanda Tangan & Dokumentasi -->
     <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -1206,7 +1095,7 @@
     <!-- App Interactive Script -->
     <script>
         const rawItemsData = @json($laporanData ? $laporanData->keyBy('id') : []);
-        let currentView = 'laporan'; // 'laporan' or 'rekap'
+        let currentView = ''; // initially none
         let currentPage = 1;
         const pageSize = 10;
         let filteredRowIndices = [];
@@ -1246,7 +1135,15 @@
             
             document.getElementById('laporanKegiatanTable').style.display = 'block';
             document.getElementById('rekapLaporanTable').style.display = 'none';
-            document.querySelector('.table-controls').style.display = 'block';
+            
+            const controls = document.querySelector('.table-controls');
+            if (controls) controls.style.display = 'block';
+            
+            const header = document.getElementById('tableHeaderContainer');
+            if (header) header.style.display = 'flex';
+            
+            const welcome = document.getElementById('welcomeState');
+            if (welcome) welcome.style.display = 'none';
             
             applyFilters();
         }
@@ -1277,7 +1174,15 @@
             
             document.getElementById('laporanKegiatanTable').style.display = 'none';
             document.getElementById('rekapLaporanTable').style.display = 'block';
-            document.querySelector('.table-controls').style.display = 'none';
+            
+            const controls = document.querySelector('.table-controls');
+            if (controls) controls.style.display = 'none';
+            
+            const header = document.getElementById('tableHeaderContainer');
+            if (header) header.style.display = 'flex';
+            
+            const welcome = document.getElementById('welcomeState');
+            if (welcome) welcome.style.display = 'none';
         }
 
         // Live Search & Multi-criteria Filtering

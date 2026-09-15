@@ -33,7 +33,12 @@ class DetailJenisKegiatanController extends Controller
             $query->byJenisKegiatan($request->jenis_kegiatan);
         }
 
-        $detailKegiatan = $query->orderBy('created_at', 'desc')->paginate(10);
+        if ($request->boolean('all') || $request->get('all') == '1' || $request->get('all') == 'true') {
+            $detailKegiatan = $query->orderBy('created_at', 'desc')->get();
+        } else {
+            $perPage = (int) $request->get('per_page', 10);
+            $detailKegiatan = $query->orderBy('created_at', 'desc')->paginate($perPage);
+        }
 
         return response()->json([
             'success' => true,
@@ -483,6 +488,14 @@ class DetailJenisKegiatanController extends Controller
      */
     public function showLaporan(Request $request)
     {
+        return $this->showLaporanKinerja($request);
+    }
+
+    /**
+     * Display Laporan Kinerja page
+     */
+    public function showLaporanKinerja(Request $request)
+    {
         try {
             $userNip = $request->get('nip');
             
@@ -526,6 +539,7 @@ class DetailJenisKegiatanController extends Controller
             $recentActivities = $laporanData->take(10);
     
             return view('laporan', compact(
+            return view('laporan-kinerja', compact(
                 'laporanData',
                 'statusStats', 
                 'unitStats',
@@ -537,6 +551,54 @@ class DetailJenisKegiatanController extends Controller
         } catch (\Exception $e) {
             \Log::error('Error in showLaporan: ' . $e->getMessage());
             return view('laporan')->with('error', 'Terjadi kesalahan saat memuat data laporan.');
+            \Log::error('Error in showLaporanKinerja: ' . $e->getMessage());
+            return view('laporan-kinerja')->with('error', 'Terjadi kesalahan saat memuat data laporan kinerja.');
+        }
+    }
+
+    /**
+     * Display Rekap Bulanan Crosstab page
+     */
+    public function showRekapBulanan(Request $request)
+    {
+        try {
+            $userNip = $request->get('nip');
+            
+            // Pastikan NIP selalu ada, jika tidak redirect ke login
+            if (!$userNip) {
+                return redirect('/login')->with('error', 'NIP tidak ditemukan dalam parameter.');
+            }
+            
+            // Ambil data user berdasarkan NIP untuk mendapatkan instansi
+            $currentUser = \App\Models\User::where('nip', $userNip)->first();
+            
+            if (!$currentUser) {
+                return redirect('/login')->with('error', 'User tidak ditemukan.');
+            }
+            
+            // Filter data berdasarkan NIP yang diberikan
+            $laporanData = DetailJenisKegiatan::with(['creator', 'user'])
+                ->where('nip', $userNip)
+                ->orderBy('created_at', 'desc')
+                ->get();
+    
+            // Group data by status for statistics
+            $statusStats = [
+                'draft' => $laporanData->where('status', 'draft')->count(),
+                'submitted' => $laporanData->where('status', 'submitted')->count(),
+                'approved' => $laporanData->where('status', 'approved')->count(),
+                'rejected' => $laporanData->where('status', 'rejected')->count(),
+            ];
+    
+            return view('rekap-bulanan', compact(
+                'laporanData',
+                'statusStats',
+                'currentUser'
+            ));
+    
+        } catch (\Exception $e) {
+            \Log::error('Error in showRekapBulanan: ' . $e->getMessage());
+            return view('rekap-bulanan')->with('error', 'Terjadi kesalahan saat memuat data rekap bulanan.');
         }
     }
 

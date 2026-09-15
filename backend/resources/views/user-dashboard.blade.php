@@ -454,7 +454,7 @@
                     </div>
                 </button>
                 
-                <button type="button" onclick="navigateToLaporan()" class="nav-item w-full text-left flex items-center space-x-3 sm:space-x-4 text-white hover:bg-white hover:bg-opacity-20 rounded-xl p-3 sm:p-4 transition-all duration-300 group">
+                <button type="button" onclick="showReports()" data-section="reports" class="nav-item w-full text-left flex items-center space-x-3 sm:space-x-4 text-white hover:bg-white hover:bg-opacity-20 rounded-xl p-3 sm:p-4 transition-all duration-300 group">
                     <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-orange-400 to-orange-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                         <i class="fas fa-chart-bar text-white text-sm sm:text-base"></i>
                     </div>
@@ -572,7 +572,7 @@
                                 <span class="block text-gray-300 text-xs sm:text-sm mt-1 leading-snug">Lengkapi data kepegawaian</span>
                             </button>
 
-                            <button type="button" onclick="navigateToLaporan()" class="quick-menu-card group min-h-36 sm:min-h-40 rounded-2xl p-4 sm:p-5 text-left transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-80">
+                            <button type="button" onclick="showReports()" class="quick-menu-card quick-card-amber group min-h-36 sm:min-h-40 rounded-2xl p-4 sm:p-5 text-left transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-amber-400">
                                 <span class="w-12 h-12 sm:w-14 sm:h-14 gradient-orange rounded-2xl flex items-center justify-center shadow-lg mb-4 transition-transform duration-300 group-hover:scale-110">
                                     <i class="fas fa-chart-column text-white text-xl sm:text-2xl"></i>
                                 </span>
@@ -647,7 +647,7 @@
                                         Buka menu <strong>Laporan</strong> untuk melihat statistik bulanan, grafik kegiatan per ruangan, dan cetak laporan kinerja.
                                     </p>
                                 </div>
-                                <button type="button" onclick="navigateToLaporan()" class="text-amber-400 hover:text-amber-300 text-xs font-semibold inline-flex items-center gap-1 group self-start">
+                                <button type="button" onclick="showReports()" class="text-amber-400 hover:text-amber-300 text-xs font-semibold inline-flex items-center gap-1 group self-start">
                                     <span>Lihat Laporan</span>
                                     <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
                                 </button>
@@ -1020,70 +1020,257 @@
                 </div>
                 
                 <!-- Reports Content -->
-                <div id="reportsContent" class="content-section hidden fade-in">
-                    <!-- Back Button on Mobile / Sub-page -->
-                    <div class="mb-3 sm:mb-4">
-                        <button type="button" onclick="showDashboard()" class="inline-flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5 glass rounded-xl text-white font-medium hover:bg-white hover:bg-opacity-20 transition-all text-sm group" title="Kembali ke Dashboard">
-                            <i class="fas fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
-                            <span>Kembali ke Dashboard</span>
-                        </button>
-                    </div>
-
-                    <div class="morphism-card rounded-2xl p-4 sm:p-6 lg:p-8 hover-scale">
-                        <div class="flex items-center space-x-3 sm:space-x-4 mb-6 sm:mb-8">
-                            <button type="button" onclick="showDashboard()" class="p-2.5 sm:p-3 glass rounded-xl hover:bg-white hover:bg-opacity-20 transition-all text-white flex items-center justify-center flex-shrink-0" title="Kembali ke Dashboard">
-                                <i class="fas fa-arrow-left text-base sm:text-xl"></i>
+                <div id="reportsContent" class="content-section hidden fade-in space-y-4 sm:space-y-6">
+                    
+                    <!-- Top Navigation & Tab Pills for Reports -->
+                    <!-- Top Navigation & Header for Reports -->
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white/5 border border-white/10 rounded-2xl p-3 sm:p-4 backdrop-blur-md">
+                        <div class="flex items-center gap-3">
+                            <button type="button" onclick="showDashboard()" class="p-2 sm:p-2.5 glass rounded-xl hover:bg-white hover:bg-opacity-20 transition-all text-white flex items-center justify-center flex-shrink-0" title="Kembali ke Dashboard">
+                                <i class="fas fa-arrow-left text-sm sm:text-base"></i>
                             </button>
-                            <div class="w-12 h-12 sm:w-16 sm:h-16 gradient-orange rounded-2xl flex items-center justify-center neon-glow flex-shrink-0">
-                                <i class="fas fa-chart-bar text-white text-xl sm:text-2xl"></i>
-                            </div>
                             <div class="min-w-0">
-                                <h2 class="text-xl sm:text-3xl font-bold text-white truncate">Laporan Kinerja</h2>
-                                <p class="text-xs sm:text-sm text-gray-300 truncate">Analisis dan statistik performa Anda</p>
+                                <h2 class="text-lg sm:text-2xl font-bold text-white flex items-center gap-2">
+                                    <i class="fas fa-chart-line text-amber-400"></i>
+                                    <span>Menu Laporan & Rekapitulasi</span>
+                                </h2>
+                                <p class="text-xs text-gray-300">Pilih jenis laporan untuk melihat rincian aktivitas dan tabulasi bulanan</p>
                             </div>
                         </div>
+
+                        <!-- Segmented Tab Switcher -->
+                        <!-- Segmented Tab / Quick Link Switcher -->
+                        <div class="flex items-center bg-black/40 p-1 rounded-xl border border-white/10 self-start md:self-auto overflow-x-auto max-w-full">
+                            <button type="button" id="repTabMenu" onclick="openReportsMenu()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-white/20 transition-all flex items-center gap-1.5 whitespace-nowrap">
+                            <button type="button" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-white/20 transition-all flex items-center gap-1.5 whitespace-nowrap">
+                                <i class="fas fa-grid-2 text-xs"></i>
+                                <span>Menu Laporan</span>
+                            </button>
+                            <button type="button" id="repTabLaporan" onclick="openSubLaporanKinerja()" class="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-300 hover:text-white transition-all flex items-center gap-1.5 whitespace-nowrap">
+                            <button type="button" onclick="openSubLaporanKinerja()" class="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-300 hover:text-white transition-all flex items-center gap-1.5 whitespace-nowrap">
+                                <i class="fas fa-clipboard-list text-xs"></i>
+                                <span>Laporan Kinerja</span>
+                            </button>
+                            <button type="button" id="repTabRekap" onclick="openSubRekapBulanan()" class="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-300 hover:text-white transition-all flex items-center gap-1.5 whitespace-nowrap">
+                            <button type="button" onclick="openSubRekapBulanan()" class="px-3 py-1.5 rounded-lg text-xs font-medium text-gray-300 hover:text-white transition-all flex items-center gap-1.5 whitespace-nowrap">
+                                <i class="fas fa-table-list text-xs"></i>
+                                <span>Rekap Bulanan</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- VIEW 1: MENU UTAMA LAPORAN (2 Big Interactive Menu Cards) -->
+                    <!-- MENU UTAMA LAPORAN (2 Big Interactive Menu Cards) -->
+                    <div id="reportsMenuHub" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                            
+                            <!-- Card 1: Laporan Kinerja -->
+                            <div onclick="openSubLaporanKinerja()" class="morphism-card rounded-2xl p-5 sm:p-7 text-left transition-all duration-300 hover:-translate-y-1.5 cursor-pointer border border-white/15 hover:border-emerald-400/60 group relative overflow-hidden flex flex-col justify-between">
+                            <div onclick="openSubLaporanKinerja()" class="morphism-card rounded-2xl p-5 sm:p-7 text-left transition-all duration-300 hover:-translate-y-1.5 cursor-pointer border border-white/15 hover:border-emerald-400/60 group relative overflow-hidden flex flex-col justify-between min-h-[220px]">
+                                <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all pointer-events-none"></div>
+                                <div>
+                                    <div class="flex items-start justify-between gap-3 mb-4">
+                                        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white text-2xl shadow-lg shadow-emerald-500/30 group-hover:scale-110 transition-transform flex-shrink-0">
+                                            <i class="fas fa-clipboard-list"></i>
+                                        </div>
+                                        <span class="px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs font-bold flex items-center gap-1.5">
+                                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                            <span id="hubTotalLaporanBadge">0 Data</span>
+                                            <span id="hubTotalLaporanBadge">Memuat...</span>
+                                        </span>
+                                    </div>
+                                    <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 group-hover:text-emerald-300 transition-colors">
+                                        Laporan Kinerja
+                                    </h3>
+                                    <p class="text-gray-300 text-xs sm:text-sm leading-relaxed mb-6">
+                                        Daftar rincian logbook seluruh aktivitas pekerjaan yang telah dicatat, lengkap dengan tanda tangan elektronik, status verifikasi penanggung jawab, dan dokumentasi foto.
+                                    </p>
+                                </div>
+                                
+                                <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+                                    <div class="flex items-center gap-2 text-xs text-gray-300">
+                                        <span class="text-emerald-400 font-semibold" id="hubApprovedCount">0 Approved</span>
+                                        <span>•</span>
+                                        <span class="text-cyan-400 font-semibold" id="hubSubmittedCount">0 Submitted</span>
+                                    </div>
+                                    <span class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-emerald-400 group-hover:translate-x-1 transition-transform">
+                                        <span>Buka Laporan</span>
+                                        <i class="fas fa-arrow-right"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: Rekap Bulanan -->
+                            <div onclick="openSubRekapBulanan()" class="morphism-card rounded-2xl p-5 sm:p-7 text-left transition-all duration-300 hover:-translate-y-1.5 cursor-pointer border border-white/15 hover:border-teal-400/60 group relative overflow-hidden flex flex-col justify-between">
+                            <div onclick="openSubRekapBulanan()" class="morphism-card rounded-2xl p-5 sm:p-7 text-left transition-all duration-300 hover:-translate-y-1.5 cursor-pointer border border-white/15 hover:border-teal-400/60 group relative overflow-hidden flex flex-col justify-between min-h-[220px]">
+                                <div class="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-2xl group-hover:bg-teal-500/20 transition-all pointer-events-none"></div>
+                                <div>
+                                    <div class="flex items-start justify-between gap-3 mb-4">
+                                        <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-teal-500 to-cyan-400 flex items-center justify-center text-white text-2xl shadow-lg shadow-teal-500/30 group-hover:scale-110 transition-transform flex-shrink-0">
+                                            <i class="fas fa-table-list"></i>
+                                        </div>
+                                        <span class="px-2.5 py-1 rounded-full bg-teal-500/20 border border-teal-500/30 text-teal-300 text-xs font-bold flex items-center gap-1.5">
+                                            <i class="fas fa-calendar-alt text-[11px]"></i>
+                                            <span>Matriks Crosstab</span>
+                                        </span>
+                                    </div>
+                                    <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 group-hover:text-teal-300 transition-colors">
+                                        Rekap Bulanan
+                                    </h3>
+                                    <p class="text-gray-300 text-xs sm:text-sm leading-relaxed mb-6">
+                                        Tabel rekapitulasi matriks bulanan: Jenis kegiatan di kolom kiri, tanggal di baris atas, jumlah pelaksanaan harian di dalam sel, total pelaksanaan per tanggal, dan total akumulasi.
+                                    </p>
+                                </div>
+                                
+                                <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+                                    <div class="text-xs text-gray-300">
+                                        <span class="text-teal-300 font-semibold" id="hubMonthLabel">Bulan Berjalan</span>
+                                    </div>
+                                    <span class="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-teal-400 group-hover:translate-x-1 transition-transform">
+                                        <span>Buka Rekapitulasi</span>
+                                        <i class="fas fa-arrow-right"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- VIEW 2: SUB-MENU LAPORAN KINERJA (Full Data Table & Mobile Cards) -->
+                    <div id="subLaporanKinerjaSection" class="hidden space-y-4">
                         
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            <div class="glass rounded-xl p-6">
-                                <h4 class="text-white font-semibold mb-4">Performa Bulanan</h4>
-                                <div class="space-y-3">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-300">Januari</span>
-                                        <span class="text-green-400 font-semibold">95%</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-300">Februari</span>
-                                        <span class="text-blue-400 font-semibold">88%</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-300">Maret</span>
-                                        <span class="text-purple-400 font-semibold">92%</span>
-                                    </div>
+                        <!-- Header Bar for Laporan Kinerja -->
+                        <div class="morphism-card rounded-2xl p-4 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <button type="button" onclick="openReportsMenu()" class="p-2 sm:p-2.5 glass rounded-xl hover:bg-white hover:bg-opacity-20 transition-all text-white flex items-center justify-center flex-shrink-0" title="Kembali ke Menu Laporan">
+                                    <i class="fas fa-arrow-left"></i>
+                                </button>
+                                <div>
+                                    <h3 class="text-base sm:text-xl font-bold text-white flex items-center gap-2">
+                                        <i class="fas fa-clipboard-list text-emerald-400"></i>
+                                        <span>Daftar Laporan Kinerja Pegawai</span>
+                                    </h3>
+                                    <p class="text-xs text-gray-300">Riwayat lengkap aktivitas pekerjaan harian dan status verifikasi</p>
                                 </div>
                             </div>
                             
-                            <div class="glass rounded-xl p-6">
-                                <h4 class="text-white font-semibold mb-4">Target vs Realisasi</h4>
-                                <div class="space-y-4">
-                                    <div>
-                                        <div class="flex justify-between mb-2">
-                                            <span class="text-gray-300">Target Bulanan</span>
-                                            <span class="text-white">100%</span>
-                                        </div>
-                                        <div class="w-full h-3 bg-gray-600 rounded-full overflow-hidden">
-                                            <div class="h-full gradient-green rounded-full" style="width: 92%;"></div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between mb-2">
-                                            <span class="text-gray-300">Realisasi</span>
-                                            <span class="text-white">92%</span>
-                                        </div>
-                                    </div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <button type="button" onclick="exportReportPdfDirect()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-rose-600/30 transition-all flex items-center gap-2">
+                                    <i class="fas fa-file-pdf"></i>
+                                    <span>Cetak PDF / Pratinjau</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Filter Controls -->
+                        <div class="morphism-card rounded-2xl p-3.5 sm:p-5 space-y-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+                                <!-- Search -->
+                                <div class="sm:col-span-6 relative">
+                                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                                    <input type="text" id="repSearchInput" oninput="applyReportFilters()" class="w-full pl-9 pr-3 py-2 bg-black/40 border border-white/15 rounded-xl text-white text-xs placeholder-gray-400 focus:outline-none focus:border-emerald-400" placeholder="Cari kegiatan, unit, atau temuan...">
+                                </div>
+                                <!-- Status Filter -->
+                                <div class="sm:col-span-3">
+                                    <select id="repStatusFilter" onchange="applyReportFilters()" class="w-full px-3 py-2 bg-black/40 border border-white/15 rounded-xl text-white text-xs focus:outline-none focus:border-emerald-400">
+                                        <option value="" class="bg-gray-900 text-white">Semua Status</option>
+                                        <option value="draft" class="bg-gray-900 text-amber-300">Draft</option>
+                                        <option value="submitted" class="bg-gray-900 text-cyan-300">Submitted</option>
+                                        <option value="approved" class="bg-gray-900 text-emerald-300">Approved</option>
+                                        <option value="rejected" class="bg-gray-900 text-rose-300">Rejected</option>
+                                    </select>
+                                </div>
+                                <!-- Reset Button -->
+                                <div class="sm:col-span-3">
+                                    <button type="button" onclick="resetReportFilters()" class="w-full py-2 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-gray-300 hover:text-white text-xs font-semibold transition-all flex items-center justify-center gap-1.5">
+                                        <i class="fas fa-rotate-left"></i>
+                                        <span>Reset Filter</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Data Container -->
+                        <div id="repLoadingState" class="text-center py-12">
+                            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-400 mx-auto mb-3"></div>
+                            <p class="text-gray-300 text-xs">Memuat data laporan...</p>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div id="repEmptyState" class="hidden morphism-card rounded-2xl p-10 text-center">
+                            <div class="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center text-gray-400 text-2xl mx-auto mb-3">
+                                <i class="fas fa-inbox"></i>
+                            </div>
+                            <h4 class="text-white font-bold text-base mb-1">Belum Ada Data Laporan</h4>
+                            <p class="text-gray-400 text-xs max-w-sm mx-auto mb-4">Anda belum mencatat kegiatan atau tidak ada data yang sesuai dengan filter pencarian.</p>
+                            <button type="button" onclick="showMasterKegiatan()" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-xs font-bold rounded-xl shadow-lg">
+                                Mulai Catat Kegiatan
+                            </button>
+                        </div>
+
+                        <!-- Desktop Table -->
+                        <div id="repTableWrapper" class="hidden morphism-card rounded-2xl p-4 overflow-x-auto">
+                            <table class="w-full text-left border-collapse min-w-[700px]">
+                                <thead>
+                                    <tr class="border-b border-white/10 text-gray-300 text-xs uppercase tracking-wider">
+                                        <th class="p-3 w-12 text-center">No</th>
+                                        <th class="p-3">Jenis Kegiatan</th>
+                                        <th class="p-3">Unit</th>
+                                        <th class="p-3">Tanggal Dibuat</th>
+                                        <th class="p-3">Status</th>
+                                        <th class="p-3 text-center">TTD</th>
+                                        <th class="p-3 text-center">Dokumentasi</th>
+                                        <th class="p-3 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="repTableBody" class="divide-y divide-white/5 text-xs text-gray-200">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Mobile Cards -->
+                        <div id="repMobileCards" class="block md:hidden space-y-3">
+                            <!-- Populated via JS -->
+                        </div>
+
                     </div>
+
+                    <!-- VIEW 3: SUB-MENU REKAP BULANAN (Matrix Crosstab Table) -->
+                    <div id="subRekapBulananSection" class="hidden space-y-4">
+                        
+                        <!-- Header Bar for Rekap Bulanan -->
+                        <div class="morphism-card rounded-2xl p-4 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <button type="button" onclick="openReportsMenu()" class="p-2 sm:p-2.5 glass rounded-xl hover:bg-white hover:bg-opacity-20 transition-all text-white flex items-center justify-center flex-shrink-0" title="Kembali ke Menu Laporan">
+                                    <i class="fas fa-arrow-left"></i>
+                                </button>
+                                <div>
+                                    <h3 class="text-base sm:text-xl font-bold text-white flex items-center gap-2">
+                                        <i class="fas fa-table-list text-teal-400"></i>
+                                        <span>Rekapitulasi Kegiatan Bulanan</span>
+                                    </h3>
+                                    <p class="text-xs text-gray-300">Tabulasi jumlah pelaksanaan kegiatan per tanggal dalam satu bulan</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Month Filter Selector -->
+                            <div class="flex items-center gap-2">
+                                <select id="rekapMonthSelect" onchange="renderRekapBulananView()" class="px-3 py-2 bg-black/40 border border-white/15 rounded-xl text-white text-xs focus:outline-none focus:border-teal-400">
+                                    <!-- Populated by JS -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Matrix Table Container -->
+                        <div class="morphism-card rounded-2xl p-4 overflow-hidden">
+                            <div id="rekapMatrixContainer" class="overflow-x-auto">
+                                <!-- Matrix Table Populated by JS -->
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
             </main>
         </div>
@@ -2075,13 +2262,450 @@
             closeSidebarOnMobile();
         }
         
+        let cachedReportsData = [];
+        let filteredReportsData = [];
+        let currentReportsTab = 'menu'; // 'menu', 'laporan', 'rekap'
+
         function showReports() {
             hideAllContent();
             const content = document.getElementById('reportsContent');
-            content.classList.remove('hidden');
-            content.classList.add('fade-in');
+            if (content) {
+                content.classList.remove('hidden');
+                content.classList.add('fade-in');
+            }
             updateMobileNav('reports');
             closeSidebarOnMobile();
+            
+            // Always start at Menu Utama
+            openReportsMenu();
+            
+            // Fetch reports data in the background
+            loadReportsData();
+        }
+
+        function openReportsMenu() {
+            currentReportsTab = 'menu';
+            document.getElementById('reportsMenuHub')?.classList.remove('hidden');
+            document.getElementById('subLaporanKinerjaSection')?.classList.add('hidden');
+            document.getElementById('subRekapBulananSection')?.classList.add('hidden');
+            
+            updateReportsTabPills('menu');
+        }
+
+        function openSubLaporanKinerja() {
+            currentReportsTab = 'laporan';
+            document.getElementById('reportsMenuHub')?.classList.add('hidden');
+            document.getElementById('subLaporanKinerjaSection')?.classList.remove('hidden');
+            document.getElementById('subRekapBulananSection')?.classList.add('hidden');
+            
+            updateReportsTabPills('laporan');
+            if (cachedReportsData.length === 0) {
+                loadReportsData();
+            } else {
+                applyReportFilters();
+            }
+            const user = getStoredUser();
+            const nipParam = (user && user.nip) ? `?nip=${user.nip}` : '';
+            window.location.href = `/laporan-kinerja${nipParam}`;
+        }
+
+        function openSubRekapBulanan() {
+            currentReportsTab = 'rekap';
+            document.getElementById('reportsMenuHub')?.classList.add('hidden');
+            document.getElementById('subLaporanKinerjaSection')?.classList.add('hidden');
+            document.getElementById('subRekapBulananSection')?.classList.remove('hidden');
+            
+            updateReportsTabPills('rekap');
+            if (cachedReportsData.length === 0) {
+                loadReportsData().then(() => renderRekapBulananView());
+            } else {
+                renderRekapBulananView();
+            }
+            const user = getStoredUser();
+            const nipParam = (user && user.nip) ? `?nip=${user.nip}` : '';
+            window.location.href = `/rekap-bulanan${nipParam}`;
+        }
+
+        function updateReportsTabPills(activeTab) {
+            const btnMenu = document.getElementById('repTabMenu');
+            const btnLaporan = document.getElementById('repTabLaporan');
+            const btnRekap = document.getElementById('repTabRekap');
+
+            [btnMenu, btnLaporan, btnRekap].forEach(btn => {
+                if (btn) {
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-medium text-gray-300 hover:text-white transition-all flex items-center gap-1.5 whitespace-nowrap";
+                }
+            });
+
+            if (activeTab === 'menu' && btnMenu) {
+                btnMenu.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-white/20 transition-all flex items-center gap-1.5 whitespace-nowrap";
+            } else if (activeTab === 'laporan' && btnLaporan) {
+                btnLaporan.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 transition-all flex items-center gap-1.5 whitespace-nowrap";
+            } else if (activeTab === 'rekap' && btnRekap) {
+                btnRekap.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-teal-500/30 text-teal-300 border border-teal-500/30 transition-all flex items-center gap-1.5 whitespace-nowrap";
+            }
+        }
+
+        async function loadReportsData() {
+            const token = localStorage.getItem('token');
+            const user = getStoredUser();
+            
+            if (!token || !user) return;
+            
+            const loading = document.getElementById('repLoadingState');
+            if (loading) loading.classList.remove('hidden');
+            
+            try {
+                const response = await fetch('/api/detail-jenis-kegiatan?all=1', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) throw new Error('Gagal memuat data laporan');
+                const resJson = await response.json();
+                
+                let rawData = resJson.data || [];
+                if (!Array.isArray(rawData)) {
+                    rawData = [];
+                }
+                
+                cachedReportsData = rawData;
+                
+                // Update Hub counters
+                const total = cachedReportsData.length;
+                const approved = cachedReportsData.filter(d => (d.status || '').toLowerCase() === 'approved').length;
+                const submitted = cachedReportsData.filter(d => (d.status || '').toLowerCase() === 'submitted').length;
+                
+                const badge = document.getElementById('hubTotalLaporanBadge');
+                if (badge) badge.textContent = `${total} Data`;
+                
+                const appCount = document.getElementById('hubApprovedCount');
+                if (appCount) appCount.textContent = `${approved} Approved`;
+
+                const subCount = document.getElementById('hubSubmittedCount');
+                if (subCount) subCount.textContent = `${submitted} Submitted`;
+                
+                // Month label for current month
+                const now = new Date();
+                const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                const monthLabel = document.getElementById('hubMonthLabel');
+                if (monthLabel) monthLabel.textContent = `${monthNames[now.getMonth()]} ${now.getFullYear()}`;
+                
+                // Populate month filter for rekap
+                populateRekapMonthSelector();
+                
+                // Render tables
+                applyReportFilters();
+                renderRekapBulananView();
+                
+            } catch (err) {
+                console.error('Error loadReportsData:', err);
+            } finally {
+                if (loading) loading.classList.add('hidden');
+            }
+        }
+
+        function populateRekapMonthSelector() {
+            const select = document.getElementById('rekapMonthSelect');
+            if (!select) return;
+            
+            // Extract unique Year-Months from data or default to current year
+            const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            const dateMap = {};
+            const now = new Date();
+            const currentYm = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            dateMap[currentYm] = true;
+
+            cachedReportsData.forEach(item => {
+                if (item.tanggal_dibuat) {
+                    const d = new Date(item.tanggal_dibuat);
+                    if (!isNaN(d.getTime())) {
+                        const ym = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                        dateMap[ym] = true;
+                    }
+                }
+            });
+
+            const keys = Object.keys(dateMap).sort().reverse();
+            select.innerHTML = keys.map(ym => {
+                const [year, month] = ym.split('-');
+                const mIdx = parseInt(month, 10) - 1;
+                return `<option value="${ym}" class="bg-gray-900 text-white" ${ym === currentYm ? 'selected' : ''}>Bulan ${monthNames[mIdx]} ${year}</option>`;
+            }).join('');
+        }
+
+        function applyReportFilters() {
+            const search = (document.getElementById('repSearchInput')?.value || '').toLowerCase().trim();
+            const status = (document.getElementById('repStatusFilter')?.value || '').toLowerCase().trim();
+
+            filteredReportsData = cachedReportsData.filter(item => {
+                const matchSearch = !search || 
+                    (item.jenis_kegiatan || '').toLowerCase().includes(search) ||
+                    (item.unit || '').toLowerCase().includes(search) ||
+                    (item.hasil_temuan || '').toLowerCase().includes(search);
+                
+                const itemStatus = (item.status || 'draft').toLowerCase();
+                const matchStatus = !status || itemStatus === status;
+
+                return matchSearch && matchStatus;
+            });
+
+            renderLaporanKinerjaTable();
+        }
+
+        function resetReportFilters() {
+            if (document.getElementById('repSearchInput')) document.getElementById('repSearchInput').value = '';
+            if (document.getElementById('repStatusFilter')) document.getElementById('repStatusFilter').value = '';
+            applyReportFilters();
+        }
+
+        function renderLaporanKinerjaTable() {
+            const tableWrapper = document.getElementById('repTableWrapper');
+            const mobileCards = document.getElementById('repMobileCards');
+            const emptyState = document.getElementById('repEmptyState');
+            const tbody = document.getElementById('repTableBody');
+
+            if (!tbody || !tableWrapper) return;
+
+            if (filteredReportsData.length === 0) {
+                tableWrapper.classList.add('hidden');
+                mobileCards.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            tableWrapper.classList.remove('hidden');
+            mobileCards.classList.remove('hidden');
+
+            // Render Desktop Table
+            tbody.innerHTML = filteredReportsData.map((item, idx) => {
+                const status = (item.status || 'draft').toLowerCase();
+                const statusColors = {
+                    'approved': 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+                    'submitted': 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
+                    'draft': 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+                    'rejected': 'bg-rose-500/20 text-rose-300 border-rose-500/30'
+                };
+                const badgeClass = statusColors[status] || statusColors['draft'];
+                const dateFormatted = item.tanggal_dibuat ? new Date(item.tanggal_dibuat).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-';
+
+                const sigPelaksana = item.signature_pelaksana ? '<span class="text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">Pelaksana ✓</span>' : '<span class="text-[10px] text-gray-500">Belum</span>';
+                const sigPJ = item.signature_pj ? '<span class="text-[10px] text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded">PJ ✓</span>' : '<span class="text-[10px] text-gray-500">Belum</span>';
+                
+                const docsCount = Array.isArray(item.dokumentasi) ? item.dokumentasi.length : 0;
+                const docsBadge = docsCount > 0 ? `<span class="text-[11px] text-gray-300"><i class="fas fa-camera text-gray-400 mr-1"></i>${docsCount} Foto</span>` : '<span class="text-gray-500 text-xs">-</span>';
+
+                return `
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="p-3 text-center font-semibold text-gray-400">${idx + 1}</td>
+                        <td class="p-3">
+                            <div class="font-bold text-white">${escapeHtml(item.jenis_kegiatan || '-')}</div>
+                            ${item.hasil_temuan ? `<div class="text-[11px] text-gray-400 line-clamp-1 mt-0.5">${escapeHtml(item.hasil_temuan)}</div>` : ''}
+                        </td>
+                        <td class="p-3">
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-teal-500/10 text-teal-300 border border-teal-500/20 text-xs font-medium">
+                                <i class="fas fa-hospital-user text-[10px]"></i>
+                                <span>${escapeHtml(item.unit || '-')}</span>
+                            </span>
+                        </td>
+                        <td class="p-3 text-gray-300">${dateFormatted}</td>
+                        <td class="p-3">
+                            <span class="inline-block px-2.5 py-0.5 rounded-full border text-[11px] font-bold ${badgeClass}">
+                                ${status.toUpperCase()}
+                            </span>
+                        </td>
+                        <td class="p-3 text-center space-y-1">${sigPelaksana} ${sigPJ}</td>
+                        <td class="p-3 text-center">${docsBadge}</td>
+                        <td class="p-3 text-center">
+                            <button type="button" onclick="exportReportPdfDirect()" class="p-1.5 rounded-lg bg-white/10 hover:bg-emerald-500/20 text-gray-300 hover:text-emerald-300 transition-all text-xs" title="Lihat Detail & Cetak">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Render Mobile Cards
+            mobileCards.innerHTML = filteredReportsData.map((item, idx) => {
+                const status = (item.status || 'draft').toLowerCase();
+                const statusColors = {
+                    'approved': 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+                    'submitted': 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
+                    'draft': 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+                    'rejected': 'bg-rose-500/20 text-rose-300 border-rose-500/30'
+                };
+                const badgeClass = statusColors[status] || statusColors['draft'];
+                const dateFormatted = item.tanggal_dibuat ? new Date(item.tanggal_dibuat).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-';
+
+                return `
+                    <div class="morphism-card rounded-2xl p-4 space-y-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <span class="text-[10px] font-bold text-gray-400 bg-black/40 px-1.5 py-0.5 rounded mr-1">#${idx + 1}</span>
+                                <span class="px-2 py-0.5 rounded-full border text-[10px] font-bold ${badgeClass}">
+                                    ${status.toUpperCase()}
+                                </span>
+                            </div>
+                            <span class="text-[11px] text-gray-400">${dateFormatted}</span>
+                        </div>
+                        <h4 class="text-white font-bold text-sm">${escapeHtml(item.jenis_kegiatan || '-')}</h4>
+                        <div class="text-xs text-teal-300 flex items-center gap-1.5">
+                            <i class="fas fa-hospital text-[10px]"></i>
+                            <span>${escapeHtml(item.unit || '-')}</span>
+                        </div>
+                        ${item.hasil_temuan ? `<p class="text-xs text-gray-300 bg-black/30 p-2 rounded-xl">${escapeHtml(item.hasil_temuan)}</p>` : ''}
+                        <div class="pt-2 border-t border-white/10 flex items-center justify-between">
+                            <div class="text-[10px] text-gray-400">
+                                ${item.signature_pelaksana ? '<span class="text-emerald-400 mr-2">✓ Pelaksana</span>' : ''}
+                                ${item.signature_pj ? '<span class="text-cyan-400">✓ PJ</span>' : ''}
+                            </div>
+                            <button type="button" onclick="exportReportPdfDirect()" class="px-3 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold">
+                                <i class="fas fa-eye mr-1"></i> Detail
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderRekapBulananView() {
+            const container = document.getElementById('rekapMatrixContainer');
+            if (!container) return;
+
+            const selectedYm = document.getElementById('rekapMonthSelect')?.value;
+            if (!selectedYm) {
+                container.innerHTML = '<div class="text-center py-8 text-gray-400 text-xs">Pilih bulan terlebih dahulu.</div>';
+                return;
+            }
+
+            const [selYear, selMonth] = selectedYm.split('-');
+            const yearNum = parseInt(selYear, 10);
+            const monthNum = parseInt(selMonth, 10); // 1-12
+
+            // Total days in selected month
+            const daysInMonth = new Date(yearNum, monthNum, 0).getDate();
+
+            // Filter data for this month
+            const monthItems = cachedReportsData.filter(item => {
+                if (!item.tanggal_dibuat) return false;
+                const d = new Date(item.tanggal_dibuat);
+                if (isNaN(d.getTime())) return false;
+                return d.getFullYear() === yearNum && (d.getMonth() + 1) === monthNum;
+            });
+
+            // Group by jenis_kegiatan and day
+            const matrix = {}; // { 'Kegiatan A': { 1: count, 2: count, ... } }
+            const dailyTotals = {};
+            for (let i = 1; i <= daysInMonth; i++) {
+                dailyTotals[i] = 0;
+            }
+            let grandTotal = 0;
+
+            monthItems.forEach(item => {
+                const keg = item.jenis_kegiatan || 'Tanpa Kegiatan';
+                const d = new Date(item.tanggal_dibuat);
+                const day = d.getDate();
+
+                if (!matrix[keg]) {
+                    matrix[keg] = {};
+                    for (let i = 1; i <= daysInMonth; i++) {
+                        matrix[keg][i] = 0;
+                    }
+                }
+
+                matrix[keg][day] = (matrix[keg][day] || 0) + 1;
+                dailyTotals[day] = (dailyTotals[day] || 0) + 1;
+                grandTotal++;
+            });
+
+            const kegiatanList = Object.keys(matrix).sort();
+
+            if (kegiatanList.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 px-4">
+                        <div class="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-gray-400 text-2xl mx-auto mb-3">
+                            <i class="fas fa-calendar-xmark"></i>
+                        </div>
+                        <h4 class="text-white font-bold text-sm mb-1">Tidak Ada Data Rekap Pada Bulan Ini</h4>
+                        <p class="text-gray-400 text-xs">Belum ada aktivitas kegiatan yang dicatat pada periode ${selectedYm}.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Build Matrix Table
+            let tableHtml = `
+                <table class="w-full text-xs border-collapse min-w-[900px]">
+                    <thead>
+                        <tr class="bg-black/50 text-gray-300 font-bold border-b border-white/15">
+                            <th class="p-3 text-left w-64 uppercase tracking-wider sticky left-0 bg-slate-900 z-10">Jenis Kegiatan</th>
+            `;
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                tableHtml += `<th class="p-2 text-center w-8 border-l border-white/10 text-[11px]">${String(day).padStart(2, '0')}</th>`;
+            }
+
+            tableHtml += `
+                            <th class="p-3 text-center w-16 bg-teal-900/40 text-teal-300 border-l border-teal-500/30 uppercase font-bold">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5">
+            `;
+
+            kegiatanList.forEach(keg => {
+                let rowTotal = 0;
+                tableHtml += `
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="p-3 font-medium text-white sticky left-0 bg-slate-900/95 z-10 border-r border-white/10">${escapeHtml(keg)}</td>
+                `;
+
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const cnt = matrix[keg][day] || 0;
+                    rowTotal += cnt;
+                    const cellDisplay = cnt > 0 ? `<span class="font-bold text-emerald-400">${cnt}</span>` : '<span class="text-gray-600">-</span>';
+                    tableHtml += `<td class="p-2 text-center border-l border-white/5">${cellDisplay}</td>`;
+                }
+
+                tableHtml += `
+                        <td class="p-3 text-center font-bold text-teal-300 bg-teal-900/20 border-l border-teal-500/30">${rowTotal}</td>
+                    </tr>
+                `;
+            });
+
+            // Table Footer for Daily Totals
+            tableHtml += `
+                    </tbody>
+                    <tfoot>
+                        <tr class="bg-black/60 font-bold border-t-2 border-teal-500/40">
+                            <td class="p-3 text-right text-gray-200 sticky left-0 bg-slate-900 z-10 border-r border-white/10">Total Harian</td>
+            `;
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dTotal = dailyTotals[day] || 0;
+                const dDisplay = dTotal > 0 ? `<span class="text-emerald-400 font-bold">${dTotal}</span>` : '<span class="text-gray-600">-</span>';
+                tableHtml += `<td class="p-2 text-center border-l border-white/10">${dDisplay}</td>`;
+            }
+
+            tableHtml += `
+                            <td class="p-3 text-center text-sm font-extrabold text-white bg-teal-600/40 border-l border-teal-500/40 shadow-inner">${grandTotal}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            `;
+
+            container.innerHTML = tableHtml;
+        }
+
+        function exportReportPdfDirect() {
+            const user = getStoredUser();
+            if (user && user.nip) {
+                window.location.href = `/laporan?nip=${user.nip}`;
+            } else {
+                window.location.href = '/laporan';
+            }
         }
         
         // Load profile

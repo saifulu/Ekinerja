@@ -35,6 +35,14 @@ Route::get('/master-data', function () {
 
 // Route untuk Laporan
 Route::get('/laporan', [DetailJenisKegiatanController::class, 'showLaporan'])->name('laporan');
+// Route untuk Laporan Kinerja
+Route::get('/laporan', [DetailJenisKegiatanController::class, 'showLaporanKinerja'])->name('laporan');
+Route::get('/laporan/kinerja', [DetailJenisKegiatanController::class, 'showLaporanKinerja'])->name('laporan.kinerja');
+Route::get('/laporan-kinerja', [DetailJenisKegiatanController::class, 'showLaporanKinerja'])->name('laporan-kinerja');
+
+// Route untuk Rekap Bulanan
+Route::get('/laporan/rekap-bulanan', [DetailJenisKegiatanController::class, 'showRekapBulanan'])->name('laporan.rekap-bulanan');
+Route::get('/rekap-bulanan', [DetailJenisKegiatanController::class, 'showRekapBulanan'])->name('rekap-bulanan');
 
 // Detail Jenis Kegiatan page - Updated route
 Route::get('/jenis-kegiatan/detail', function () {
