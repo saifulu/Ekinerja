@@ -82,7 +82,7 @@
         max-width: fit-content !important;
         height: auto !important;
         z-index: 99990 !important;
-        display: inline-flex !important;
+        display: none !important; /* disembunyikan sementara */
         align-items: center !important;
         gap: 10px !important;
         padding: 10px 18px !important;
@@ -357,10 +357,10 @@
             deferredPrompt = e;
             console.log('[PWA] Event beforeinstallprompt diterima.');
 
-            // Tampilkan tombol instalasi
-            if (pwaBtn) {
-                pwaBtn.style.display = 'inline-flex';
-            }
+            // Tampilkan tombol instalasi (disembunyikan sementara)
+            // if (pwaBtn) {
+            //     pwaBtn.style.display = 'inline-flex';
+            // }
         });
 
         // 3. Fallback jika di iOS Safari
@@ -368,7 +368,7 @@
             // Tampilkan tombol untuk membuka panduan iOS jika belum ditutup sebelumnya
             const dismissed = sessionStorage.getItem('pwa_ios_dismissed');
             if (!dismissed && pwaBtn) {
-                pwaBtn.style.display = 'inline-flex';
+                // pwaBtn.style.display = 'inline-flex'; // disembunyikan sementara
                 if (pwaIosGuide) pwaIosGuide.style.display = 'block';
                 if (pwaConfirm) pwaConfirm.style.display = 'none'; // iOS tidak mendukung prompt API
             }
