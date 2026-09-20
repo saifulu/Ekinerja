@@ -1123,19 +1123,31 @@
                 const skeleton = document.getElementById('pdfLoadingSkeleton');
 
                 if (filenameLabel) filenameLabel.textContent = fileName;
-                if (skeleton) skeleton.style.display = 'flex';
 
-                if (frame) {
-                    frame.onload = function() {
-                        if (skeleton) skeleton.style.display = 'none';
-                    };
-                    frame.src = currentPdfUrl;
-                }
+                // Deteksi perangkat mobile/tablet (iOS & Android)
+                // Browser mobile tidak mendukung render PDF di dalam iframe
+                const isMobileOrTablet = /Android|iPad|iPhone|iPod|Mobile/i.test(navigator.userAgent) ||
+                    (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent)); // iPadOS
 
-                const previewModalEl = document.getElementById('pdfPreviewModal');
-                if (previewModalEl && window.bootstrap) {
-                    const previewModal = new bootstrap.Modal(previewModalEl);
-                    previewModal.show();
+                if (isMobileOrTablet) {
+                    // Di tablet/mobile: langsung buka di tab baru
+                    window.open(currentPdfUrl, '_blank');
+                } else {
+                    // Di desktop: tampilkan modal pratinjau dengan iframe
+                    if (skeleton) skeleton.style.display = 'flex';
+
+                    if (frame) {
+                        frame.onload = function() {
+                            if (skeleton) skeleton.style.display = 'none';
+                        };
+                        frame.src = currentPdfUrl;
+                    }
+
+                    const previewModalEl = document.getElementById('pdfPreviewModal');
+                    if (previewModalEl && window.bootstrap) {
+                        const previewModal = new bootstrap.Modal(previewModalEl);
+                        previewModal.show();
+                    }
                 }
 
             } catch (err) {
